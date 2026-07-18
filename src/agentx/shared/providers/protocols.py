@@ -1,0 +1,13 @@
+from typing import Protocol
+
+from pydantic import BaseModel
+
+
+class AuthProvider(Protocol):
+    async def get_headers(self) -> dict[str, str]: ...
+    async def refresh(self) -> None: ...
+
+
+class ModelInvoker(Protocol):
+    async def invoke(self, prompt: str, **kwargs) -> str: ...
+    async def invoke_structured(self, prompt: str, schema: type[BaseModel]) -> BaseModel: ...

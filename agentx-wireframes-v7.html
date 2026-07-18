@@ -1,0 +1,2572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentX • AI-powered STP Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap');
+        
+        :root {
+            --corp-navy: #001529;
+            --corp-navy-mid: #003a8c;
+            --corp-blue: #1677ff;
+            --corp-blue-hover: #0958d9;
+            --corp-blue-light: #e6f4ff;
+            --corp-sidebar: #f0f2f5;
+            --corp-bg: #f5f7fa;
+            --corp-border: #d9d9d9;
+            --corp-text: #262626;
+            --corp-text-secondary: #595959;
+            --corp-text-muted: #8c8c8c;
+            --corp-success: #52c41a;
+            --corp-warning: #faad14;
+            --corp-danger: #ff4d4f;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Inter', system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .enterprise-app {
+            background: var(--corp-bg);
+            color: var(--corp-text);
+        }
+
+        /* Two-tier enterprise header */
+        .corp-top-bar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--corp-border);
+        }
+        .corp-top-bar-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--corp-text);
+            letter-spacing: -0.01em;
+        }
+        .corp-top-link {
+            color: var(--corp-blue);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.15s ease;
+        }
+        .corp-top-link:hover {
+            color: var(--corp-blue-hover);
+        }
+        .corp-hero-banner {
+            position: relative;
+            background: linear-gradient(135deg, var(--corp-navy) 0%, var(--corp-navy-mid) 55%, #0050b3 100%);
+            overflow: hidden;
+            min-height: 88px;
+        }
+        .corp-hero-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+            background-size: 18px 18px;
+            opacity: 0.5;
+        }
+        .corp-hero-banner::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 42%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'%3E%3Crect x='20' y='40' width='28' height='80' fill='%23ffffff' opacity='0.06'/%3E%3Crect x='60' y='20' width='32' height='100' fill='%23ffffff' opacity='0.08'/%3E%3Crect x='105' y='55' width='24' height='65' fill='%23ffffff' opacity='0.05'/%3E%3Crect x='140' y='10' width='36' height='110' fill='%23ffffff' opacity='0.09'/%3E%3Crect x='190' y='35' width='30' height='85' fill='%23ffffff' opacity='0.06'/%3E%3Crect x='235' y='50' width='26' height='70' fill='%23ffffff' opacity='0.05'/%3E%3Crect x='275' y='25' width='34' height='95' fill='%23ffffff' opacity='0.08'/%3E%3Crect x='320' y='45' width='28' height='75' fill='%23ffffff' opacity='0.06'/%3E%3Crect x='360' y='15' width='32' height='105' fill='%23ffffff' opacity='0.07'/%3E%3C/svg%3E") no-repeat right bottom;
+            background-size: cover;
+            pointer-events: none;
+        }
+        .corp-hero-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        .corp-hero-subtitle {
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 4px;
+            max-width: 720px;
+            line-height: 1.5;
+        }
+        .corp-user-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.02em;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .corp-sidebar {
+            background: var(--corp-sidebar);
+            border-right: 1px solid var(--corp-border);
+        }
+
+        .sidebar-item {
+            transition: all 0.1s ease;
+            color: var(--corp-text);
+        }
+        
+        .sidebar-item:hover {
+            background-color: #e6e8eb;
+        }
+        
+        .sidebar-item.active {
+            background-color: #d9d9d9;
+            color: var(--corp-text);
+            border-left: 3px solid var(--corp-blue);
+            font-weight: 500;
+        }
+
+        .corp-main {
+            background: #ffffff;
+        }
+
+        .wireframe-card {
+            background: #ffffff;
+            border: 1px solid var(--corp-border);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-label {
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--corp-text-muted);
+            font-weight: 600;
+        }
+
+        .corp-btn-primary {
+            background: var(--corp-blue);
+            color: #ffffff;
+            border-radius: 9999px;
+            font-weight: 500;
+            transition: background 0.15s ease;
+        }
+        .corp-btn-primary:hover {
+            background: var(--corp-blue-hover);
+        }
+
+        .corp-pill {
+            background: var(--corp-blue-light);
+            color: var(--corp-navy-mid);
+            border: 1px solid #91caff;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 12px;
+            border-radius: 9999px;
+        }
+
+        .enterprise-app .bg-slate-800 { background-color: #fafafa !important; }
+        .enterprise-app thead.bg-slate-800 { background-color: #f0f2f5 !important; color: var(--corp-text-secondary); }
+        .enterprise-app .bg-slate-900 { background-color: #ffffff !important; }
+        .enterprise-app .bg-slate-800\/50 { background-color: #fafafa !important; }
+        .enterprise-app .border-slate-600,
+        .enterprise-app .border-slate-700 { border-color: var(--corp-border) !important; }
+        .enterprise-app .divide-slate-700 > :not([hidden]) ~ :not([hidden]) { border-color: #f0f0f0 !important; }
+        .enterprise-app .text-slate-400 { color: var(--corp-text-muted) !important; }
+        .enterprise-app .text-slate-500 { color: var(--corp-text-muted) !important; }
+        .enterprise-app .text-slate-300 { color: var(--corp-text-secondary) !important; }
+        .enterprise-app .text-slate-200 { color: var(--corp-text) !important; }
+        .enterprise-app .text-emerald-400,
+        .enterprise-app .text-emerald-500 { color: var(--corp-blue) !important; }
+        .enterprise-app .bg-emerald-400,
+        .enterprise-app .bg-emerald-500,
+        .enterprise-app .bg-emerald-600 { background-color: var(--corp-blue) !important; }
+        .enterprise-app .bg-slate-700 { background-color: #f0f0f0 !important; }
+        .enterprise-app select.bg-slate-800,
+        .enterprise-app input.bg-slate-800 { background-color: #ffffff !important; border-color: var(--corp-border) !important; color: var(--corp-text) !important; }
+        .enterprise-app .hover\:bg-slate-800:hover { background-color: #f5f5f5 !important; }
+        .enterprise-app .hover\:bg-amber-900\/20:hover { background-color: #fffbe6 !important; }
+        .enterprise-app .border-l-2.border-emerald-500 { border-color: var(--corp-blue) !important; }
+
+        .enterprise-app h1 { color: var(--corp-text); }
+        .enterprise-app .golden-schema,
+        .enterprise-app .evidence-timeline,
+        .enterprise-app #original-source-view,
+        .enterprise-app #agent-actions-view,
+        .enterprise-app #system-repair-view,
+        .enterprise-app #ws-explain {
+            background-color: #fafafa !important;
+            border-color: var(--corp-border) !important;
+            color: var(--corp-text-secondary) !important;
+        }
+        .enterprise-app .editable-field,
+        .enterprise-app #audit-note {
+            background-color: #ffffff !important;
+            border: 1px solid var(--corp-border) !important;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--corp-text) !important;
+        }
+        .enterprise-app .editable-field:focus,
+        .enterprise-app #audit-note:focus {
+            border-color: var(--corp-blue) !important;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+        }
+        .enterprise-app .field-label {
+            font-size: 12px;
+            color: var(--corp-text-secondary);
+            font-weight: 500;
+        }
+        .enterprise-app thead th {
+            font-weight: 500;
+            color: var(--corp-text-secondary);
+        }
+        .enterprise-app .kanban-card {
+            background: #ffffff !important;
+            border-color: var(--corp-border) !important;
+        }
+        .enterprise-app #ws-explain {
+            background-color: #fafafa !important;
+            border-color: var(--corp-border) !important;
+            color: var(--corp-text-secondary) !important;
+        }
+        .enterprise-app tbody tr:hover {
+            background-color: #fafafa;
+        }
+
+        .status-pill {
+            font-size: 10px;
+            padding: 1px 9px;
+            border-radius: 9999px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .journey-mini {
+            display: flex;
+            gap: 3px;
+            align-items: center;
+        }
+        
+        .journey-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        /* Processing step tracker (queue & exceptions) */
+        .step-tracker { min-width: 200px; }
+        .step-tracker-status {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+        .step-track {
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+        }
+        .step-node-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 0;
+            position: relative;
+        }
+        .step-node-wrap:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 9px;
+            left: calc(50% + 10px);
+            width: calc(100% - 20px);
+            height: 2px;
+            background: #d9d9d9;
+            z-index: 0;
+        }
+        .step-node-wrap.step-done:not(:last-child)::after,
+        .step-node-wrap.step-failed:not(:last-child)::after {
+            background: var(--corp-blue);
+        }
+        .step-node-wrap.step-failed:not(:last-child)::after {
+            background: linear-gradient(90deg, var(--corp-blue) 0%, #d9d9d9 100%);
+        }
+        .step-node {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            z-index: 1;
+            border: 1.5px solid #bfbfbf;
+            background: #fafafa;
+            color: #8c8c8c;
+        }
+        .step-node i { font-size: 9px; line-height: 1; }
+        .step-node.step-pending { opacity: 0.55; }
+        .step-node.step-done {
+            background: var(--corp-blue-light);
+            border-color: var(--corp-blue);
+            color: var(--corp-blue);
+        }
+        .step-node.step-active {
+            background: #fff7e6;
+            border-color: var(--corp-warning);
+            color: #d48806;
+            box-shadow: 0 0 0 3px rgba(250, 173, 20, 0.15);
+        }
+        .step-node.step-failed {
+            background: #fff1f0;
+            border-color: var(--corp-danger);
+            color: var(--corp-danger);
+            box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.12);
+        }
+        .step-node-wrap.step-failed .step-fail-badge {
+            position: absolute;
+            top: -3px;
+            right: calc(50% - 14px);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--corp-danger);
+            border: 1.5px solid #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6px;
+            color: white;
+            z-index: 2;
+        }
+        .step-label {
+            font-size: 8px;
+            color: var(--corp-text-muted);
+            margin-top: 3px;
+            text-align: center;
+            line-height: 1.1;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .step-label.step-label-failed { color: var(--corp-danger); font-weight: 600; }
+        .step-label.step-label-active { color: #d48806; font-weight: 600; }
+        .step-label.step-label-done { color: var(--corp-blue); }
+
+        /* Journey tracker variants */
+        .step-tracker-workspace .step-tracker-status { font-size: 12px; margin-bottom: 10px; }
+        .step-tracker-workspace .step-node { width: 34px; height: 34px; border-radius: 8px; }
+        .step-tracker-workspace .step-node i { font-size: 11px; }
+        .step-tracker-workspace .step-node-wrap:not(:last-child)::after { top: 16px; left: calc(50% + 17px); width: calc(100% - 34px); }
+        .step-tracker-workspace .step-label { font-size: 9px; margin-top: 5px; }
+        .step-tracker-card {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--corp-border);
+        }
+        .step-tracker-card .step-tracker-status { font-size: 8px; margin-bottom: 4px; line-height: 1.15; }
+        .step-tracker-card .step-node { width: 17px; height: 17px; border-radius: 4px; }
+        .step-tracker-card .step-node i { font-size: 7px; }
+        .step-tracker-card .step-node-wrap:not(:last-child)::after { top: 7px; left: calc(50% + 8px); width: calc(100% - 16px); height: 1.5px; }
+        .step-tracker-card .step-label { display: none; }
+        .ws-queue-pill {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            letter-spacing: 0.02em;
+        }
+        .journey-bridge-hint {
+            font-size: 10px;
+            color: var(--corp-text-muted);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .journey-bridge-hint i { color: var(--corp-text-muted); font-size: 9px; }
+
+        .kpi-value {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .metric-trend {
+            font-size: 10px;
+        }
+
+        /* AgentX Assistant */
+        .assistant-fab {
+            background: linear-gradient(135deg, #1677ff 0%, #0958d9 50%, #003a8c 100%);
+            box-shadow: 0 8px 32px rgba(22, 119, 255, 0.35), 0 0 0 1px rgba(255,255,255,0.08) inset;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        #assistant-fab {
+            position: relative;
+            z-index: 2;
+        }
+        .assistant-send-btn {
+            background: linear-gradient(135deg, #1677ff 0%, #0958d9 50%, #003a8c 100%);
+        }
+        .assistant-fab:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(22, 119, 255, 0.45);
+        }
+        .assistant-fab-pulse {
+            animation: assistant-pulse 2.5s ease-in-out infinite;
+        }
+        @keyframes assistant-pulse {
+            0%, 100% { box-shadow: 0 8px 32px rgba(22, 119, 255, 0.35), 0 0 0 0 rgba(22, 119, 255, 0.4); }
+            50% { box-shadow: 0 8px 32px rgba(22, 119, 255, 0.35), 0 0 0 8px rgba(22, 119, 255, 0); }
+        }
+        .assistant-panel {
+            background: linear-gradient(180deg, #ffffff 0%, #f5f7fa 100%);
+            border: 1px solid var(--corp-border);
+            box-shadow: -12px 0 48px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0,0,0,0.03) inset;
+        }
+        .assistant-header {
+            background: linear-gradient(135deg, var(--corp-navy) 0%, var(--corp-navy-mid) 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .assistant-avatar {
+            background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
+            box-shadow: 0 2px 12px rgba(22, 119, 255, 0.4);
+        }
+        .assistant-status-dot {
+            animation: status-blink 2s ease-in-out infinite;
+        }
+        @keyframes status-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .assistant-welcome-card {
+            background: #ffffff;
+            border: 1px solid var(--corp-border);
+            transition: all 0.15s ease;
+        }
+        .assistant-welcome-card:hover {
+            background: var(--corp-blue-light);
+            border-color: #91caff;
+            transform: translateY(-1px);
+        }
+        .assistant-msg-user {
+            background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+            border-radius: 18px 18px 4px 18px;
+        }
+        .assistant-msg-bot {
+            background: #ffffff;
+            border: 1px solid var(--corp-border);
+            border-radius: 4px 18px 18px 18px;
+            color: var(--corp-text);
+        }
+        .assistant-typing span {
+            animation: typing-dot 1.4s ease-in-out infinite;
+        }
+        .assistant-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .assistant-typing span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-dot {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-4px); opacity: 1; }
+        }
+        .assistant-composer {
+            background: #ffffff;
+            border-top: 1px solid var(--corp-border);
+        }
+        .assistant-input {
+            background: #ffffff;
+            border: 1px solid var(--corp-border);
+            color: var(--corp-text);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .assistant-input:focus {
+            border-color: rgba(22, 119, 255, 0.5);
+            box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+            outline: none;
+        }
+        .assistant-stat-chip {
+            background: var(--corp-blue-light);
+            border: 1px solid #91caff;
+        }
+        .assistant-panel-enter {
+            animation: panel-slide-in 0.25s ease-out;
+        }
+        @keyframes panel-slide-in {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* AI Operations Workbench */
+        .workbench-layout { height: calc(100vh - 260px); min-height: 420px; }
+        .workbench-stats-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+        .wb-stat-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: #ffffff;
+            border: 1px solid var(--corp-border);
+            border-radius: 12px;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+        .wb-stat-chip .wb-stat-value {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+        .wb-stat-chip.wb-stat-warn { border-color: rgba(250, 173, 20, 0.5); background: #fffbe6; }
+        .wb-stat-chip.wb-stat-danger { border-color: rgba(255, 77, 79, 0.4); background: #fff1f0; }
+        .workbench-insights-drawer {
+            position: fixed;
+            top: 140px;
+            right: 0;
+            width: 300px;
+            max-width: 92vw;
+            height: calc(100vh - 140px);
+            background: #ffffff;
+            border-left: 1px solid var(--corp-border);
+            box-shadow: -12px 0 40px rgba(0, 0, 0, 0.1);
+            z-index: 350;
+            transform: translateX(100%);
+            transition: transform 0.22s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+        .workbench-insights-drawer.open { transform: translateX(0); }
+        .workbench-insights-backdrop {
+            position: fixed;
+            inset: 140px 0 0 0;
+            background: rgba(0, 0, 0, 0.25);
+            z-index: 340;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .workbench-insights-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .kanban-board { display: flex; gap: 12px; overflow-x: auto; overflow-y: hidden; padding-bottom: 8px; flex: 1; min-height: 0; }
+        .kanban-column { flex: 0 0 248px; min-width: 248px; display: flex; flex-direction: column; max-height: 100%; }
+        .kanban-column-header { border-radius: 8px 8px 0 0; padding: 10px 12px; border: 1px solid var(--corp-border); border-bottom: none; }
+        .kanban-column-body { flex: 1; overflow-y: auto; padding: 8px; border: 1px solid var(--corp-border); border-top: none; border-radius: 0 0 8px 8px; background: #fafafa; min-height: 100px; transition: background 0.15s; }
+        .kanban-column-body.drag-over { background: var(--corp-blue-light); border-color: #91caff; }
+        .kanban-card { background: #ffffff; border: 1px solid var(--corp-border); border-radius: 8px; padding: 10px; margin-bottom: 8px; cursor: grab; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; user-select: none; }
+        .kanban-card:hover { border-color: #91caff; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .kanban-card.dragging { opacity: 0.5; transform: scale(0.98); cursor: grabbing; }
+        .sla-ok { color: var(--corp-success); }
+        .sla-warn { color: #d48806; }
+        .sla-critical { color: var(--corp-danger); animation: sla-pulse 1.5s ease-in-out infinite; }
+        @keyframes sla-pulse { 0%,100%{opacity:1} 50%{opacity:0.65} }
+        .conf-bar { height: 4px; border-radius: 99px; background: #f0f0f0; overflow: hidden; }
+        .conf-fill-high { background: linear-gradient(90deg, #0958d9, #1677ff); }
+        .conf-fill-med { background: linear-gradient(90deg, #d48806, #faad14); }
+        .conf-fill-low { background: linear-gradient(90deg, #cf1322, #ff4d4f); }
+        .heatmap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .heatmap-cell { border-radius: 8px; padding: 8px 6px; text-align: center; font-size: 10px; border: 1px solid transparent; }
+        .heat-high { background: var(--corp-blue-light); border-color: #91caff; color: var(--corp-navy-mid); }
+        .heat-med { background: #fffbe6; border-color: #ffe58f; color: #d48806; }
+        .heat-low { background: #fff1f0; border-color: #ffa39e; color: #cf1322; }
+        #review-workspace { animation: ws-in 0.25s ease-out; }
+        @keyframes ws-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .col-submitted .kanban-column-header { background: rgba(22,119,255,0.08); }
+        .col-validation .kanban-column-header { background: rgba(114,46,209,0.08); }
+        .col-review .kanban-column-header { background: rgba(250,173,20,0.1); }
+        .col-approved .kanban-column-header { background: rgba(82,196,26,0.1); }
+        .col-rejected .kanban-column-header { background: rgba(255,77,79,0.08); }
+        .col-escalated .kanban-column-header { background: rgba(235,47,150,0.08); }
+    </style>
+</head>
+<body class="enterprise-app">
+    <!-- ENTERPRISE HEADER: white top bar + navy hero banner -->
+    <header>
+        <div class="corp-top-bar">
+            <div class="px-6 h-12 flex items-center justify-between">
+                <span class="corp-top-bar-title">AgentX — AI-powered STP Platform</span>
+                <div class="flex items-center gap-x-5">
+                    <button onclick="openAssistant()" class="hidden sm:flex items-center gap-2 text-sm corp-top-link">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                        <span>Assistant</span>
+                    </button>
+                    <a href="#" class="corp-top-link">Main</a>
+                </div>
+            </div>
+        </div>
+        <div class="corp-hero-banner">
+            <div class="relative z-10 px-6 py-5 flex items-center justify-between gap-6">
+                <div>
+                    <h1 class="corp-hero-title">AgentX</h1>
+                    <p class="corp-hero-subtitle">Empowering fund operations with intelligent straight-through processing, exception handling, and real-time transaction surveillance.</p>
+                </div>
+                <div class="hidden md:flex items-center gap-x-4 shrink-0">
+                    <div class="text-right">
+                        <div class="text-sm font-medium text-white">SCB User</div>
+                        <div class="text-[11px] text-white/70">Fund Administrator &bull; Operations</div>
+                    </div>
+                    <div class="corp-user-avatar w-9 h-9 rounded-full border-2 border-white/30" title="SCB User">SU</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex min-h-[calc(100vh-140px)]">
+        
+        <!-- LEFT SIDEBAR -->
+        <div class="corp-sidebar w-60 min-h-full p-3 flex flex-col shrink-0">
+            <div class="px-3 pt-2 pb-4">
+                <div class="section-label mb-2 px-1">Platform</div>
+                
+                <div onclick="switchTab('dashboard')" class="sidebar-item active flex items-center gap-x-3 px-3 py-[9px] rounded mb-0.5 cursor-pointer" id="nav-dashboard">
+                    <i class="fa-solid fa-chart-line w-4"></i>
+                    <span class="text-sm font-medium">Dashboard</span>
+                </div>
+                
+                <div onclick="switchTab('queue')" class="sidebar-item flex items-center gap-x-3 px-3 py-[9px] rounded mb-0.5 cursor-pointer" id="nav-queue">
+                    <i class="fa-solid fa-list-check w-4"></i>
+                    <span class="text-sm font-medium">Transaction Queue</span>
+                </div>
+                
+                <div onclick="switchTab('exceptions')" class="sidebar-item flex items-center gap-x-3 px-3 py-[9px] rounded mb-0.5 cursor-pointer" id="nav-exceptions">
+                    <i class="fa-solid fa-exclamation-triangle w-4"></i>
+                    <span class="text-sm font-medium">Exceptions</span>
+                    <span class="ml-auto text-xs px-2 py-px bg-amber-500 text-amber-950 font-bold rounded-full">47</span>
+                </div>
+                
+                <div onclick="switchTab('workbench')" class="sidebar-item flex items-center gap-x-3 px-3 py-[9px] rounded mb-0.5 cursor-pointer" id="nav-workbench">
+                    <i class="fa-solid fa-table-columns w-4"></i>
+                    <span class="text-sm font-medium">Operations Workbench</span>
+                    <span class="ml-auto text-xs px-2 py-px bg-amber-500 text-amber-950 font-bold rounded-full" id="workbench-badge">47</span>
+                </div>
+                
+                <div onclick="switchTab('audit')" class="sidebar-item flex items-center gap-x-3 px-3 py-[9px] rounded mb-0.5 cursor-pointer" id="nav-audit">
+                    <i class="fa-solid fa-history w-4"></i>
+                    <span class="text-sm font-medium">Audit &amp; Evidence</span>
+                </div>
+
+                <div onclick="switchTab('configuration')" class="sidebar-item flex items-center gap-x-3 px-3 py-[9px] rounded mb-0.5 cursor-pointer" id="nav-configuration">
+                    <i class="fa-solid fa-cog w-4"></i>
+                    <span class="text-sm font-medium">Configuration</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="corp-main flex-1 p-6 overflow-auto">
+            
+            <!-- REDESIGNED DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content">
+                <div class="flex items-end justify-between mb-6">
+                    <div>
+                        <h1 class="text-3xl font-semibold tracking-tight">Operations Command Center</h1>
+                        <p class="text-sm text-gray-500 mt-0.5">AI-powered STP Platform &bull; Thursday, 16 July 2026 &bull; Real-time view</p>
+                    </div>
+                    <div class="flex items-center gap-x-2">
+                        <button class="px-4 h-9 text-sm flex items-center gap-x-2 border border-gray-300 hover:bg-gray-50 rounded-full text-gray-700">
+                            <i class="fa-solid fa-sync-alt text-xs"></i>
+                            <span>Refresh</span>
+                        </button>
+                        <button class="corp-btn-primary px-5 h-9 text-sm flex items-center gap-x-2">
+                            <i class="fa-solid fa-download text-xs"></i>
+                            <span>Export Report</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Top Impact KPIs -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <!-- Primary KPI -->
+                    <div class="wireframe-card rounded-3xl p-6 col-span-1 md:col-span-2 lg:col-span-1">
+                        <div class="section-label">Overall Straight-Through Rate</div>
+                        <div class="flex items-baseline gap-x-2 mt-2">
+                            <div class="text-6xl font-semibold kpi-value">96.8</div>
+                            <div class="text-2xl text-emerald-400">%</div>
+                        </div>
+                        <div class="flex items-center gap-x-2 mt-3">
+                            <span class="text-blue-600 text-sm font-medium">+4.2%</span>
+                            <span class="text-xs text-slate-400">vs last 7 days</span>
+                        </div>
+                    </div>
+
+                    <div class="wireframe-card rounded-3xl p-6">
+                        <div class="section-label">SLA Compliance (Today)</div>
+                        <div class="flex items-baseline gap-x-2 mt-2">
+                            <div class="text-5xl font-semibold kpi-value">99.4</div>
+                            <div class="text-xl text-emerald-400">%</div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span>Target: 99.0%</span>
+                                <span class="text-emerald-400">On Track</span>
+                            </div>
+                            <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
+                                <div class="h-2 bg-emerald-400 rounded-full" style="width: 99.4%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wireframe-card rounded-3xl p-6">
+                        <div class="section-label">Avg Processing Time</div>
+                        <div class="flex items-baseline gap-x-2 mt-2">
+                            <div class="text-5xl font-semibold kpi-value">4.1</div>
+                            <div class="text-xl">s</div>
+                        </div>
+                        <div class="text-xs text-emerald-400 mt-3">↓ 92% faster than manual baseline</div>
+                    </div>
+
+                    <div class="wireframe-card rounded-3xl p-6">
+                        <div class="section-label">Instructions Processed Today</div>
+                        <div class="flex items-baseline gap-x-2 mt-2">
+                            <div class="text-5xl font-semibold kpi-value">2,443</div>
+                        </div>
+                        <div class="flex items-center gap-x-4 mt-3 text-xs">
+                            <div>
+                                <span class="text-emerald-400 font-medium">2,396</span>
+                                <span class="text-slate-400"> auto</span>
+                            </div>
+                            <div>
+                                <span class="text-amber-400 font-medium">47</span>
+                                <span class="text-slate-400"> reviewed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRD-Aligned Secondary KPIs -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+                    <div class="wireframe-card rounded-2xl p-4">
+                        <div class="section-label">Reconciliation Match</div>
+                        <div class="text-2xl font-semibold kpi-value mt-1">99.2<span class="text-sm text-emerald-400">%</span></div>
+                        <div class="text-[10px] text-slate-400 mt-1">8 mismatches today</div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-4">
+                        <div class="section-label">Auto-Repair Success</div>
+                        <div class="text-2xl font-semibold kpi-value mt-1">94.7<span class="text-sm text-emerald-400">%</span></div>
+                        <div class="text-[10px] text-slate-400 mt-1">312 safe exceptions healed</div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-4">
+                        <div class="section-label">Compliance Holds</div>
+                        <div class="text-2xl font-semibold kpi-value mt-1 text-amber-400">5</div>
+                        <div class="text-[10px] text-slate-400 mt-1">AML / regulatory blocks</div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-4">
+                        <div class="section-label">Exception Queue</div>
+                        <div class="text-2xl font-semibold kpi-value mt-1 text-amber-400">47</div>
+                        <div class="text-[10px] text-slate-400 mt-1">avg age 18 min</div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-4">
+                        <div class="section-label">Below 98% Confidence</div>
+                        <div class="text-2xl font-semibold kpi-value mt-1 text-amber-400">31</div>
+                        <div class="text-[10px] text-slate-400 mt-1">escalated for review</div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-4">
+                        <div class="section-label">Recon Exceptions</div>
+                        <div class="text-2xl font-semibold kpi-value mt-1 text-red-400">8</div>
+                        <div class="text-[10px] text-slate-400 mt-1">pending manual match</div>
+                    </div>
+                </div>
+
+                <!-- Second Row: Journey Health + Attention Required -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+                    
+                    <!-- Journey Stage Health -->
+                    <div class="lg:col-span-2 wireframe-card rounded-3xl p-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="font-semibold">Journey Stage Performance</div>
+                            <span class="text-xs text-emerald-400">96.8% completed full journey</span>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5">
+                                    <div>1. Ingestion</div>
+                                    <div class="font-medium">100%</div>
+                                </div>
+                                <div class="h-2.5 bg-slate-700 rounded-full overflow-hidden">
+                                    <div class="h-2.5 bg-emerald-400 rounded-full" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5">
+                                    <div>2. Detect &amp; Classify</div>
+                                    <div class="font-medium">99.6%</div>
+                                </div>
+                                <div class="h-2.5 bg-slate-700 rounded-full overflow-hidden">
+                                    <div class="h-2.5 bg-emerald-400 rounded-full" style="width: 99.6%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5">
+                                    <div>3. Validate &amp; Enrich</div>
+                                    <div class="font-medium">98.7%</div>
+                                </div>
+                                <div class="h-2.5 bg-slate-700 rounded-full overflow-hidden">
+                                    <div class="h-2.5 bg-emerald-400 rounded-full" style="width: 98.7%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5">
+                                    <div>4. Repair + Templatise (Golden Schema)</div>
+                                    <div class="font-medium text-amber-400">94.2%</div>
+                                </div>
+                                <div class="h-2.5 bg-slate-700 rounded-full overflow-hidden">
+                                    <div class="h-2.5 bg-amber-400 rounded-full" style="width: 94.2%"></div>
+                                </div>
+                                <div class="text-[10px] text-amber-400 mt-0.5">Main bottleneck stage</div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5">
+                                    <div>5. Routing</div>
+                                    <div class="font-medium">99.1%</div>
+                                </div>
+                                <div class="h-2.5 bg-slate-700 rounded-full overflow-hidden">
+                                    <div class="h-2.5 bg-emerald-400 rounded-full" style="width: 99.1%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5">
+                                    <div>6. Reconciliation</div>
+                                    <div class="font-medium">99.2%</div>
+                                </div>
+                                <div class="h-2.5 bg-slate-700 rounded-full overflow-hidden">
+                                    <div class="h-2.5 bg-emerald-400 rounded-full" style="width: 99.2%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attention Required -->
+                    <div class="wireframe-card rounded-3xl p-5">
+                        <div class="font-semibold mb-4 flex items-center gap-x-2">
+                            <span>Attention Required</span>
+                            <span class="px-2 py-px bg-red-900 text-red-300 text-xs rounded">47</span>
+                        </div>
+                        
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <div>High Priority Exceptions</div>
+                                <div class="font-semibold text-red-400">12</div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>SLA at Risk (next 2h)</div>
+                                <div class="font-semibold text-amber-400">3</div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>Reconciliation Mismatches</div>
+                                <div class="font-semibold text-red-400">8</div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>Compliance Holds (AML)</div>
+                                <div class="font-semibold text-amber-400">5</div>
+                            </div>
+                        </div>
+                        
+                        <button onclick="switchTab('workbench')" class="mt-4 w-full py-2 text-sm corp-btn-primary">
+                            Go to Operations Workbench &rarr;
+                        </button>
+                        <button onclick="switchTab('exceptions')" class="mt-2 w-full py-2 text-sm border border-gray-300 text-gray-600 rounded-full hover:bg-gray-50">
+                            View Exceptions List
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bottom: Channel Performance + Routing + Self-Heal -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="wireframe-card rounded-3xl p-5">
+                        <div class="font-semibold mb-4">Channel Performance</div>
+                        <div class="space-y-4 text-sm">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-x-2">
+                                    <i class="fa-solid fa-file-code text-emerald-400"></i>
+                                    <span>SWIFT</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-medium">1,284</span>
+                                    <span class="text-xs text-emerald-400 ml-2">98.2% STP</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-x-2">
+                                    <i class="fa-solid fa-envelope text-emerald-400"></i>
+                                    <span>Email + PDF</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-medium">847</span>
+                                    <span class="text-xs text-emerald-400 ml-2">94.1% STP</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-x-2">
+                                    <i class="fa-solid fa-folder text-emerald-400"></i>
+                                    <span>Portals &amp; Files</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-medium">312</span>
+                                    <span class="text-xs text-emerald-400 ml-2">96.8% STP</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-x-2">
+                                    <i class="fa-solid fa-plug text-emerald-400"></i>
+                                    <span>API</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-medium">156</span>
+                                    <span class="text-xs text-emerald-400 ml-2">99.1% STP</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-x-2">
+                                    <i class="fa-solid fa-file-lines text-emerald-400"></i>
+                                    <span>Client Templates</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-medium">89</span>
+                                    <span class="text-xs text-emerald-400 ml-2">97.5% STP</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wireframe-card rounded-3xl p-5">
+                        <div class="font-semibold mb-4">Routing Distribution (TA / FA / IS)</div>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1"><span>Transfer Agent (TA)</span><span class="font-medium">62%</span></div>
+                                <div class="h-2 bg-slate-700 rounded-full"><div class="h-2 bg-emerald-400 rounded-full" style="width:62%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1"><span>Fund Accounting (FA)</span><span class="font-medium">28%</span></div>
+                                <div class="h-2 bg-slate-700 rounded-full"><div class="h-2 bg-emerald-500 rounded-full" style="width:28%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1"><span>Investor Servicing (IS)</span><span class="font-medium">10%</span></div>
+                                <div class="h-2 bg-slate-700 rounded-full"><div class="h-2 bg-emerald-600 rounded-full" style="width:10%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wireframe-card rounded-3xl p-5">
+                        <div class="font-semibold mb-4">STP by Intent</div>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between"><span>Subscription</span><span class="font-medium text-emerald-400">97.8%</span></div>
+                            <div class="flex justify-between"><span>Redemption</span><span class="font-medium text-emerald-400">96.2%</span></div>
+                            <div class="flex justify-between"><span>Switch</span><span class="font-medium text-emerald-400">94.1%</span></div>
+                            <div class="flex justify-between"><span>Transfer</span><span class="font-medium text-emerald-400">98.4%</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Processing Pipeline Reference (static — moved from Journey tab) -->
+                <div class="mt-6">
+                    <button onclick="toggleSection('dashboard-pipeline-section')" class="flex items-center justify-between w-full text-left wireframe-card rounded-2xl px-5 py-4 hover:border-blue-300 transition-colors group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center">
+                                <i class="fa-solid fa-route text-blue-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-sm">Processing Pipeline Reference</div>
+                                <div class="text-xs text-slate-500">6-stage flow every instruction follows • 98% confidence gate</div>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-gray-400 group-hover:text-gray-600 transition-transform" id="dashboard-pipeline-chevron"></i>
+                    </button>
+                    <div id="dashboard-pipeline-section" class="hidden mt-3 wireframe-card rounded-3xl p-5">
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 mb-4">
+                            <div class="border border-gray-200 rounded-xl p-3 text-center bg-gray-50">
+                                <i class="fa-solid fa-inbox text-blue-600 text-sm"></i>
+                                <div class="text-xs font-medium mt-1.5">1. Ingestion</div>
+                            </div>
+                            <div class="border border-gray-200 rounded-xl p-3 text-center bg-gray-50">
+                                <i class="fa-solid fa-search text-blue-600 text-sm"></i>
+                                <div class="text-xs font-medium mt-1.5">2. Detect</div>
+                            </div>
+                            <div class="border border-gray-200 rounded-xl p-3 text-center bg-gray-50">
+                                <i class="fa-solid fa-check-double text-blue-600 text-sm"></i>
+                                <div class="text-xs font-medium mt-1.5">3. Validate</div>
+                            </div>
+                            <div class="border border-gray-200 rounded-xl p-3 text-center bg-gray-50">
+                                <i class="fa-solid fa-tools text-blue-600 text-sm"></i>
+                                <div class="text-xs font-medium mt-1.5">4. Repair</div>
+                            </div>
+                            <div class="border border-gray-200 rounded-xl p-3 text-center bg-gray-50">
+                                <i class="fa-solid fa-share text-blue-600 text-sm"></i>
+                                <div class="text-xs font-medium mt-1.5">5. Route</div>
+                            </div>
+                            <div class="border border-gray-200 rounded-xl p-3 text-center bg-gray-50">
+                                <i class="fa-solid fa-scale-balanced text-blue-600 text-sm"></i>
+                                <div class="text-xs font-medium mt-1.5">6. Reconcile</div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-400 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-info text-emerald-500"></i>
+                            Instructions below <strong class="text-amber-400">98% confidence</strong> are held for human review before auto-creation.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRANSACTION QUEUE -->
+            <div id="tab-queue" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h1 class="text-3xl font-semibold tracking-tight">Transaction Queue</h1>
+                        <p class="text-sm text-slate-400 mt-0.5">Live instructions across all intake channels</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-end gap-3 mb-4 text-sm p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Instruction ID</label>
+                        <input type="text" placeholder="Enter ID" class="bg-white border border-gray-300 rounded px-3 h-9 text-xs w-40 outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Party / Asset</label>
+                        <input type="text" placeholder="Search..." class="bg-white border border-gray-300 rounded px-3 h-9 text-xs w-48 outline-none focus:border-blue-500">
+                    </div>
+                    <select id="filter-status" class="bg-white border border-gray-300 rounded px-3 h-9 text-xs">
+                        <option>All Statuses</option>
+                        <option>Auto Created</option>
+                        <option>Exception Queue</option>
+                        <option>In Review</option>
+                        <option>Routed</option>
+                        <option>Reconciled</option>
+                        <option>Recon Exception</option>
+                    </select>
+                    <select id="filter-channel" class="bg-white border border-gray-300 rounded px-3 h-9 text-xs">
+                        <option>All Channels</option>
+                        <option>SWIFT</option>
+                        <option>Email + PDF</option>
+                        <option>Portals &amp; Files</option>
+                        <option>API</option>
+                        <option>Client Templates</option>
+                    </select>
+                    <select id="filter-intent" class="bg-white border border-gray-300 rounded px-3 h-9 text-xs">
+                        <option>All Intents</option>
+                        <option>Subscription</option>
+                        <option>Redemption</option>
+                        <option>Switch</option>
+                        <option>Transfer</option>
+                    </select>
+                    <select id="filter-destination" class="bg-white border border-gray-300 rounded px-3 h-9 text-xs">
+                        <option>All Destinations</option>
+                        <option>TA</option>
+                        <option>FA</option>
+                        <option>IS</option>
+                    </select>
+                    <select id="filter-confidence" class="bg-white border border-gray-300 rounded px-3 h-9 text-xs">
+                        <option>All Confidence</option>
+                        <option>≥ 98% (Auto eligible)</option>
+                        <option>&lt; 98% (Review required)</option>
+                    </select>
+                    <button class="corp-btn-primary px-6 h-9 text-xs ml-auto">Search</button>
+                </div>
+                <div class="wireframe-card rounded-lg overflow-x-auto">
+                    <table class="w-full text-sm min-w-[1080px]">
+                        <thead class="bg-gray-100 text-xs">
+                            <tr>
+                                <th class="px-3 py-3 text-left">Instruction ID</th>
+                                <th class="px-3 py-3 text-left">Source</th>
+                                <th class="px-3 py-3 text-left">Intent</th>
+                                <th class="px-3 py-3 text-left">Destination</th>
+                                <th class="px-3 py-3 text-center">Confidence</th>
+                                <th class="px-3 py-3 text-center">Status</th>
+                                <th class="px-3 py-3 text-left" style="min-width:240px">Processing Step</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-xs" id="queue-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- EXCEPTIONS -->
+            <div id="tab-exceptions" class="tab-content hidden">
+                <h1 class="text-3xl font-semibold tracking-tight mb-1">Exceptions</h1>
+                <p class="text-sm text-slate-400 mb-5">Instructions requiring human review — failure step shown inline</p>
+                <div class="wireframe-card rounded-lg overflow-x-auto">
+                    <table class="w-full min-w-[1000px]">
+                        <thead class="bg-gray-100 text-xs">
+                            <tr>
+                                <th class="px-5 py-3 text-left">Instruction ID</th>
+                                <th class="px-4 py-3 text-left">Issue</th>
+                                <th class="px-4 py-3 text-left" style="min-width:260px">Where It Stopped</th>
+                                <th class="px-4 py-3 text-center">Priority</th>
+                                <th class="px-4 py-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-gray-100" id="exceptions-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AI OPERATIONS WORKBENCH (replaces Transaction Queue + Exceptions) -->
+            <div id="tab-workbench" class="tab-content hidden flex flex-col">
+                <div class="flex items-center justify-between mb-3 shrink-0">
+                    <div>
+                        <h1 class="text-3xl font-semibold tracking-tight">AI Operations Workbench</h1>
+                        <p class="text-sm text-slate-400 mt-0.5">Review queue (Kanban) · each card tracks the <span class="text-emerald-400/90">6-stage STP journey</span> from ingestion to reconciliation</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <select id="wb-filter-intent" class="bg-white border border-gray-300 rounded px-3 h-8 text-xs" onchange="renderBoard()">
+                            <option value="">All Intents</option>
+                            <option>Subscription</option>
+                            <option>Redemption</option>
+                            <option>Switch</option>
+                            <option>Transfer</option>
+                        </select>
+                        <select id="wb-filter-view" class="bg-white border border-gray-300 rounded px-3 h-8 text-xs" onchange="setWorkbenchView(this.value)">
+                            <option value="all">All Requests</option>
+                            <option value="review">Needs Review Only</option>
+                            <option value="exceptions">Exceptions &amp; Escalations</option>
+                        </select>
+                        <button onclick="refreshBoard()" class="px-3 h-8 text-xs border border-gray-300 rounded hover:bg-gray-50 text-gray-700"><i class="fa-solid fa-sync-alt mr-1"></i>Refresh</button>
+                        <button id="wb-insights-btn" onclick="toggleWorkbenchInsights()" class="corp-btn-primary px-4 h-8 text-xs flex items-center gap-1.5" title="Queue insights">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span class="hidden sm:inline">Insights</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Compact glanceable stats — no permanent sidebar -->
+                <div class="workbench-stats-strip" id="workbench-stats-strip">
+                    <div class="wb-stat-chip">
+                        <i class="fa-solid fa-layer-group text-slate-500 text-[10px]"></i>
+                        <span class="text-slate-400">Active</span>
+                        <span class="wb-stat-value text-emerald-400" id="strip-total">0</span>
+                    </div>
+                    <div class="wb-stat-chip wb-stat-warn">
+                        <i class="fa-solid fa-user-check text-amber-500/80 text-[10px]"></i>
+                        <span class="text-slate-400">In review</span>
+                        <span class="wb-stat-value text-amber-400" id="strip-review">0</span>
+                    </div>
+                    <div class="wb-stat-chip wb-stat-warn">
+                        <i class="fa-regular fa-clock text-amber-500/80 text-[10px]"></i>
+                        <span class="text-slate-400">SLA at risk</span>
+                        <span class="wb-stat-value text-amber-400" id="strip-sla-risk">0</span>
+                    </div>
+                    <div class="wb-stat-chip wb-stat-danger">
+                        <i class="fa-solid fa-triangle-exclamation text-red-400/80 text-[10px]"></i>
+                        <span class="text-slate-400">Breached</span>
+                        <span class="wb-stat-value text-red-400" id="strip-breached">0</span>
+                    </div>
+                    <div class="wb-stat-chip">
+                        <i class="fa-solid fa-gauge-high text-slate-500 text-[10px]"></i>
+                        <span class="text-slate-400">Avg conf</span>
+                        <span class="wb-stat-value text-slate-200" id="strip-avg-conf">—</span>
+                    </div>
+                    <button onclick="toggleWorkbenchInsights()" class="wb-stat-chip hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-colors ml-auto">
+                        <i class="fa-solid fa-chart-simple text-blue-600 text-[10px]"></i>
+                        <span class="text-gray-600">Stage breakdown</span>
+                        <i class="fa-solid fa-chevron-right text-[9px] text-gray-400"></i>
+                    </button>
+                </div>
+
+                <div class="flex flex-col workbench-layout min-h-0 flex-1">
+                    <div class="kanban-board" id="kanban-board"></div>
+                </div>
+            </div>
+
+            <!-- Workbench insights drawer (on-demand, overlays — does not shrink Kanban) -->
+            <div id="workbench-insights-backdrop" class="workbench-insights-backdrop" onclick="toggleWorkbenchInsights(false)"></div>
+            <aside id="workbench-insights-drawer" class="workbench-insights-drawer" aria-hidden="true">
+                <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between shrink-0">
+                    <div>
+                        <div class="font-semibold text-sm">Queue Insights</div>
+                        <div class="text-[10px] text-gray-500">Live workbench analytics</div>
+                    </div>
+                    <button onclick="toggleWorkbenchInsights(false)" class="w-8 h-8 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 flex items-center justify-center">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4">
+                    <div class="wireframe-card rounded-2xl p-4 mb-3">
+                        <div class="text-2xl font-semibold kpi-value text-emerald-400" id="analytics-total">0</div>
+                        <div class="text-xs text-slate-400">Active requests</div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-4 mb-3">
+                        <div class="section-label mb-2">By Review Queue</div>
+                        <div id="analytics-distribution" class="space-y-2 text-xs"></div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-4 mb-3">
+                        <div class="section-label mb-2">SLA Health</div>
+                        <div class="flex justify-between text-xs mb-1"><span>On track</span><span class="text-emerald-400 font-medium" id="sla-on-track">0</span></div>
+                        <div class="flex justify-between text-xs mb-1"><span>At risk</span><span class="text-amber-400 font-medium" id="sla-at-risk">0</span></div>
+                        <div class="flex justify-between text-xs"><span>Breached</span><span class="text-red-400 font-medium" id="sla-breached">0</span></div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-4 mb-3">
+                        <div class="section-label mb-2">Avg Confidence</div>
+                        <div class="text-xl font-semibold kpi-value" id="analytics-avg-conf">—</div>
+                        <div class="conf-bar mt-2"><div class="conf-fill-high h-full" id="analytics-conf-bar" style="width:0%"></div></div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-4 mb-3">
+                        <div class="section-label mb-2">By STP Journey Stage</div>
+                        <div id="analytics-journey" class="space-y-2 text-xs"></div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-4">
+                        <div class="section-label mb-2">Paths Today</div>
+                        <div class="space-y-1.5 text-xs">
+                            <div class="flex justify-between"><span>Auto-approved</span><span class="text-emerald-400">18</span></div>
+                            <div class="flex justify-between"><span>Human approved</span><span class="text-emerald-400">12</span></div>
+                            <div class="flex justify-between"><span>Rejected</span><span class="text-red-400">3</span></div>
+                            <div class="flex justify-between"><span>Escalated</span><span class="text-pink-400">2</span></div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+
+            <div id="tab-audit" class="tab-content hidden">
+                <h1 class="text-3xl font-semibold tracking-tight mb-5">Audit &amp; Evidence Trail</h1>
+                <div class="wireframe-card rounded-3xl p-6">
+                    <div class="text-xs text-slate-400 mb-4">Complete immutable record of every stage, decision and correction</div>
+                    <div class="space-y-4 text-sm">
+                        <div class="border-l-2 border-emerald-500 pl-4">
+                            <div class="font-medium">INS-7843892 • Approved at Repair + Templatise stage</div>
+                            <div class="text-xs text-emerald-400">Units corrected • Evidence attached • Reviewed by SCB User</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONFIGURATION -->
+            <div id="tab-configuration" class="tab-content hidden">
+                <h1 class="text-3xl font-semibold tracking-tight mb-1">Configuration</h1>
+                <p class="text-slate-400 mb-6">Rules applied by AgentX during validation, repair and templatisation</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div class="wireframe-card rounded-3xl p-6">
+                        <div class="font-semibold mb-4">Validation Rules</div>
+                        <div class="space-y-3 text-sm">
+                            <div>Required fields check</div>
+                            <div>Amount &amp; quantity consistency</div>
+                            <div>Duplicate detection</div>
+                        </div>
+                    </div>
+                    <div class="wireframe-card rounded-3xl p-6">
+                        <div class="font-semibold mb-4">Repair &amp; Templatise Rules</div>
+                        <div class="space-y-3 text-sm">
+                            <div>Auto-fill missing settlement date</div>
+                            <div>Standardise asset identifiers</div>
+                            <div>Map to Golden Transaction Schema</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- AgentX Assistant — Enterprise Operations Intelligence -->
+    <div id="assistant-root" class="fixed bottom-6 right-6 z-[500]">
+        
+        <div id="chat-window" class="hidden assistant-panel assistant-panel-enter absolute bottom-[4.5rem] right-0 rounded-2xl w-[400px] h-[560px] flex flex-col overflow-hidden">
+            
+            <div class="assistant-header px-4 py-3.5 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <div class="assistant-avatar w-10 h-10 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-wand-magic-sparkles text-white text-sm"></i>
+                        </div>
+                        <span class="assistant-status-dot absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></span>
+                    </div>
+                    <div>
+                        <div class="font-display text-base font-semibold tracking-tight text-white">AgentX Assistant</div>
+                        <div class="text-[11px] text-blue-200 flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 bg-blue-200 rounded-full"></span>
+                            Online &bull; Operations Intelligence
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button onclick="minimizeAssistant()" class="w-8 h-8 rounded-lg hover:bg-white/10 text-white/70 hover:text-white flex items-center justify-center" title="Minimize">
+                        <i class="fa-solid fa-minus text-xs"></i>
+                    </button>
+                    <button onclick="toggleChatWindow()" class="w-8 h-8 rounded-lg hover:bg-white/10 text-white/70 hover:text-white flex items-center justify-center" title="Close">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-4 py-4" id="chat-messages-scroll">
+                <div id="chat-welcome" class="space-y-4">
+                    <div class="text-center py-2">
+                        <div class="text-sm text-gray-700 font-medium">Good morning, SCB User</div>
+                        <div class="text-xs text-gray-500 mt-1">I have full visibility into today's transaction operations. How can I help?</div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="assistant-stat-chip rounded-xl p-2.5 text-center">
+                            <div class="text-lg font-semibold text-blue-600 kpi-value">96.8%</div>
+                            <div class="text-[9px] text-gray-500 uppercase tracking-wide">STP Rate</div>
+                        </div>
+                        <div class="assistant-stat-chip rounded-xl p-2.5 text-center">
+                            <div class="text-lg font-semibold text-amber-400 kpi-value">47</div>
+                            <div class="text-[9px] text-slate-400 uppercase tracking-wide">Exceptions</div>
+                        </div>
+                        <div class="assistant-stat-chip rounded-xl p-2.5 text-center">
+                            <div class="text-lg font-semibold text-blue-600 kpi-value">99.4%</div>
+                            <div class="text-[9px] text-gray-500 uppercase tracking-wide">SLA</div>
+                        </div>
+                    </div>
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold px-1">Suggested actions</div>
+                    <div class="space-y-2">
+                        <button onclick="runSuggestedQuery('What is our SLA compliance today?')" class="assistant-welcome-card w-full text-left px-3.5 py-3 rounded-xl flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="fa-solid fa-clock text-blue-600 text-xs"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-800">SLA status today</div>
+                                <div class="text-[11px] text-gray-500 mt-0.5">Compliance rate and at-risk instructions</div>
+                            </div>
+                        </button>
+                        <button onclick="runSuggestedQuery('Show reconciliation exceptions')" class="assistant-welcome-card w-full text-left px-3.5 py-3 rounded-xl flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="fa-solid fa-scale-balanced text-blue-600 text-xs"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-800">Reconciliation exceptions</div>
+                                <div class="text-[11px] text-gray-500 mt-0.5">Open mismatches and settlement gaps</div>
+                            </div>
+                        </button>
+                        <button onclick="runSuggestedQuery('Which stage is the bottleneck?')" class="assistant-welcome-card w-full text-left px-3.5 py-3 rounded-xl flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="fa-solid fa-chart-line text-blue-600 text-xs"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-800">Journey bottleneck</div>
+                                <div class="text-[11px] text-gray-500 mt-0.5">Stage performance and root causes</div>
+                            </div>
+                        </button>
+                        <button onclick="runSuggestedQuery('List high priority exceptions')" class="assistant-welcome-card w-full text-left px-3.5 py-3 rounded-xl flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="fa-solid fa-triangle-exclamation text-red-500 text-xs"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-800">High priority exceptions</div>
+                                <div class="text-[11px] text-gray-500 mt-0.5">12 items requiring immediate attention</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <div id="chat-messages" class="space-y-4 hidden"></div>
+                <div id="chat-typing" class="hidden mt-4 flex items-start gap-2.5">
+                    <div class="assistant-avatar w-7 h-7 rounded-lg flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-wand-magic-sparkles text-white text-[10px]"></i>
+                    </div>
+                    <div class="assistant-msg-bot px-4 py-3 assistant-typing flex gap-1 items-center">
+                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
+                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
+                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="assistant-composer px-4 py-3 shrink-0">
+                <div class="flex items-end gap-2">
+                    <div class="flex-1 relative">
+                        <textarea id="chat-input" rows="1" placeholder="Ask about transactions, exceptions, SLA..." 
+                            class="assistant-input w-full rounded-xl px-4 py-2.5 text-sm text-gray-800 resize-none max-h-24"
+                            onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendChatMessage();}"></textarea>
+                    </div>
+                    <button onclick="sendChatMessage()" class="assistant-send-btn w-10 h-10 rounded-xl flex items-center justify-center shrink-0 hover:opacity-90 transition-opacity">
+                        <i class="fa-solid fa-paper-plane text-white text-sm"></i>
+                    </button>
+                </div>
+                <div class="flex items-center justify-between mt-2 px-1">
+                    <div class="text-[10px] text-slate-500 flex items-center gap-1">
+                        <i class="fa-solid fa-shield-halved text-blue-500/80"></i>
+                        <span>Enterprise data • Audited responses</span>
+                    </div>
+                    <span class="text-[10px] text-slate-600">↵ to send</span>
+                </div>
+            </div>
+        </div>
+
+        <button id="assistant-fab" type="button" onclick="toggleChatWindow()" class="assistant-fab assistant-fab-pulse group relative w-14 h-14 rounded-2xl flex items-center justify-center" aria-label="Open AgentX Assistant">
+            <i id="assistant-fab-icon" class="fa-solid fa-wand-magic-sparkles text-white text-xl"></i>
+            <span class="absolute right-full mr-3 px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
+                AgentX Assistant
+            </span>
+            <span id="assistant-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 text-amber-950 text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">3</span>
+        </button>
+    </div>
+
+    <!-- Full-screen Reviewer Workspace (Operations Workbench) -->
+    <div id="review-workspace" class="hidden fixed inset-0 z-[600] bg-gray-50 flex flex-col">
+        <div class="border-b border-gray-200 bg-white px-6 py-3 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-4">
+                <button onclick="closeWorkspace()" class="w-9 h-9 rounded-lg border border-gray-300 hover:bg-gray-50 flex items-center justify-center text-gray-700"><i class="fa-solid fa-arrow-left text-sm"></i></button>
+                <div>
+                    <div class="font-mono text-lg font-semibold text-gray-900" id="ws-ref">—</div>
+                    <div class="text-xs text-blue-600" id="ws-subtitle">—</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="openTxnFromWorkspace()" class="hidden sm:flex items-center gap-2 px-3 h-9 text-xs border border-gray-300 hover:bg-gray-50 rounded-lg text-gray-700">
+                    <i class="fa-solid fa-file-code text-blue-600"></i>
+                    Golden Schema
+                </button>
+                <div id="ws-sla" class="text-sm font-medium"></div>
+                <button onclick="closeWorkspace()" class="text-gray-400 hover:text-gray-700 text-2xl px-2">&times;</button>
+            </div>
+        </div>
+
+        <div class="border-b border-gray-200 bg-white px-6 py-4 shrink-0">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="section-label">Transaction Journey</span>
+                        <span class="text-[10px] text-slate-600 hidden sm:inline">Ingest → Detect → Validate → Repair → Route → Reconcile</span>
+                    </div>
+                    <span id="ws-queue-pill" class="ws-queue-pill bg-blue-50 text-blue-700 border border-blue-200">—</span>
+                </div>
+                <div id="ws-journey-tracker"></div>
+                <div id="ws-journey-bridge" class="journey-bridge-hint"></div>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-hidden flex">
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div class="wireframe-card rounded-2xl p-5 lg:col-span-2">
+                        <div class="section-label mb-3">Request Summary</div>
+                        <div id="ws-summary" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm"></div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-5">
+                        <div class="section-label mb-3">AI Findings</div>
+                        <div id="ws-findings" class="space-y-2 text-xs"></div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-5">
+                        <div class="section-label mb-3">Risk Score</div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-5xl font-semibold kpi-value" id="ws-risk-value">—</div>
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-400 mb-2" id="ws-risk-label">—</div>
+                                <div class="h-3 bg-slate-700 rounded-full overflow-hidden">
+                                    <div id="ws-risk-bar" class="h-full rounded-full transition-all duration-500" style="width:0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-5 lg:col-span-2">
+                        <div class="section-label mb-3">Confidence Heatmap — Field-Level Scores</div>
+                        <div id="ws-heatmap" class="heatmap-grid"></div>
+                        <div class="mt-3 flex gap-4 text-[10px] text-slate-500">
+                            <span><span class="inline-block w-2 h-2 rounded bg-emerald-500 mr-1"></span>≥ 95%</span>
+                            <span><span class="inline-block w-2 h-2 rounded bg-amber-500 mr-1"></span>80–94%</span>
+                            <span><span class="inline-block w-2 h-2 rounded bg-red-500 mr-1"></span>&lt; 80%</span>
+                        </div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-5 lg:col-span-2">
+                        <div class="section-label mb-3">Explainability Panel</div>
+                        <div id="ws-explain" class="text-xs text-gray-600 leading-relaxed bg-gray-50 rounded-xl p-4 border border-gray-200"></div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-5">
+                        <div class="section-label mb-3">Review Timeline</div>
+                        <div id="ws-timeline" class="space-y-3 text-xs"></div>
+                    </div>
+                    <div class="wireframe-card rounded-2xl p-5 flex flex-col">
+                        <div class="section-label mb-3">Comments &amp; Collaboration</div>
+                        <div id="ws-comments" class="flex-1 space-y-3 text-xs mb-3 max-h-40 overflow-y-auto"></div>
+                        <div class="flex gap-2">
+                            <input id="ws-comment-input" type="text" placeholder="Add a comment..." class="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs outline-none focus:border-blue-500">
+                            <button onclick="addComment()" class="corp-btn-primary px-3 py-2 text-xs">Post</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-200 bg-white px-6 py-4 flex items-center justify-between shrink-0 pr-24">
+            <div class="text-xs text-gray-500" id="ws-action-hint">Select an action to advance this request</div>
+            <div class="flex flex-wrap justify-end gap-2" id="ws-actions"></div>
+        </div>
+    </div>
+
+    <!-- Transaction Detail Modal (same as v6) -->
+    <div id="txn-modal" onclick="if (event.target.id === 'txn-modal') hideTransactionModal()" class="hidden fixed inset-0 bg-black/40 z-[200] flex items-center justify-center p-6">
+        <div onclick="event.stopImmediatePropagation()" class="bg-white border border-gray-200 rounded-2xl w-full max-w-6xl max-h-[92vh] overflow-auto shadow-xl">
+            <div class="px-6 pt-5 pb-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+                <div>
+                    <div id="modal-txn-ref" class="font-mono text-2xl font-semibold text-gray-900"></div>
+                    <div id="modal-txn-meta" class="text-blue-600 text-sm"></div>
+                </div>
+                <button onclick="hideTransactionModal()" class="text-3xl text-gray-400 hover:text-gray-700 px-3">&times;</button>
+            </div>
+            
+            <div class="p-6">
+                <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="section-label mb-2">Confidence Score</div>
+                        <div id="modal-confidence-view" class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm"></div>
+                    </div>
+                    <div>
+                        <div class="section-label mb-2">Reconciliation Status</div>
+                        <div id="modal-recon-view" class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm"></div>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <div class="section-label mb-2">Current Stage in Journey</div>
+                    <div id="modal-stage-pill"></div>
+                </div>
+                <div class="mb-4">
+                    <button onclick="toggleSection('golden-schema-section')" class="flex items-center justify-between w-full text-left mb-2 group">
+                        <div class="section-label flex items-center gap-x-2">Golden Transaction Schema <span class="text-blue-600 text-xs">(Normalized)</span></div>
+                        <i class="fa-solid fa-chevron-down text-gray-400 group-hover:text-gray-600 transition-transform" id="golden-chevron"></i>
+                    </button>
+                    <div id="golden-schema-section" class="progressive-section hidden">
+                        <div id="golden-schema-view" class="golden-schema bg-gray-50 border border-gray-200 rounded-xl p-5 text-xs leading-relaxed max-h-[160px] overflow-auto"></div>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <button onclick="toggleSection('evidence-timeline-section')" class="flex items-center justify-between w-full text-left mb-2 group">
+                        <div class="section-label">Evidence Timeline</div>
+                        <i class="fa-solid fa-chevron-down text-gray-400 group-hover:text-gray-600 transition-transform" id="evidence-chevron"></i>
+                    </button>
+                    <div id="evidence-timeline-section" class="progressive-section hidden">
+                        <div id="evidence-timeline-view" class="evidence-timeline bg-gray-50 border border-gray-200 rounded-xl p-5 text-xs space-y-4"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8">
+                    <div>
+                        <div class="section-label mb-3">Original Source</div>
+                        <div id="original-source-view" class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs text-gray-500 mb-6"></div>
+                        
+                        <div class="section-label mb-3">Editable Fields</div>
+                        <div class="space-y-4 text-sm">
+                            <div><div class="field-label mb-1">Party Name</div><input id="field-party" type="text" class="editable-field w-full"></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><div class="field-label mb-1">Account / Wallet</div><input id="field-account" type="text" class="editable-field w-full mono"></div>
+                                <div><div class="field-label mb-1">Settlement Date</div><input id="field-settlement" type="text" class="editable-field w-full"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><div class="field-label mb-1">Amount</div><input id="field-amount" type="text" class="editable-field w-full"></div>
+                                <div><div class="field-label mb-1">Quantity</div><input id="field-units" type="text" class="editable-field w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="section-label mb-3">Processing Decisions</div>
+                        <div id="agent-actions-view" class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs space-y-2 mb-4"></div>
+                        <div class="section-label mb-2">System Actions &amp; Auto-Repair</div>
+                        <div id="system-repair-view" class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs space-y-2 mb-6"></div>
+                        <div class="section-label mb-2">Review Note (Added to Evidence Trail)</div>
+                        <textarea id="audit-note" placeholder="Explain your correction..." class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm h-24"></textarea>
+                    </div>
+                </div>
+                
+                <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end gap-x-3">
+                    <button onclick="hideTransactionModal()" class="px-6 py-2.5 text-sm border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50">Cancel</button>
+                    <button onclick="saveCorrectionsAndApprove()" class="corp-btn-primary px-6 py-2.5 text-sm font-medium flex items-center gap-x-2">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Approve &amp; Continue Journey</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function initializeTailwind() {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            'display': ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif']
+                        }
+                    }
+                }
+            };
+        }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            
+            document.querySelectorAll('[id^="nav-"]').forEach(el => el.classList.remove('active'));
+            const navEl = document.getElementById('nav-' + tab);
+            if (navEl) navEl.classList.add('active');
+            
+            if (tab === 'queue') loadQueueTable();
+            if (tab === 'exceptions') loadExceptionsTable();
+            if (tab === 'workbench') renderBoard();
+        }
+        
+        const JOURNEY_STEPS = [
+            { short: 'Ingest', full: 'Ingestion', icon: 'fa-inbox' },
+            { short: 'Detect', full: 'Detect & Classify', icon: 'fa-search' },
+            { short: 'Validate', full: 'Validate & Enrich', icon: 'fa-check-double' },
+            { short: 'Repair', full: 'Repair + Templatise', icon: 'fa-tools' },
+            { short: 'Route', full: 'Routing', icon: 'fa-share' },
+            { short: 'Reconcile', full: 'Reconciliation', icon: 'fa-scale-balanced' }
+        ];
+
+        function renderStepTracker(opts) {
+            const {
+                completedThrough = 0, activeStep = 0, failedStep = 0, heldStep = 0,
+                state = 'in-progress', context = 'queue', variant = 'default'
+            } = opts;
+            let statusText = '';
+            let statusClass = 'text-slate-400';
+
+            if (state === 'completed' || completedThrough >= 6) {
+                statusText = '<i class="fa-solid fa-check-circle mr-1"></i>Complete';
+                statusClass = 'text-emerald-400';
+            } else if (heldStep > 0) {
+                const step = JOURNEY_STEPS[heldStep - 1];
+                statusText = `<i class="fa-solid ${step.icon} mr-1"></i>Awaiting review · <strong>${step.full}</strong>`;
+                statusClass = 'text-amber-400';
+            } else if (failedStep > 0) {
+                const step = JOURNEY_STEPS[failedStep - 1];
+                statusText = context === 'workbench'
+                    ? `<i class="fa-solid ${step.icon} mr-1"></i>Exception · <strong>${step.full}</strong>`
+                    : `<i class="fa-solid ${step.icon} mr-1"></i>Failed at <strong>${step.full}</strong>`;
+                statusClass = 'text-red-400';
+            } else if (activeStep > 0) {
+                const step = JOURNEY_STEPS[activeStep - 1];
+                statusText = `<i class="fa-solid ${step.icon} mr-1"></i>At <strong>${step.full}</strong>`;
+                statusClass = 'text-amber-400';
+            }
+
+            const trackerClass = variant === 'workspace' ? 'step-tracker step-tracker-workspace'
+                : variant === 'card' ? 'step-tracker step-tracker-card' : 'step-tracker';
+
+            let trackHtml = '<div class="step-track">';
+            JOURNEY_STEPS.forEach((step, i) => {
+                const stepNum = i + 1;
+                let nodeClass = 'step-node step-pending';
+                let wrapClass = 'step-node-wrap';
+                let labelClass = 'step-label';
+                const stepIcon = `<i class="fa-solid ${step.icon}"></i>`;
+                let failBadge = '';
+
+                if (failedStep === stepNum) {
+                    nodeClass = 'step-node step-failed';
+                    wrapClass += ' step-failed';
+                    labelClass += ' step-label-failed';
+                    failBadge = '<span class="step-fail-badge"><i class="fa-solid fa-xmark"></i></span>';
+                } else if (heldStep === stepNum) {
+                    nodeClass = 'step-node step-active';
+                    labelClass += ' step-label-active';
+                } else if (stepNum <= completedThrough) {
+                    nodeClass = 'step-node step-done';
+                    wrapClass += ' step-done';
+                    labelClass += ' step-label-done';
+                } else if (activeStep === stepNum) {
+                    nodeClass = 'step-node step-active';
+                    labelClass += ' step-label-active';
+                }
+
+                trackHtml += `
+                    <div class="${wrapClass}" title="${step.full}">
+                        ${failBadge}
+                        <div class="${nodeClass}">${stepIcon}</div>
+                        <div class="${labelClass}">${step.short}</div>
+                    </div>`;
+            });
+            trackHtml += '</div>';
+
+            return `<div class="${trackerClass}">
+                <div class="step-tracker-status ${statusClass}">${statusText}</div>
+                ${trackHtml}
+            </div>`;
+        }
+
+
+        function loadQueueTable() {
+            const tbody = document.getElementById('queue-table-body');
+            const rows = [
+                { ref: 'INS-7843921', source: 'SWIFT', intent: 'Subscription', dest: 'TA', conf: '99.4%', confClass: 'text-emerald-400', status: 'Reconciled', statusClass: 'bg-emerald-900 text-emerald-300', tracker: { state: 'completed', completedThrough: 6 } },
+                { ref: 'INS-7843892', source: 'Email + PDF', intent: 'Switch', dest: 'TA', conf: '87.2%', confClass: 'text-amber-400', status: 'Exception Queue', statusClass: 'bg-amber-900 text-amber-300', tracker: { heldStep: 4, completedThrough: 3 } },
+                { ref: 'INS-7844102', source: 'API', intent: 'Redemption', dest: 'FA', conf: '99.1%', confClass: 'text-emerald-400', status: 'Auto Created', statusClass: 'bg-emerald-900 text-emerald-300', tracker: { activeStep: 6, completedThrough: 5 } },
+                { ref: 'INS-7844156', source: 'Client Templates', intent: 'Transfer', dest: 'IS', conf: '98.6%', confClass: 'text-emerald-400', status: 'Routed', statusClass: 'bg-blue-900 text-blue-300', tracker: { activeStep: 5, completedThrough: 4 } },
+                { ref: 'INS-7844201', source: 'Portals & Files', intent: 'Subscription', dest: 'TA', conf: '91.0%', confClass: 'text-amber-400', status: 'Recon Exception', statusClass: 'bg-red-900 text-red-300', tracker: { failedStep: 6, completedThrough: 5 } }
+            ];
+
+            tbody.innerHTML = rows.map(r => `
+                <tr class="border-b border-slate-700 hover:bg-slate-800/50 cursor-pointer" onclick="showTransactionDetail('${r.ref}')">
+                    <td class="px-3 py-3 mono font-medium">${r.ref}</td>
+                    <td class="px-3 py-3">${r.source}</td>
+                    <td class="px-3 py-3">${r.intent}</td>
+                    <td class="px-3 py-3">${r.dest}</td>
+                    <td class="px-3 py-3 text-center font-medium ${r.confClass}">${r.conf}</td>
+                    <td class="px-3 py-3 text-center"><span class="status-pill ${r.statusClass}">${r.status}</span></td>
+                    <td class="px-3 py-3">${renderStepTracker(r.tracker)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function loadExceptionsTable() {
+            const tbody = document.getElementById('exceptions-table-body');
+            const rows = [
+                { ref: 'INS-7843892', issue: 'Ambiguity while mapping to Golden Schema', failedStep: 4, priority: 'HIGH', priorityClass: 'bg-red-900 text-red-300' },
+                { ref: 'INS-7844201', issue: 'Settlement amount mismatch — expected $10,000, received $9,950', failedStep: 6, priority: 'HIGH', priorityClass: 'bg-red-900 text-red-300' },
+                { ref: 'INS-7844310', issue: 'Missing ISIN — fund identifier not found in source', failedStep: 3, priority: 'MEDIUM', priorityClass: 'bg-amber-900 text-amber-300' },
+                { ref: 'INS-7844298', issue: 'AML hold — enhanced due diligence required', failedStep: 3, priority: 'HIGH', priorityClass: 'bg-red-900 text-red-300' },
+                { ref: 'INS-7844255', issue: 'Low confidence (84%) — quantity field ambiguous in PDF', failedStep: 4, priority: 'MEDIUM', priorityClass: 'bg-amber-900 text-amber-300' }
+            ];
+
+            tbody.innerHTML = rows.map(r => `
+                <tr class="hover:bg-slate-800 cursor-pointer" onclick="showTransactionDetail('${r.ref}', true)">
+                    <td class="px-5 py-4 mono text-xs font-medium">${r.ref}</td>
+                    <td class="px-4 py-4 text-amber-300 text-xs max-w-xs">${r.issue}</td>
+                    <td class="px-4 py-4">${renderStepTracker({ failedStep: r.failedStep, completedThrough: r.failedStep - 1, context: 'exceptions' })}</td>
+                    <td class="px-4 py-4 text-center"><span class="px-3 py-px ${r.priorityClass} text-xs rounded font-semibold">${r.priority}</span></td>
+                    <td class="px-5 py-4"><button onclick="event.stopPropagation(); showTransactionDetail('${r.ref}', true)" class="text-xs px-4 py-1.5 border border-amber-600 text-amber-400 rounded-2xl hover:bg-amber-900/20">Review</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const chevron = document.getElementById(sectionId.replace('-section', '-chevron'));
+            
+            if (section.classList.contains('hidden')) {
+                section.classList.remove('hidden');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+            } else {
+                section.classList.add('hidden');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function openAssistant() {
+            const w = document.getElementById('chat-window');
+            w.classList.remove('hidden');
+            updateAssistantFabIcon(true);
+        }
+
+        function toggleChatWindow() {
+            const w = document.getElementById('chat-window');
+            const isOpening = w.classList.contains('hidden');
+            w.classList.toggle('hidden');
+            updateAssistantFabIcon(isOpening);
+        }
+
+        function updateAssistantFabIcon(panelOpen) {
+            const icon = document.getElementById('assistant-fab-icon');
+            const badge = document.getElementById('assistant-badge');
+            if (!icon) return;
+            if (panelOpen) {
+                icon.className = 'fa-solid fa-chevron-down text-white text-lg';
+                if (badge) badge.classList.add('hidden');
+            } else {
+                icon.className = 'fa-solid fa-wand-magic-sparkles text-white text-xl';
+                if (badge) badge.classList.remove('hidden');
+            }
+        }
+
+        function minimizeAssistant() {
+            document.getElementById('chat-window').classList.add('hidden');
+            updateAssistantFabIcon(false);
+        }
+
+        function showChatConversation() {
+            document.getElementById('chat-welcome').classList.add('hidden');
+            document.getElementById('chat-messages').classList.remove('hidden');
+        }
+
+        function scrollChatToBottom() {
+            const scroll = document.getElementById('chat-messages-scroll');
+            scroll.scrollTop = scroll.scrollHeight;
+        }
+
+        function showTyping(show) {
+            document.getElementById('chat-typing').classList.toggle('hidden', !show);
+            if (show) scrollChatToBottom();
+        }
+
+        function runSuggestedQuery(text) {
+            document.getElementById('chat-input').value = text;
+            sendChatMessage();
+        }
+        
+        function addChatMessage(sender, text, meta = null) {
+            showChatConversation();
+            const container = document.getElementById('chat-messages');
+            const wrap = document.createElement('div');
+            
+            if (sender === 'user') {
+                wrap.className = 'flex justify-end';
+                wrap.innerHTML = `<div class="assistant-msg-user text-white text-sm px-4 py-2.5 max-w-[85%] leading-relaxed">${text}</div>`;
+            } else {
+                const metaHtml = meta ? `
+                    <div class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-slate-700/50">
+                        ${meta.stats.map(s => `<span class="assistant-stat-chip text-[10px] px-2 py-1 rounded-lg text-emerald-400 font-medium">${s}</span>`).join('')}
+                    </div>
+                    <div class="text-[10px] text-slate-500 mt-2 flex items-center gap-1">
+                        <i class="fa-solid fa-database text-emerald-600/70"></i> Sourced from live ops data • ${meta.time}
+                    </div>` : '';
+                wrap.className = 'flex items-start gap-2.5';
+                wrap.innerHTML = `
+                    <div class="assistant-avatar w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-white text-[10px]"></i>
+                    </div>
+                    <div class="assistant-msg-bot text-sm text-slate-300 px-4 py-3 max-w-[90%] leading-relaxed">
+                        ${text}${metaHtml}
+                    </div>`;
+            }
+            container.appendChild(wrap);
+            scrollChatToBottom();
+        }
+        
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            addChatMessage('user', text);
+            input.value = '';
+            showTyping(true);
+            
+            setTimeout(() => {
+                showTyping(false);
+                const q = text.toLowerCase();
+                let reply = "Repair + Templatise is today's bottleneck at <strong class=\"text-amber-400\">94.2%</strong> pass rate. Most issues relate to quantity mapping in the Email + PDF channel.";
+                let meta = { stats: ['31 below 98% confidence', 'Stage 4 bottleneck'], time: 'Just now' };
+                
+                if (q.includes('sla')) {
+                    reply = "SLA compliance is at <strong class=\"text-emerald-400\">99.4%</strong>, above your <strong>99.0%</strong> target. You have <strong class=\"text-amber-400\">3 instructions</strong> at risk in the next 2 hours — I'd recommend prioritising those in the Exceptions queue.";
+                    meta = { stats: ['99.4% compliance', '3 at risk'], time: 'Just now' };
+                } else if (q.includes('recon')) {
+                    reply = "Reconciliation match rate is <strong class=\"text-emerald-400\">99.2%</strong>. There are <strong class=\"text-red-400\">8 open exceptions</strong> — 5 settlement amount mismatches and 3 missing confirmations. Shall I list the instruction IDs?";
+                    meta = { stats: ['8 recon exceptions', '99.2% match rate'], time: 'Just now' };
+                } else if (q.includes('exception') || q.includes('priority')) {
+                    reply = "You have <strong class=\"text-amber-400\">47 items</strong> in the Exception Queue (avg age 18 min). <strong class=\"text-red-400\">12 are high priority</strong> — 7 low-confidence, 3 AML holds, 2 repair failures. I can open the highest-priority item for review.";
+                    meta = { stats: ['12 high priority', '47 in queue'], time: 'Just now' };
+                } else if (q.includes('swift') && q.includes('valid')) {
+                    reply = "<strong class=\"text-amber-400\">12 SWIFT instructions</strong> failed validation today — 8 duplicate detection flags and 4 missing ISIN. All have been routed to the Exception Queue.";
+                    meta = { stats: ['12 failed', 'SWIFT channel'], time: 'Just now' };
+                } else if (q.includes('bottleneck')) {
+                    reply = "Stage <strong>4 — Repair + Templatise</strong> is the main bottleneck at <strong class=\"text-amber-400\">94.2%</strong>. The top issue is quantity mapping ambiguity, primarily from Email + PDF instructions.";
+                    meta = { stats: ['94.2% pass rate', 'Email + PDF'], time: 'Just now' };
+                }
+                addChatMessage('assistant', reply, meta);
+            }, 900);
+        }
+        
+        let currentRef = null;
+        
+        const txnDetails = {
+            'INS-7843921': {
+                meta: 'Subscription • TA • Reconciled',
+                stage: '<span class="px-4 py-1 bg-emerald-900 text-emerald-300 rounded-2xl">Completed • Reconciled</span>',
+                confidence: '<div class="flex items-center gap-3"><span class="text-2xl font-semibold text-emerald-400">99.4%</span><span class="text-xs text-emerald-400">≥ 98% — Auto Created</span></div>',
+                recon: '<span class="text-emerald-400"><i class="fa-solid fa-check-circle"></i> Matched</span><div class="text-xs text-slate-400 mt-1">Settlement ref SET-8847291 confirmed</div>',
+                schema: `{ "instructionId": "INS-7843921", "intent": "SUBSCRIPTION", "currency": "INR", "isin": "INF109K01VQ1", "party": "Priya Sharma", "accountId": "INV-8847291", "amount": 250000, "quantity": 2793.74, "settlementDate": "2026-07-18", "routingTarget": "TA" }`,
+                source: 'Source: SWIFT MT103<br>Message Type: 103<br>Reference: FUND-2026-0716-88421',
+                decisions: '✓ Intent classified: Subscription<br>✓ Validation rules passed<br>✓ Fund API: ISIN valid<br>✓ Investor API: Account active<br>✓ AML API: Clear<br>✓ Routed to TA System',
+                repair: '✓ No repair required<br>✓ Templatised to Golden Schema',
+                party: 'Priya Sharma', account: 'INV-8847291', settlement: '18 July 2026', amount: '250000', units: '2793.74',
+                timeline: '<div><strong>21:12:44</strong> — Ingestion from SWIFT</div><div><strong>21:12:45</strong> — Classified: Subscription</div><div><strong>21:12:46</strong> — Validated (6 API checks passed)</div><div><strong>21:12:47</strong> — Templatised to Golden Schema</div><div><strong>21:12:51</strong> — Routed to TA</div><div><strong>21:15:02</strong> — Reconciled: settlement matched</div>'
+            },
+            'INS-7843892': {
+                meta: 'Switch • TA • Exception Queue',
+                stage: '<span class="px-4 py-1 bg-amber-900 text-amber-300 rounded-2xl">Stage 4: Repair + Templatise</span>',
+                confidence: '<div class="flex items-center gap-3"><span class="text-2xl font-semibold text-amber-400">87.2%</span><span class="text-xs text-amber-400">&lt; 98% — Human review required</span></div>',
+                recon: '<span class="text-slate-400">Pending</span><div class="text-xs text-slate-400 mt-1">Awaiting approval before routing</div>',
+                schema: `{ "instructionId": "INS-7843892", "intent": "SWITCH", "currency": "INR", "party": "Rajesh Kumar", "fromAsset": "HDFC Top 100", "toAsset": "HDFC Mid-Cap", "amount": 125000, "quantity": <span class="text-amber-400">1012.50</span>, "settlementDate": "2026-07-20" }`,
+                source: 'Source: Email + PDF<br>Subject: Switch Request - Rajesh Kumar<br>Language detected: English',
+                decisions: '✓ Intent classified: Switch<br>✓ Pricing API: NAV applied<br>⚠ Confidence below threshold (87.2%)<br>⚠ Escalation: Low confidence + quantity ambiguity',
+                repair: '⚠ Ambiguity in quantity during templatise<br>✓ Suggested repair: 1012.50 units from NAV 2026-07-16<br>⚠ Awaiting human confirmation',
+                party: 'Rajesh Kumar', account: 'INV-3928471', settlement: '20 July 2026', amount: '125000', units: '1012.50',
+                timeline: '<div><strong>20:58:11</strong> — Ingestion from Email</div><div><strong>20:58:12</strong> — Classified: Switch</div><div><strong>20:58:13</strong> — Validated</div><div><strong>20:58:14</strong> — Quantity ambiguity (Repair)</div><div><strong>20:58:14</strong> — Routed to Exception Queue (&lt;98%)</div>'
+            },
+            'INS-7844102': {
+                meta: 'Redemption • FA • Reconciling',
+                stage: '<span class="px-4 py-1 bg-blue-900 text-blue-300 rounded-2xl">Stage 6: Reconciliation</span>',
+                confidence: '<div class="flex items-center gap-3"><span class="text-2xl font-semibold text-emerald-400">99.1%</span><span class="text-xs text-emerald-400">≥ 98% — Auto Created</span></div>',
+                recon: '<span class="text-amber-400"><i class="fa-solid fa-clock"></i> In progress</span><div class="text-xs text-slate-400 mt-1">Awaiting FA settlement confirmation</div>',
+                schema: `{ "instructionId": "INS-7844102", "intent": "REDEMPTION", "currency": "SGD", "isin": "SG9999012345", "party": "Tan Wei Ming", "amount": 50000, "quantity": 4120.00, "routingTarget": "FA" }`,
+                source: 'Source: API /v1/instructions<br>Client: Apex Capital SG',
+                decisions: '✓ Intent classified: Redemption<br>✓ Compliance API: rules passed<br>✓ Auto Created at 99.1% confidence<br>✓ Routed to Fund Accounting',
+                repair: '✓ No repair required',
+                party: 'Tan Wei Ming', account: 'INV-SG-4421', settlement: '17 July 2026', amount: '50000', units: '4120.00',
+                timeline: '<div><strong>14:22:01</strong> — API ingestion</div><div><strong>14:22:02</strong> — Classified: Redemption</div><div><strong>14:22:03</strong> — Auto Created (99.1%)</div><div><strong>14:22:05</strong> — Routed to FA</div><div><strong>14:25:00</strong> — Reconciliation pending</div>'
+            },
+            'INS-7844156': {
+                meta: 'Transfer • IS • Routed',
+                stage: '<span class="px-4 py-1 bg-blue-900 text-blue-300 rounded-2xl">Stage 5: Routed to IS</span>',
+                confidence: '<div class="flex items-center gap-3"><span class="text-2xl font-semibold text-emerald-400">98.6%</span><span class="text-xs text-emerald-400">≥ 98% — Auto Created</span></div>',
+                recon: '<span class="text-slate-400">Pending</span><div class="text-xs text-slate-400 mt-1">Reconciliation scheduled post-settlement</div>',
+                schema: `{ "instructionId": "INS-7844156", "intent": "TRANSFER", "currency": "GBP", "party": "James Mitchell", "fromAccount": "INV-UK-9912", "toAccount": "INV-UK-8844", "routingTarget": "IS" }`,
+                source: 'Source: Client Template — Standard Transfer v3<br>Template match: 98.6%',
+                decisions: '✓ Template matched: Standard Transfer v3<br>✓ Investor API: Both accounts verified<br>✓ Routed to Investor Servicing',
+                repair: '✓ Account IDs normalised to UK format',
+                party: 'James Mitchell', account: 'INV-UK-9912 → INV-UK-8844', settlement: '18 July 2026', amount: '—', units: '—',
+                timeline: '<div><strong>11:05:00</strong> — Client template ingestion</div><div><strong>11:05:01</strong> — Classified: Transfer</div><div><strong>11:05:02</strong> — Auto Created</div><div><strong>11:05:04</strong> — Routed to IS</div>'
+            },
+            'INS-7844201': {
+                meta: 'Subscription • TA • Recon Exception',
+                stage: '<span class="px-4 py-1 bg-red-900 text-red-300 rounded-2xl">Stage 6: Reconciliation Exception</span>',
+                confidence: '<div class="flex items-center gap-3"><span class="text-2xl font-semibold text-emerald-400">91.0%</span><span class="text-xs text-amber-400">Reviewed &amp; approved manually</span></div>',
+                recon: '<span class="text-red-400"><i class="fa-solid fa-times-circle"></i> Mismatch</span><div class="text-xs text-red-300 mt-1">Expected $10,000 — Settlement shows $9,950</div>',
+                schema: `{ "instructionId": "INS-7844201", "intent": "SUBSCRIPTION", "currency": "USD", "amount": 10000, "routingTarget": "TA" }`,
+                source: 'Source: Portal upload — US Ops Portal',
+                decisions: '✓ Manually approved after fee adjustment review<br>✓ Routed to TA<br>⚠ Reconciliation mismatch detected',
+                repair: '✓ Fee deduction explanation attached',
+                party: 'Sarah Chen', account: 'INV-US-2201', settlement: '16 July 2026', amount: '10000', units: '892.15',
+                timeline: '<div><strong>09:30:00</strong> — Portal ingestion</div><div><strong>09:45:00</strong> — Human review approved</div><div><strong>09:46:00</strong> — Routed to TA</div><div><strong>10:12:00</strong> — Recon mismatch: amount variance $50</div>'
+            }
+        };
+
+        function showTransactionDetail(ref, isException = false) {
+            currentRef = ref;
+            const modal = document.getElementById('txn-modal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            
+            document.getElementById('golden-schema-section').classList.add('hidden');
+            document.getElementById('evidence-timeline-section').classList.add('hidden');
+            
+            const d = txnDetails[ref] || txnDetails['INS-7843892'];
+            document.getElementById('modal-txn-ref').innerText = ref;
+            document.getElementById('modal-txn-meta').innerText = d.meta;
+            document.getElementById('modal-stage-pill').innerHTML = d.stage;
+            document.getElementById('modal-confidence-view').innerHTML = d.confidence;
+            document.getElementById('modal-recon-view').innerHTML = d.recon;
+            document.getElementById('golden-schema-view').innerHTML = d.schema;
+            document.getElementById('original-source-view').innerHTML = d.source;
+            document.getElementById('agent-actions-view').innerHTML = d.decisions;
+            document.getElementById('system-repair-view').innerHTML = d.repair;
+            document.getElementById('field-party').value = d.party;
+            document.getElementById('field-account').value = d.account;
+            document.getElementById('field-settlement').value = d.settlement;
+            document.getElementById('field-amount').value = d.amount;
+            document.getElementById('field-units').value = d.units;
+            document.getElementById('evidence-timeline-view').innerHTML = d.timeline;
+        }
+        
+        function hideTransactionModal() {
+            document.getElementById('txn-modal').classList.add('hidden');
+            document.getElementById('txn-modal').style.display = 'none';
+        }
+        
+        function saveCorrectionsAndApprove() {
+            const ref = currentRef;
+            hideTransactionModal();
+            
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-24 right-8 bg-emerald-600 px-6 py-3 rounded-2xl flex items-center gap-x-3 text-white z-[400]`;
+            toast.innerHTML = `
+                <i class="fa-solid fa-check-circle"></i>
+                <div>
+                    <div class="font-medium">${ref} approved</div>
+                    <div class="text-xs opacity-90">Journey continued • Evidence recorded</div>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2400);
+        }
+        
+        // Workbench Kanban columns = review queue states (where ops acts)
+        const STAGES = [
+            { id: 'submitted', label: 'Submitted', icon: 'fa-inbox', css: 'col-submitted', color: 'text-blue-400', pillClass: 'bg-blue-950 text-blue-300 border-blue-800' },
+            { id: 'validation', label: 'AI Validation', icon: 'fa-robot', css: 'col-validation', color: 'text-violet-400', pillClass: 'bg-violet-950 text-violet-300 border-violet-800' },
+            { id: 'review', label: 'Human Review', icon: 'fa-user-check', css: 'col-review', color: 'text-amber-400', pillClass: 'bg-amber-950 text-amber-300 border-amber-800' },
+            { id: 'approved', label: 'Approved', icon: 'fa-circle-check', css: 'col-approved', color: 'text-emerald-400', pillClass: 'bg-emerald-950 text-emerald-300 border-emerald-800' },
+            { id: 'rejected', label: 'Rejected', icon: 'fa-circle-xmark', css: 'col-rejected', color: 'text-red-400', pillClass: 'bg-red-950 text-red-300 border-red-800' },
+            { id: 'escalated', label: 'Escalated', icon: 'fa-arrow-up-right-dots', css: 'col-escalated', color: 'text-pink-400', pillClass: 'bg-pink-950 text-pink-300 border-pink-800' }
+        ];
+
+        function getJourneyStatusLine(journey) {
+            const t = renderStepTracker({ ...journey, context: 'workbench', variant: 'card' });
+            const match = t.match(/step-tracker-status[^"]*">(.*?)<\/div>/);
+            return match ? match[1] : '';
+        }
+
+        function getQueuePillHtml(stageId) {
+            const s = STAGES.find(x => x.id === stageId);
+            if (!s) return '';
+            return `<i class="fa-solid ${s.icon} mr-1.5 text-[9px]"></i>Review queue: ${s.label}`;
+        }
+
+        let workbenchViewFilter = 'all';
+        let activeRequestId = null;
+        let draggedId = null;
+
+        let requests = [
+            {
+                id: 'REQ-2026-08421', ref: 'INS-7843921', stage: 'approved', intent: 'Subscription', source: 'SWIFT',
+                party: 'Priya Sharma', amount: '₹2,50,000', confidence: 99.4, risk: 12, riskLabel: 'Low',
+                slaMinutes: 120, slaRemaining: 0, assignee: 'Auto', path: 'auto',
+                journey: { state: 'completed', completedThrough: 6 },
+                fields: { ISIN: 99, Fund: 98, Investor: 97, Amount: 100, Date: 99, Account: 96, Currency: 99 },
+                findings: ['✓ All validation APIs passed', '✓ Confidence 99.4% — above 98% threshold', '✓ Auto-routed to TA', '✓ Reconciled — settlement matched'],
+                explain: 'Subscription instruction ingested via SWIFT MT103. AI classified intent with 99.8% confidence. All six journey stages completed — routed to TA and reconciled without human intervention.',
+                timeline: ['10:12 — Ingestion (SWIFT)', '10:12 — Detect & Classify: Subscription', '10:12 — Validate & Enrich passed', '10:13 — Repair + Templatise (auto)', '10:13 — Routed to TA', '10:15 — Reconciliation matched'],
+                comments: [{ user: 'System', text: 'Auto-approved per STP policy.', time: '10:13' }]
+            },
+            {
+                id: 'REQ-2026-08402', ref: 'INS-7843892', stage: 'review', intent: 'Switch', source: 'Email + PDF',
+                party: 'Rajesh Kumar', amount: '₹1,25,000', confidence: 87.2, risk: 58, riskLabel: 'Medium',
+                slaMinutes: 60, slaRemaining: 18, assignee: 'SCB User', path: 'human',
+                journey: { heldStep: 4, completedThrough: 3 },
+                fields: { ISIN: 92, Fund: 88, Investor: 95, Amount: 91, Date: 85, Account: 94, Quantity: 72, Currency: 98 },
+                findings: ['⚠ Quantity field ambiguous in PDF', '⚠ Confidence 87.2% — below 98% threshold', '✓ Stages 1–3 complete', '→ Held at Repair + Templatise — human sign-off required'],
+                explain: 'Switch request detected from email attachment. Journey paused at Stage 4 (Repair + Templatise): quantity could not be resolved unambiguously. Workbench queue: Human Review.',
+                timeline: ['09:42 — Ingestion (Email + PDF)', '09:42 — Detect: Switch', '09:43 — Validate passed', '09:44 — Repair held — quantity ambiguity', '09:44 — Routed to Human Review queue'],
+                comments: [
+                    { user: 'AI System', text: 'Suggested repair: 1012.50 units based on NAV 2026-07-16.', time: '09:44' },
+                    { user: 'Vikram (L2)', text: 'Please confirm with client if approximate units are acceptable.', time: '10:02' }
+                ]
+            },
+            {
+                id: 'REQ-2026-08415', ref: 'INS-7844102', stage: 'validation', intent: 'Redemption', source: 'API',
+                party: 'Tan Wei Ming', amount: 'SGD 50,000', confidence: 91.0, risk: 34, riskLabel: 'Low',
+                slaMinutes: 90, slaRemaining: 52, assignee: 'AI', path: 'validating',
+                journey: { activeStep: 6, completedThrough: 5 },
+                fields: { ISIN: 96, Fund: 94, Investor: 98, Amount: 97, Date: 93, Account: 99, Currency: 100 },
+                findings: ['✓ Stages 1–5 complete — routed to FA', '⟳ Stage 6 Reconciliation in progress', '⏳ Awaiting FA settlement confirmation'],
+                explain: 'API redemption auto-created at 99.1% confidence. Journey at Stage 6 (Reconciliation) — awaiting fund accounting settlement. Workbench queue: AI Validation finishing compliance checks.',
+                timeline: ['11:05 — Ingestion (API)', '11:05 — Classified: Redemption', '11:05 — Validated & auto-created', '11:05 — Routed to FA', '11:05 — Reconciliation started'],
+                comments: []
+            },
+            {
+                id: 'REQ-2026-08398', ref: 'INS-7844156', stage: 'submitted', intent: 'Transfer', source: 'Client Template',
+                party: 'James Mitchell', amount: 'GBP —', confidence: 0, risk: 25, riskLabel: 'Low',
+                slaMinutes: 120, slaRemaining: 115, assignee: '—', path: 'new',
+                journey: { activeStep: 1, completedThrough: 0 },
+                fields: { ISIN: 0, Fund: 0, Investor: 0, Amount: 0, Date: 0, Account: 0, Currency: 0 },
+                findings: ['⏳ Stage 1 Ingestion complete', '→ Stage 2 Detect & Classify queued'],
+                explain: 'Transfer instruction received via client template. Journey at Ingestion — entering Detect & Classify. Workbench queue: Submitted.',
+                timeline: ['11:18 — Ingestion (Client Template v3)'],
+                comments: []
+            },
+            {
+                id: 'REQ-2026-08371', ref: 'INS-7843621', stage: 'rejected', intent: 'Subscription', source: 'Portal',
+                party: 'Sarah Chen', amount: '$10,000', confidence: 76.0, risk: 72, riskLabel: 'High',
+                slaMinutes: 60, slaRemaining: 0, assignee: 'SCB User', path: 'rejected',
+                journey: { failedStep: 3, completedThrough: 2 },
+                fields: { ISIN: 45, Fund: 82, Investor: 88, Amount: 76, Date: 90, Account: 85, Currency: 95 },
+                findings: ['✗ Journey failed at Stage 3 Validate & Enrich', '✗ ISIN not found in fund master', '✗ Reviewer rejected after human review'],
+                explain: 'Portal subscription rejected. Journey exception at Validate & Enrich — invalid ISIN. Human reviewer rejected in workbench queue.',
+                timeline: ['08:30 — Ingestion', '08:31 — Detect: Subscription', '08:32 — Validate failed (ISIN)', '08:35 — Human Review', '08:48 — Rejected'],
+                comments: [{ user: 'SCB User', text: 'Rejected — ISIN invalid. Client to resubmit with correct fund code.', time: '08:48' }]
+            },
+            {
+                id: 'REQ-2026-08355', ref: 'INS-7843510', stage: 'escalated', intent: 'Redemption', source: 'SWIFT',
+                party: 'Global Pension Fund', amount: '€2.1M', confidence: 82.0, risk: 91, riskLabel: 'Critical',
+                slaMinutes: 30, slaRemaining: -8, assignee: 'Compliance Team', path: 'escalated',
+                journey: { heldStep: 3, completedThrough: 2 },
+                fields: { ISIN: 88, Fund: 90, Investor: 70, Amount: 85, Date: 92, Account: 65, Currency: 94 },
+                findings: ['⚠ Held at Stage 3 — AML enhanced due diligence', '⚠ Large redemption exceeds auto-approval limit', '↑ Escalated to Compliance Team', '✗ SLA breached'],
+                explain: 'High-value redemption escalated at Validate & Enrich due to AML flags. Journey held at Stage 3; workbench escalated to Compliance.',
+                timeline: ['07:15 — Ingestion (SWIFT)', '07:15 — Detect: Redemption', '07:16 — Validate: AML hold', '07:18 — Human Review', '07:22 — Escalated to Compliance'],
+                comments: [
+                    { user: 'AI System', text: 'AML API: Enhanced due diligence required for investor.', time: '07:16' },
+                    { user: 'SCB User', text: 'Escalating to Compliance — amount exceeds threshold.', time: '07:22' }
+                ]
+            },
+            {
+                id: 'REQ-2026-08408', ref: 'INS-7844012', stage: 'review', intent: 'Subscription', source: 'Email + PDF',
+                party: 'Meera Patel', amount: '₹5,00,000', confidence: 84.5, risk: 45, riskLabel: 'Medium',
+                slaMinutes: 60, slaRemaining: 8, assignee: 'Unassigned', path: 'human',
+                journey: { heldStep: 4, completedThrough: 3 },
+                fields: { ISIN: 90, Fund: 86, Investor: 92, Amount: 88, Date: 80, Account: 91, Currency: 97 },
+                findings: ['⚠ Held at Repair + Templatise — settlement date inferred T+2', '⚠ Confidence 84.5%', '→ Reviewer to confirm settlement date'],
+                explain: 'Subscription missing explicit settlement date. AI inferred T+2 at Stage 4 — held for human confirmation before routing.',
+                timeline: ['10:45 — Ingestion', '10:45 — Detect: Subscription', '10:46 — Validate passed', '10:47 — Repair held (date field)', '10:47 — Human Review queue'],
+                comments: []
+            },
+            {
+                id: 'REQ-2026-08420', ref: 'INS-7844201', stage: 'review', intent: 'Subscription', source: 'Portals & Files',
+                party: 'Sarah Chen', amount: '$10,000', confidence: 91.0, risk: 62, riskLabel: 'Medium',
+                slaMinutes: 45, slaRemaining: 12, assignee: 'SCB User', path: 'human',
+                journey: { failedStep: 6, completedThrough: 5 },
+                fields: { ISIN: 88, Fund: 90, Investor: 92, Amount: 76, Date: 94, Account: 89, Currency: 95 },
+                findings: ['⚠ Reconciliation exception at Stage 6', 'Expected $10,000 — settlement shows $9,950', '✓ Stages 1–5 complete', '→ Resolve fee variance in Human Review'],
+                explain: 'Instruction routed to TA but reconciliation mismatch at Stage 6. $50 fee variance — reviewer resolving in workbench while journey shows recon exception.',
+                timeline: ['09:30 — Portal ingestion', '09:31 — Detect & Validate', '09:45 — Human approved repair', '09:46 — Routed to TA', '10:12 — Recon mismatch flagged'],
+                comments: [{ user: 'SCB User', text: 'Fee adjustment likely — checking with TA.', time: '10:15' }]
+            }
+        ];
+
+        function getCurrentJourneyStep(j) {
+            if (!j) return 0;
+            if (j.state === 'completed' || j.completedThrough >= 6) return 6;
+            if (j.failedStep) return j.failedStep;
+            if (j.heldStep) return j.heldStep;
+            if (j.activeStep) return j.activeStep;
+            return Math.min(6, (j.completedThrough || 0) + 1);
+        }
+
+        function confClass(v) {
+            if (v >= 95) return 'conf-fill-high';
+            if (v >= 80) return 'conf-fill-med';
+            return 'conf-fill-low';
+        }
+        function heatClass(v) {
+            if (v >= 95) return 'heat-high';
+            if (v >= 80) return 'heat-med';
+            if (v > 0) return 'heat-low';
+            return 'bg-slate-800 text-slate-600 border-slate-700';
+        }
+        function slaClass(mins) {
+            if (mins <= 0) return 'sla-critical';
+            if (mins <= 15) return 'sla-warn';
+            return 'sla-ok';
+        }
+        function formatSla(mins) {
+            if (mins <= 0) return `SLA breached ${Math.abs(mins)}m ago`;
+            if (mins < 60) return `${mins}m left`;
+            return `${Math.floor(mins / 60)}h ${mins % 60}m left`;
+        }
+
+        function matchesWorkbenchView(r) {
+            if (workbenchViewFilter === 'review') return ['review', 'validation'].includes(r.stage);
+            if (workbenchViewFilter === 'exceptions') return ['review', 'rejected', 'escalated'].includes(r.stage);
+            return true;
+        }
+
+        function setWorkbenchView(view) {
+            workbenchViewFilter = view;
+            renderBoard();
+        }
+
+        function toggleWorkbenchInsights(forceOpen) {
+            const drawer = document.getElementById('workbench-insights-drawer');
+            const backdrop = document.getElementById('workbench-insights-backdrop');
+            const btn = document.getElementById('wb-insights-btn');
+            if (!drawer || !backdrop) return;
+            const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !drawer.classList.contains('open');
+            drawer.classList.toggle('open', shouldOpen);
+            backdrop.classList.toggle('open', shouldOpen);
+            drawer.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+            if (btn) btn.classList.toggle('border-emerald-600/50', shouldOpen);
+            if (btn) btn.classList.toggle('bg-emerald-950/30', shouldOpen);
+        }
+
+        function updateWorkbenchBadge() {
+            const badge = document.getElementById('workbench-badge');
+            if (!badge) return;
+            const pending = requests.filter(r => ['submitted', 'validation', 'review', 'escalated'].includes(r.stage)).length;
+            badge.textContent = pending;
+        }
+
+        function renderCard(r) {
+            const slaCls = slaClass(r.slaRemaining);
+            const confPct = r.confidence || 0;
+            const journeyHtml = r.journey ? renderStepTracker({ ...r.journey, context: 'workbench', variant: 'card' }) : '';
+            return `
+                <div class="kanban-card" draggable="true" data-id="${r.id}"
+                     onclick="openWorkspace('${r.id}', event)" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
+                    <div class="flex justify-between items-start mb-1.5">
+                        <span class="font-mono text-[10px] font-medium text-slate-300">${r.ref}</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-slate-700 text-slate-400">${r.intent}</span>
+                    </div>
+                    <div class="text-xs font-medium mb-0.5">${r.party}</div>
+                    <div class="text-[10px] text-slate-500 mb-2">${r.source} · ${r.amount}</div>
+                    ${confPct > 0 ? `
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="text-[9px] text-slate-500 w-12">Conf</span>
+                        <div class="conf-bar flex-1"><div class="${confClass(confPct)} h-full" style="width:${confPct}%"></div></div>
+                        <span class="text-[9px] font-medium ${confPct >= 98 ? 'text-emerald-400' : confPct >= 80 ? 'text-amber-400' : 'text-red-400'}">${confPct}%</span>
+                    </div>` : '<div class="text-[9px] text-slate-600 mb-1.5">Pending validation</div>'}
+                    ${journeyHtml}
+                    <div class="flex justify-between items-center mt-1.5">
+                        <span class="text-[10px] ${slaCls}"><i class="fa-regular fa-clock mr-0.5"></i>${formatSla(r.slaRemaining)}</span>
+                        <span class="text-[9px] text-slate-500">${r.assignee}</span>
+                    </div>
+                </div>`;
+        }
+
+        function renderBoard() {
+            const intentEl = document.getElementById('wb-filter-intent');
+            const filter = intentEl ? intentEl.value : '';
+            const board = document.getElementById('kanban-board');
+            if (!board) return;
+
+            board.innerHTML = STAGES.map(stage => {
+                const cards = requests.filter(r =>
+                    r.stage === stage.id &&
+                    (!filter || r.intent === filter) &&
+                    matchesWorkbenchView(r)
+                );
+                return `
+                    <div class="kanban-column ${stage.css}">
+                        <div class="kanban-column-header">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid ${stage.icon} ${stage.color} text-xs"></i>
+                                    <div>
+                                        <div class="text-xs font-semibold leading-tight">${stage.label}</div>
+                                        <div class="text-[8px] text-slate-500 font-normal">ops queue</div>
+                                    </div>
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-400">${cards.length}</span>
+                                </div>
+                            </div>
+                            ${cards.length > 0 && ['review', 'submitted', 'validation'].includes(stage.id) ? `
+                            <div class="flex gap-1">
+                                <button onclick="bulkAction('${stage.id}','advance')" class="flex-1 text-[9px] py-1 px-1.5 bg-slate-800 hover:bg-emerald-900/40 border border-slate-600 rounded-lg text-emerald-400">Advance all</button>
+                                <button onclick="bulkAction('${stage.id}','assign')" class="flex-1 text-[9px] py-1 px-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-300">Assign me</button>
+                            </div>` : ''}
+                        </div>
+                        <div class="kanban-column-body" data-stage="${stage.id}"
+                             ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+                            ${cards.map(renderCard).join('')}
+                        </div>
+                    </div>`;
+            }).join('');
+            updateAnalytics();
+            updateWorkbenchBadge();
+        }
+
+        function updateAnalytics() {
+            const total = requests.length;
+            const totalEl = document.getElementById('analytics-total');
+            if (totalEl) totalEl.textContent = total;
+
+            const inReview = requests.filter(r => r.stage === 'review').length;
+            const onTrack = requests.filter(r => r.slaRemaining > 15).length;
+            const atRisk = requests.filter(r => r.slaRemaining > 0 && r.slaRemaining <= 15).length;
+            const breached = requests.filter(r => r.slaRemaining <= 0).length;
+
+            const stripTotal = document.getElementById('strip-total');
+            const stripReview = document.getElementById('strip-review');
+            const stripSlaRisk = document.getElementById('strip-sla-risk');
+            const stripBreached = document.getElementById('strip-breached');
+            if (stripTotal) stripTotal.textContent = total;
+            if (stripReview) stripReview.textContent = inReview;
+            if (stripSlaRisk) stripSlaRisk.textContent = atRisk;
+            if (stripBreached) stripBreached.textContent = breached;
+
+            const dist = document.getElementById('analytics-distribution');
+            if (dist) {
+                dist.innerHTML = STAGES.map(s => {
+                    const n = requests.filter(r => r.stage === s.id).length;
+                    const pct = total ? Math.round(n / total * 100) : 0;
+                    return `<div><div class="flex justify-between mb-0.5"><span class="${s.color}">${s.label}</span><span>${n}</span></div>
+                        <div class="h-1.5 bg-slate-700 rounded-full"><div class="h-full ${s.color.replace('text', 'bg')} rounded-full opacity-60" style="width:${pct}%"></div></div></div>`;
+                }).join('');
+            }
+
+            const onTrackEl = document.getElementById('sla-on-track');
+            const atRiskEl = document.getElementById('sla-at-risk');
+            const breachedEl = document.getElementById('sla-breached');
+            if (onTrackEl) onTrackEl.textContent = onTrack;
+            if (atRiskEl) atRiskEl.textContent = atRisk;
+            if (breachedEl) breachedEl.textContent = breached;
+
+            const withConf = requests.filter(r => r.confidence > 0);
+            const avg = withConf.length ? (withConf.reduce((a, r) => a + r.confidence, 0) / withConf.length).toFixed(1) : 0;
+            const avgEl = document.getElementById('analytics-avg-conf');
+            const barEl = document.getElementById('analytics-conf-bar');
+            const stripAvg = document.getElementById('strip-avg-conf');
+            if (avgEl) avgEl.textContent = avg + '%';
+            if (barEl) barEl.style.width = avg + '%';
+            if (stripAvg) {
+                stripAvg.textContent = avg + '%';
+                stripAvg.className = 'wb-stat-value ' + (avg >= 98 ? 'text-emerald-400' : avg >= 80 ? 'text-amber-400' : 'text-red-400');
+            }
+
+            const journeyEl = document.getElementById('analytics-journey');
+            if (journeyEl) {
+                journeyEl.innerHTML = JOURNEY_STEPS.map((step, i) => {
+                    const stepNum = i + 1;
+                    const n = requests.filter(r => getCurrentJourneyStep(r.journey) === stepNum).length;
+                    const pct = total ? Math.round(n / total * 100) : 0;
+                    return `<div><div class="flex justify-between mb-0.5"><span class="text-slate-400">${step.full}</span><span>${n}</span></div>
+                        <div class="h-1 bg-slate-700 rounded-full"><div class="h-full bg-emerald-500/50 rounded-full" style="width:${pct}%"></div></div></div>`;
+                }).join('');
+            }
+        }
+
+        function onDragStart(e) {
+            draggedId = e.target.closest('.kanban-card').dataset.id;
+            e.target.closest('.kanban-card').classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        function onDragEnd(e) {
+            e.target.closest('.kanban-card')?.classList.remove('dragging');
+            draggedId = null;
+        }
+        function onDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+        function onDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+        function onDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            const stage = e.currentTarget.dataset.stage;
+            const req = requests.find(r => r.id === draggedId);
+            if (req && req.stage !== stage) {
+                req.stage = stage;
+                if (stage === 'review') req.assignee = req.assignee === '—' ? 'SCB User' : req.assignee;
+                req.timeline.push(`${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} — Moved to ${STAGES.find(s => s.id === stage).label} (drag)`);
+                renderBoard();
+            }
+        }
+
+        function bulkAction(stageId, action) {
+            const affected = requests.filter(r => r.stage === stageId);
+            if (!affected.length) return;
+            if (action === 'assign') {
+                affected.forEach(r => { r.assignee = 'SCB User'; });
+                showWorkbenchToast(`Assigned ${affected.length} request(s) to you`);
+            } else if (action === 'advance') {
+                const next = { submitted: 'validation', validation: 'review', review: 'approved' };
+                affected.forEach(r => { if (next[stageId]) r.stage = next[stageId]; });
+                showWorkbenchToast(`Advanced ${affected.length} request(s)`);
+            }
+            renderBoard();
+        }
+
+        function advanceJourneyOnApprove(r) {
+            if (!r.journey) return;
+            const j = r.journey;
+            if (j.heldStep === 4) {
+                j.heldStep = 0;
+                j.completedThrough = 4;
+                j.activeStep = 5;
+                r.timeline.push(`${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} — Repair approved — continuing to Routing`);
+            } else if (j.failedStep === 6) {
+                j.failedStep = 0;
+                j.state = 'completed';
+                j.completedThrough = 6;
+                j.activeStep = 0;
+                r.timeline.push(`${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} — Reconciliation exception resolved`);
+            } else if (j.heldStep === 3) {
+                j.heldStep = 0;
+                j.completedThrough = 3;
+                j.activeStep = 4;
+                r.timeline.push(`${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} — Validate hold cleared — entering Repair`);
+            } else if (j.completedThrough < 6) {
+                j.completedThrough = Math.min(6, (j.completedThrough || 0) + 1);
+                j.activeStep = j.completedThrough < 6 ? j.completedThrough + 1 : 0;
+                if (j.completedThrough >= 6) j.state = 'completed';
+            }
+        }
+
+        function setAssistantVisible(visible) {
+            const root = document.getElementById('assistant-root');
+            if (!root) return;
+            root.classList.toggle('hidden', !visible);
+            if (!visible) {
+                document.getElementById('chat-window')?.classList.add('hidden');
+                updateAssistantFabIcon(false);
+            }
+        }
+
+        function openWorkspace(id, e) {
+            if (e && e.target.closest('button')) return;
+            const r = requests.find(x => x.id === id);
+            if (!r) return;
+            activeRequestId = id;
+
+            const queueStage = STAGES.find(s => s.id === r.stage);
+
+            document.getElementById('ws-ref').textContent = r.ref;
+            document.getElementById('ws-subtitle').textContent = `${r.intent} · ${r.source} · ${r.id}`;
+
+            const pill = document.getElementById('ws-queue-pill');
+            if (pill && queueStage) {
+                pill.className = `ws-queue-pill border ${queueStage.pillClass}`;
+                pill.innerHTML = getQueuePillHtml(r.stage);
+            }
+
+            document.getElementById('ws-journey-tracker').innerHTML = r.journey
+                ? renderStepTracker({ ...r.journey, context: 'workbench', variant: 'workspace' })
+                : '';
+
+            const bridge = document.getElementById('ws-journey-bridge');
+            if (bridge && r.journey) {
+                const stepIdx = r.journey.heldStep || r.journey.failedStep || r.journey.activeStep || r.journey.completedThrough;
+                const stepName = stepIdx > 0 ? JOURNEY_STEPS[stepIdx - 1].full : 'Complete';
+                bridge.innerHTML = `<i class="fa-solid fa-link"></i> Kanban column = where ops acts · Journey stage = where STP processing is (${stepName})`;
+            }
+
+            document.getElementById('ws-sla').innerHTML = `<span class="${slaClass(r.slaRemaining)}"><i class="fa-regular fa-clock mr-1"></i>${formatSla(r.slaRemaining)}</span>`;
+
+            const journeyLabel = r.journey ? getJourneyStatusLine(r.journey).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '—';
+
+            document.getElementById('ws-summary').innerHTML = `
+                <div><div class="text-slate-500 text-xs">Party</div><div class="font-medium">${r.party}</div></div>
+                <div><div class="text-slate-500 text-xs">Amount</div><div class="font-medium">${r.amount}</div></div>
+                <div><div class="text-slate-500 text-xs">Intent</div><div class="font-medium">${r.intent}</div></div>
+                <div><div class="text-slate-500 text-xs">Assignee</div><div class="font-medium">${r.assignee}</div></div>
+                <div><div class="text-slate-500 text-xs">Source</div><div class="font-medium">${r.source}</div></div>
+                <div><div class="text-slate-500 text-xs">Confidence</div><div class="font-medium ${r.confidence >= 98 ? 'text-emerald-400' : r.confidence >= 80 ? 'text-amber-400' : 'text-red-400'}">${r.confidence || '—'}%</div></div>
+                <div><div class="text-slate-500 text-xs">Review Queue</div><div class="font-medium">${queueStage?.label || '—'}</div></div>
+                <div><div class="text-slate-500 text-xs">Journey Status</div><div class="font-medium text-xs leading-snug">${journeyLabel}</div></div>`;
+
+            document.getElementById('ws-findings').innerHTML = r.findings.map(f => `<div class="py-1.5 border-b border-slate-700/50 last:border-0">${f}</div>`).join('');
+
+            const riskColor = r.risk >= 70 ? '#f87171' : r.risk >= 40 ? '#fbbf24' : '#34d399';
+            document.getElementById('ws-risk-value').textContent = r.risk;
+            document.getElementById('ws-risk-value').style.color = riskColor;
+            document.getElementById('ws-risk-label').textContent = r.riskLabel + ' Risk';
+            document.getElementById('ws-risk-bar').style.width = r.risk + '%';
+            document.getElementById('ws-risk-bar').style.background = riskColor;
+
+            document.getElementById('ws-heatmap').innerHTML = Object.entries(r.fields).map(([k, v]) =>
+                `<div class="heatmap-cell ${heatClass(v)}"><div class="font-semibold">${v || '—'}${v ? '%' : ''}</div><div class="text-[9px] opacity-80 mt-0.5">${k}</div></div>`
+            ).join('');
+
+            document.getElementById('ws-explain').textContent = r.explain;
+            document.getElementById('ws-timeline').innerHTML = r.timeline.map(t => `<div class="flex gap-2"><span class="text-slate-500 shrink-0">●</span><span>${t}</span></div>`).join('');
+            renderComments(r);
+
+            const actions = document.getElementById('ws-actions');
+            if (r.stage === 'review') {
+                actions.innerHTML = `
+                    <button onclick="wsAction('approve')" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-medium"><i class="fa-solid fa-check mr-1"></i>Approve</button>
+                    <button onclick="wsAction('reject')" class="px-5 py-2.5 bg-red-900/60 hover:bg-red-900 border border-red-700 rounded-xl text-sm text-red-300"><i class="fa-solid fa-xmark mr-1"></i>Reject</button>
+                    <button onclick="wsAction('escalate')" class="px-5 py-2.5 border border-pink-700 text-pink-400 hover:bg-pink-900/20 rounded-xl text-sm"><i class="fa-solid fa-arrow-up mr-1"></i>Escalate</button>
+                    <button onclick="wsAction('request-info')" class="px-5 py-2.5 border border-slate-600 rounded-xl text-sm hover:bg-slate-800">Request Info</button>`;
+            } else if (r.stage === 'validation' || r.stage === 'submitted') {
+                actions.innerHTML = `<button onclick="wsAction('advance')" class="px-5 py-2.5 bg-violet-600 hover:bg-violet-500 rounded-xl text-sm">Run Validation</button>`;
+            } else {
+                actions.innerHTML = `<button onclick="closeWorkspace()" class="px-5 py-2.5 border border-slate-600 rounded-xl text-sm">Close</button>`;
+            }
+
+            document.getElementById('review-workspace').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setAssistantVisible(false);
+        }
+
+        function openTxnFromWorkspace() {
+            const r = requests.find(x => x.id === activeRequestId);
+            if (!r) return;
+            closeWorkspace();
+            showTransactionDetail(r.ref, r.stage === 'review' || r.stage === 'rejected' || r.stage === 'escalated');
+        }
+
+        function closeWorkspace() {
+            document.getElementById('review-workspace').classList.add('hidden');
+            document.body.style.overflow = '';
+            activeRequestId = null;
+            setAssistantVisible(true);
+        }
+
+        function renderComments(r) {
+            document.getElementById('ws-comments').innerHTML = r.comments.length
+                ? r.comments.map(c => `<div class="bg-slate-800 rounded-xl p-2.5"><div class="font-medium text-emerald-400">${c.user}</div><div class="text-slate-300 mt-0.5">${c.text}</div><div class="text-slate-600 mt-1">${c.time}</div></div>`).join('')
+                : '<div class="text-slate-600">No comments yet</div>';
+        }
+
+        function addComment() {
+            const input = document.getElementById('ws-comment-input');
+            const text = input.value.trim();
+            if (!text || !activeRequestId) return;
+            const r = requests.find(x => x.id === activeRequestId);
+            r.comments.push({ user: 'SCB User', text, time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) });
+            input.value = '';
+            renderComments(r);
+        }
+
+        function wsAction(action) {
+            const r = requests.find(x => x.id === activeRequestId);
+            if (!r) return;
+            const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            if (action === 'approve') {
+                r.stage = 'approved';
+                advanceJourneyOnApprove(r);
+                r.timeline.push(`${time} — Approved by SCB User`);
+                showWorkbenchToast(`${r.ref} approved — journey continues`);
+            } else if (action === 'reject') {
+                r.stage = 'rejected';
+                if (r.journey && !r.journey.failedStep) {
+                    r.journey.failedStep = r.journey.heldStep || r.journey.activeStep || 3;
+                    r.journey.heldStep = 0;
+                    r.journey.activeStep = 0;
+                }
+                r.timeline.push(`${time} — Rejected by SCB User`);
+                showWorkbenchToast(`${r.ref} rejected`);
+            } else if (action === 'escalate') {
+                r.stage = 'escalated';
+                r.assignee = 'Compliance Team';
+                r.timeline.push(`${time} — Escalated`);
+                showWorkbenchToast(`${r.ref} escalated`);
+            } else if (action === 'advance') {
+                r.stage = 'validation';
+                if (r.journey) {
+                    r.journey.activeStep = Math.max(r.journey.activeStep || 1, 2);
+                    r.journey.completedThrough = Math.max(r.journey.completedThrough || 0, 1);
+                }
+                r.confidence = 94;
+                r.timeline.push(`${time} — AI Validation running (Detect & Classify)`);
+                showWorkbenchToast('Validation started');
+            } else if (action === 'request-info') {
+                r.comments.push({ user: 'SCB User', text: 'Requested additional information from client.', time });
+                showWorkbenchToast('Info request sent');
+            }
+            closeWorkspace();
+            renderBoard();
+        }
+
+        function showWorkbenchToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'fixed bottom-24 right-8 bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm shadow-xl z-[450]';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+
+        function refreshBoard() {
+            requests.forEach(r => { if (r.slaRemaining > 0) r.slaRemaining = Math.max(0, r.slaRemaining - 1); });
+            renderBoard();
+            showWorkbenchToast('Board refreshed');
+        }
+
+        function initializeWireframes() {
+            initializeTailwind();
+            
+            document.getElementById('tab-dashboard').classList.remove('hidden');
+            document.getElementById('nav-dashboard').classList.add('active');
+            
+            // Ensure assistant FAB is always visible on load
+            const fab = document.getElementById('assistant-fab');
+            const panel = document.getElementById('chat-window');
+            if (fab) fab.classList.remove('hidden');
+            if (panel) panel.classList.add('hidden');
+            updateAssistantFabIcon(false);
+            renderBoard();
+
+            setInterval(() => {
+                requests.forEach(r => {
+                    if (r.slaRemaining > 0 && !['approved', 'rejected'].includes(r.stage)) r.slaRemaining--;
+                });
+                const ws = document.getElementById('review-workspace');
+                if (ws && !ws.classList.contains('hidden') && activeRequestId) {
+                    const r = requests.find(x => x.id === activeRequestId);
+                    if (r) document.getElementById('ws-sla').innerHTML = `<span class="${slaClass(r.slaRemaining)}"><i class="fa-regular fa-clock mr-1"></i>${formatSla(r.slaRemaining)}</span>`;
+                }
+                updateAnalytics();
+                updateWorkbenchBadge();
+            }, 60000);
+            
+            setTimeout(() => {
+                const queueTab = document.getElementById('tab-queue');
+                if (!queueTab.classList.contains('hidden')) {
+                    loadQueueTable();
+                }
+            }, 300);
+        }
+        
+        window.onload = initializeWireframes;
+    </script>
+</body>
+</html>

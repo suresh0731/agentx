@@ -1,0 +1,22 @@
+{
+  "instructionRef": null,
+  "sourceType": "swift | pdf | excel | api | file | template",
+  "sourceChannel": "SWIFT | Email + PDF | API | Portals & Files | Client Templates",
+  "detectedLanguage": "en",
+  "normalizedLanguage": "en",
+  "party": { "name": "", "accountId": "" },
+  "transaction": {
+    "intentHint": "subscription | redemption | switch | transfer | unknown",
+    "amount": null,
+    "currency": null,
+    "quantity": null,
+    "isin": null,
+    "settlementDate": null
+  },
+  "extractedFields": [],
+  "rawExcerpt": "",
+  "parserUsed": "",
+  "parserVersion": "1.0.0",
+  "providerUsed": "mock",
+  "parserMetadata": {}
+}

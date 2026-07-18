@@ -1,0 +1,1732 @@
+{
+  "metric_rollups": {
+    "overall_stp_rate": 96.8,
+    "stp_rate_delta_7d": 4.2,
+    "sla_compliance": 99.4,
+    "sla_target": 99.0,
+    "sla_on_track": true,
+    "avg_processing_time_sec": 4.1,
+    "processing_time_improvement_pct": 92,
+    "instructions_processed_today": 2443,
+    "instructions_auto": 2396,
+    "instructions_reviewed": 47,
+    "reconciliation_match_rate": 99.2,
+    "reconciliation_mismatches_today": 8,
+    "auto_repair_success_rate": 94.7,
+    "auto_repair_healed_count": 312,
+    "compliance_holds": 5,
+    "exception_queue_count": 47,
+    "exception_queue_avg_age_min": 18,
+    "below_confidence_threshold_count": 31,
+    "confidence_threshold": 98,
+    "recon_exceptions": 8,
+    "journey_completion_rate": 96.8,
+    "primary": [
+      {
+        "key": "overall_stp_rate",
+        "label": "Overall Straight-Through Rate",
+        "value": 96.8,
+        "unit": "%",
+        "delta": 4.2,
+        "delta_label": "vs last 7 days",
+        "tone": "success"
+      },
+      {
+        "key": "sla_compliance",
+        "label": "SLA Compliance (Today)",
+        "value": 99.4,
+        "unit": "%",
+        "target": 99.0,
+        "status_label": "On Track",
+        "tone": "success"
+      },
+      {
+        "key": "avg_processing_time",
+        "label": "Avg Processing Time",
+        "value": 4.1,
+        "unit": "s",
+        "footnote": "92% faster than manual baseline",
+        "tone": "success"
+      },
+      {
+        "key": "instructions_processed_today",
+        "label": "Instructions Processed Today",
+        "value": 2443,
+        "breakdown": {
+          "auto": 2396,
+          "reviewed": 47
+        },
+        "tone": "neutral"
+      }
+    ],
+    "secondary": [
+      {
+        "key": "reconciliation_match",
+        "label": "Reconciliation Match",
+        "value": 99.2,
+        "unit": "%",
+        "footnote": "8 mismatches today",
+        "tone": "success"
+      },
+      {
+        "key": "auto_repair_success",
+        "label": "Auto-Repair Success",
+        "value": 94.7,
+        "unit": "%",
+        "footnote": "312 safe exceptions healed",
+        "tone": "success"
+      },
+      {
+        "key": "compliance_holds",
+        "label": "Compliance Holds",
+        "value": 5,
+        "footnote": "AML / regulatory blocks",
+        "tone": "warning"
+      },
+      {
+        "key": "exception_queue",
+        "label": "Exception Queue",
+        "value": 47,
+        "footnote": "avg age 18 min",
+        "tone": "warning"
+      },
+      {
+        "key": "below_confidence_threshold",
+        "label": "Below 98% Confidence",
+        "value": 31,
+        "footnote": "escalated for review",
+        "tone": "warning"
+      },
+      {
+        "key": "recon_exceptions",
+        "label": "Recon Exceptions",
+        "value": 8,
+        "footnote": "pending manual match",
+        "tone": "danger"
+      }
+    ]
+  },
+  "journey_health": {
+    "overall_stp": 96.8,
+    "overall_label": "96.8% completed full journey",
+    "bottleneck_stage": 4,
+    "stages": [
+      {
+        "stage": 1,
+        "label": "Ingestion",
+        "short_label": "Ingest",
+        "pass_rate": 100.0,
+        "is_bottleneck": false
+      },
+      {
+        "stage": 2,
+        "label": "Detect & Classify",
+        "short_label": "Detect",
+        "pass_rate": 99.6,
+        "is_bottleneck": false
+      },
+      {
+        "stage": 3,
+        "label": "Validate & Enrich",
+        "short_label": "Validate",
+        "pass_rate": 98.7,
+        "is_bottleneck": false
+      },
+      {
+        "stage": 4,
+        "label": "Repair + Templatise (Golden Schema)",
+        "short_label": "Repair",
+        "pass_rate": 94.2,
+        "is_bottleneck": true,
+        "bottleneck_note": "Main bottleneck stage"
+      },
+      {
+        "stage": 5,
+        "label": "Routing",
+        "short_label": "Route",
+        "pass_rate": 99.1,
+        "is_bottleneck": false
+      },
+      {
+        "stage": 6,
+        "label": "Reconciliation",
+        "short_label": "Reconcile",
+        "pass_rate": 99.2,
+        "is_bottleneck": false
+      }
+    ]
+  },
+  "attention": {
+    "total": 47,
+    "high_priority": 12,
+    "sla_at_risk": 3,
+    "recon_mismatches": 8,
+    "aml_holds": 5
+  },
+  "channels": [
+    {
+      "name": "SWIFT",
+      "icon": "fa-file-code",
+      "volume": 1284,
+      "stp_rate": 98.2
+    },
+    {
+      "name": "Email + PDF",
+      "icon": "fa-envelope",
+      "volume": 847,
+      "stp_rate": 94.1
+    },
+    {
+      "name": "Portals & Files",
+      "icon": "fa-folder",
+      "volume": 312,
+      "stp_rate": 96.8
+    },
+    {
+      "name": "API",
+      "icon": "fa-plug",
+      "volume": 156,
+      "stp_rate": 99.1
+    },
+    {
+      "name": "Client Templates",
+      "icon": "fa-file-lines",
+      "volume": 89,
+      "stp_rate": 97.5
+    }
+  ],
+  "routing": {
+    "ta": 62,
+    "fa": 28,
+    "is": 10,
+    "labels": {
+      "ta": "Transfer Agent (TA)",
+      "fa": "Fund Accounting (FA)",
+      "is": "Investor Servicing (IS)"
+    }
+  },
+  "intents": [
+    {
+      "intent": "Subscription",
+      "stp_rate": 97.8
+    },
+    {
+      "intent": "Redemption",
+      "stp_rate": 96.2
+    },
+    {
+      "intent": "Switch",
+      "stp_rate": 94.1
+    },
+    {
+      "intent": "Transfer",
+      "stp_rate": 98.4
+    }
+  ],
+  "instructions": [
+    {
+      "instruction_id": "INS-7843921",
+      "intent": "Subscription",
+      "channel": "SWIFT",
+      "routing_target": "TA",
+      "confidence": 99.4,
+      "status": "Reconciled",
+      "status_tone": "success",
+      "journey": {
+        "state": "completed",
+        "completed_through": 6,
+        "active_step": 0,
+        "failed_step": 0,
+        "held_step": 0
+      },
+      "meta": "Subscription • TA • Reconciled",
+      "stage_label": "Completed • Reconciled",
+      "recon_status": "matched",
+      "recon_detail": "Settlement ref SET-8847291 confirmed",
+      "golden_schema": {
+        "instructionId": "INS-7843921",
+        "intent": "SUBSCRIPTION",
+        "currency": "INR",
+        "isin": "INF109K01VQ1",
+        "party": "Priya Sharma",
+        "accountId": "INV-8847291",
+        "amount": 250000,
+        "quantity": 2793.74,
+        "settlementDate": "2026-07-18",
+        "routingTarget": "TA"
+      },
+      "intake": {
+        "source_type": "SWIFT",
+        "source_detail": "SWIFT MT103",
+        "message_type": "103",
+        "reference": "FUND-2026-0716-88421"
+      },
+      "party": "Priya Sharma",
+      "account": "INV-8847291",
+      "settlement_date": "2026-07-18",
+      "settlement_display": "18 July 2026",
+      "amount": 250000,
+      "amount_display": "₹2,50,000",
+      "quantity": 2793.74,
+      "currency": "INR",
+      "decisions": [
+        "Intent classified: Subscription",
+        "Validation rules passed",
+        "Fund API: ISIN valid",
+        "Investor API: Account active",
+        "AML API: Clear",
+        "Routed to TA System"
+      ],
+      "repair_notes": [
+        "No repair required",
+        "Templatised to Golden Schema"
+      ],
+      "field_confidences": {
+        "ISIN": 99,
+        "Fund": 98,
+        "Investor": 97,
+        "Amount": 100,
+        "Date": 99,
+        "Account": 96,
+        "Currency": 99
+      },
+      "timeline": [
+        {
+          "time": "21:12:44",
+          "event": "Ingestion from SWIFT",
+          "stage": 1
+        },
+        {
+          "time": "21:12:45",
+          "event": "Classified: Subscription",
+          "stage": 2
+        },
+        {
+          "time": "21:12:46",
+          "event": "Validated (6 API checks passed)",
+          "stage": 3
+        },
+        {
+          "time": "21:12:47",
+          "event": "Templatised to Golden Schema",
+          "stage": 4
+        },
+        {
+          "time": "21:12:51",
+          "event": "Routed to TA",
+          "stage": 5
+        },
+        {
+          "time": "21:15:02",
+          "event": "Reconciled: settlement matched",
+          "stage": 6
+        }
+      ],
+      "is_exception": false,
+      "in_queue": true,
+      "workbench_request_id": "REQ-2026-08421"
+    },
+    {
+      "instruction_id": "INS-7843892",
+      "intent": "Switch",
+      "channel": "Email + PDF",
+      "routing_target": "TA",
+      "confidence": 87.2,
+      "status": "Exception Queue",
+      "status_tone": "warning",
+      "journey": {
+        "state": "held",
+        "completed_through": 3,
+        "active_step": 0,
+        "failed_step": 0,
+        "held_step": 4
+      },
+      "meta": "Switch • TA • Exception Queue",
+      "stage_label": "Stage 4: Repair + Templatise",
+      "recon_status": "pending",
+      "recon_detail": "Awaiting approval before routing",
+      "golden_schema": {
+        "instructionId": "INS-7843892",
+        "intent": "SWITCH",
+        "currency": "INR",
+        "party": "Rajesh Kumar",
+        "fromAsset": "HDFC Top 100",
+        "toAsset": "HDFC Mid-Cap",
+        "amount": 125000,
+        "quantity": 1012.5,
+        "settlementDate": "2026-07-20"
+      },
+      "intake": {
+        "source_type": "Email + PDF",
+        "source_detail": "Email + PDF",
+        "subject": "Switch Request - Rajesh Kumar",
+        "language_detected": "English"
+      },
+      "party": "Rajesh Kumar",
+      "account": "INV-3928471",
+      "settlement_date": "2026-07-20",
+      "settlement_display": "20 July 2026",
+      "amount": 125000,
+      "amount_display": "₹1,25,000",
+      "quantity": 1012.5,
+      "currency": "INR",
+      "decisions": [
+        "Intent classified: Switch",
+        "Pricing API: NAV applied",
+        "Confidence below threshold (87.2%)",
+        "Escalation: Low confidence + quantity ambiguity"
+      ],
+      "repair_notes": [
+        "Ambiguity in quantity during templatise",
+        "Suggested repair: 1012.50 units from NAV 2026-07-16",
+        "Awaiting human confirmation"
+      ],
+      "field_confidences": {
+        "ISIN": 92,
+        "Fund": 88,
+        "Investor": 95,
+        "Amount": 91,
+        "Date": 85,
+        "Account": 94,
+        "Quantity": 72,
+        "Currency": 98
+      },
+      "timeline": [
+        {
+          "time": "20:58:11",
+          "event": "Ingestion from Email",
+          "stage": 1
+        },
+        {
+          "time": "20:58:12",
+          "event": "Classified: Switch",
+          "stage": 2
+        },
+        {
+          "time": "20:58:13",
+          "event": "Validated",
+          "stage": 3
+        },
+        {
+          "time": "20:58:14",
+          "event": "Quantity ambiguity (Repair)",
+          "stage": 4
+        },
+        {
+          "time": "20:58:14",
+          "event": "Routed to Exception Queue (<98%)",
+          "stage": 4
+        }
+      ],
+      "is_exception": true,
+      "exception": {
+        "issue": "Ambiguity while mapping to Golden Schema",
+        "failed_step": 4,
+        "priority": "HIGH"
+      },
+      "in_queue": true,
+      "workbench_request_id": "REQ-2026-08402"
+    },
+    {
+      "instruction_id": "INS-7844102",
+      "intent": "Redemption",
+      "channel": "API",
+      "routing_target": "FA",
+      "confidence": 99.1,
+      "status": "Auto Created",
+      "status_tone": "success",
+      "journey": {
+        "state": "in-progress",
+        "completed_through": 5,
+        "active_step": 6,
+        "failed_step": 0,
+        "held_step": 0
+      },
+      "meta": "Redemption • FA • Reconciling",
+      "stage_label": "Stage 6: Reconciliation",
+      "recon_status": "in_progress",
+      "recon_detail": "Awaiting FA settlement confirmation",
+      "golden_schema": {
+        "instructionId": "INS-7844102",
+        "intent": "REDEMPTION",
+        "currency": "SGD",
+        "isin": "SG9999012345",
+        "party": "Tan Wei Ming",
+        "amount": 50000,
+        "quantity": 4120.0,
+        "routingTarget": "FA"
+      },
+      "intake": {
+        "source_type": "API",
+        "source_detail": "API /v1/instructions",
+        "client": "Apex Capital SG"
+      },
+      "party": "Tan Wei Ming",
+      "account": "INV-SG-4421",
+      "settlement_date": "2026-07-17",
+      "settlement_display": "17 July 2026",
+      "amount": 50000,
+      "amount_display": "SGD 50,000",
+      "quantity": 4120.0,
+      "currency": "SGD",
+      "decisions": [
+        "Intent classified: Redemption",
+        "Compliance API: rules passed",
+        "Auto Created at 99.1% confidence",
+        "Routed to Fund Accounting"
+      ],
+      "repair_notes": [
+        "No repair required"
+      ],
+      "field_confidences": {
+        "ISIN": 96,
+        "Fund": 94,
+        "Investor": 98,
+        "Amount": 97,
+        "Date": 93,
+        "Account": 99,
+        "Currency": 100
+      },
+      "timeline": [
+        {
+          "time": "14:22:01",
+          "event": "API ingestion",
+          "stage": 1
+        },
+        {
+          "time": "14:22:02",
+          "event": "Classified: Redemption",
+          "stage": 2
+        },
+        {
+          "time": "14:22:03",
+          "event": "Auto Created (99.1%)",
+          "stage": 3
+        },
+        {
+          "time": "14:22:05",
+          "event": "Routed to FA",
+          "stage": 5
+        },
+        {
+          "time": "14:25:00",
+          "event": "Reconciliation pending",
+          "stage": 6
+        }
+      ],
+      "is_exception": false,
+      "in_queue": true,
+      "workbench_request_id": "REQ-2026-08415"
+    },
+    {
+      "instruction_id": "INS-7844156",
+      "intent": "Transfer",
+      "channel": "Client Templates",
+      "routing_target": "IS",
+      "confidence": 98.6,
+      "status": "Routed",
+      "status_tone": "info",
+      "journey": {
+        "state": "in-progress",
+        "completed_through": 4,
+        "active_step": 5,
+        "failed_step": 0,
+        "held_step": 0
+      },
+      "meta": "Transfer • IS • Routed",
+      "stage_label": "Stage 5: Routed to IS",
+      "recon_status": "pending",
+      "recon_detail": "Reconciliation scheduled post-settlement",
+      "golden_schema": {
+        "instructionId": "INS-7844156",
+        "intent": "TRANSFER",
+        "currency": "GBP",
+        "party": "James Mitchell",
+        "fromAccount": "INV-UK-9912",
+        "toAccount": "INV-UK-8844",
+        "routingTarget": "IS"
+      },
+      "intake": {
+        "source_type": "Client Templates",
+        "source_detail": "Client Template — Standard Transfer v3",
+        "template_match": 98.6
+      },
+      "party": "James Mitchell",
+      "account": "INV-UK-9912 → INV-UK-8844",
+      "settlement_date": "2026-07-18",
+      "settlement_display": "18 July 2026",
+      "amount": null,
+      "amount_display": "GBP —",
+      "quantity": null,
+      "currency": "GBP",
+      "decisions": [
+        "Template matched: Standard Transfer v3",
+        "Investor API: Both accounts verified",
+        "Routed to Investor Servicing"
+      ],
+      "repair_notes": [
+        "Account IDs normalised to UK format"
+      ],
+      "field_confidences": {
+        "ISIN": 0,
+        "Fund": 0,
+        "Investor": 0,
+        "Amount": 0,
+        "Date": 0,
+        "Account": 0,
+        "Currency": 0
+      },
+      "timeline": [
+        {
+          "time": "11:05:00",
+          "event": "Client template ingestion",
+          "stage": 1
+        },
+        {
+          "time": "11:05:01",
+          "event": "Classified: Transfer",
+          "stage": 2
+        },
+        {
+          "time": "11:05:02",
+          "event": "Auto Created",
+          "stage": 3
+        },
+        {
+          "time": "11:05:04",
+          "event": "Routed to IS",
+          "stage": 5
+        }
+      ],
+      "is_exception": false,
+      "in_queue": true,
+      "workbench_request_id": "REQ-2026-08398"
+    },
+    {
+      "instruction_id": "INS-7844201",
+      "intent": "Subscription",
+      "channel": "Portals & Files",
+      "routing_target": "TA",
+      "confidence": 91.0,
+      "status": "Recon Exception",
+      "status_tone": "danger",
+      "journey": {
+        "state": "failed",
+        "completed_through": 5,
+        "active_step": 0,
+        "failed_step": 6,
+        "held_step": 0
+      },
+      "meta": "Subscription • TA • Recon Exception",
+      "stage_label": "Stage 6: Reconciliation Exception",
+      "recon_status": "mismatch",
+      "recon_detail": "Expected $10,000 — Settlement shows $9,950",
+      "golden_schema": {
+        "instructionId": "INS-7844201",
+        "intent": "SUBSCRIPTION",
+        "currency": "USD",
+        "amount": 10000,
+        "routingTarget": "TA"
+      },
+      "intake": {
+        "source_type": "Portals & Files",
+        "source_detail": "Portal upload — US Ops Portal"
+      },
+      "party": "Sarah Chen",
+      "account": "INV-US-2201",
+      "settlement_date": "2026-07-16",
+      "settlement_display": "16 July 2026",
+      "amount": 10000,
+      "amount_display": "$10,000",
+      "quantity": 892.15,
+      "currency": "USD",
+      "decisions": [
+        "Manually approved after fee adjustment review",
+        "Routed to TA",
+        "Reconciliation mismatch detected"
+      ],
+      "repair_notes": [
+        "Fee deduction explanation attached"
+      ],
+      "field_confidences": {
+        "ISIN": 88,
+        "Fund": 90,
+        "Investor": 92,
+        "Amount": 76,
+        "Date": 94,
+        "Account": 89,
+        "Currency": 95
+      },
+      "timeline": [
+        {
+          "time": "09:30:00",
+          "event": "Portal ingestion",
+          "stage": 1
+        },
+        {
+          "time": "09:45:00",
+          "event": "Human review approved",
+          "stage": 4
+        },
+        {
+          "time": "09:46:00",
+          "event": "Routed to TA",
+          "stage": 5
+        },
+        {
+          "time": "10:12:00",
+          "event": "Recon mismatch: amount variance $50",
+          "stage": 6
+        }
+      ],
+      "is_exception": true,
+      "exception": {
+        "issue": "Settlement amount mismatch — expected $10,000, received $9,950",
+        "failed_step": 6,
+        "priority": "HIGH"
+      },
+      "in_queue": true,
+      "workbench_request_id": "REQ-2026-08420"
+    },
+    {
+      "instruction_id": "INS-7844310",
+      "intent": "Subscription",
+      "channel": "Email + PDF",
+      "routing_target": "TA",
+      "confidence": 84.0,
+      "status": "Exception Queue",
+      "status_tone": "warning",
+      "journey": {
+        "state": "failed",
+        "completed_through": 2,
+        "active_step": 0,
+        "failed_step": 3,
+        "held_step": 0
+      },
+      "meta": "Subscription • TA • Exception Queue",
+      "stage_label": "Stage 3: Validate & Enrich",
+      "recon_status": "pending",
+      "recon_detail": null,
+      "golden_schema": null,
+      "intake": {
+        "source_type": "Email + PDF",
+        "source_detail": "Email attachment — fund instruction"
+      },
+      "party": null,
+      "account": null,
+      "settlement_date": null,
+      "settlement_display": null,
+      "amount": null,
+      "amount_display": null,
+      "quantity": null,
+      "currency": null,
+      "decisions": [],
+      "repair_notes": [],
+      "field_confidences": {},
+      "timeline": [],
+      "is_exception": true,
+      "exception": {
+        "issue": "Missing ISIN — fund identifier not found in source",
+        "failed_step": 3,
+        "priority": "MEDIUM"
+      },
+      "in_queue": false,
+      "workbench_request_id": null
+    },
+    {
+      "instruction_id": "INS-7844298",
+      "intent": "Redemption",
+      "channel": "SWIFT",
+      "routing_target": "FA",
+      "confidence": 82.0,
+      "status": "Exception Queue",
+      "status_tone": "warning",
+      "journey": {
+        "state": "held",
+        "completed_through": 2,
+        "active_step": 0,
+        "failed_step": 0,
+        "held_step": 3
+      },
+      "meta": "Redemption • FA • Exception Queue",
+      "stage_label": "Stage 3: Validate & Enrich",
+      "recon_status": "pending",
+      "recon_detail": null,
+      "golden_schema": null,
+      "intake": {
+        "source_type": "SWIFT",
+        "source_detail": "SWIFT MT103"
+      },
+      "party": null,
+      "account": null,
+      "settlement_date": null,
+      "settlement_display": null,
+      "amount": null,
+      "amount_display": null,
+      "quantity": null,
+      "currency": null,
+      "decisions": [
+        "AML API: Enhanced due diligence required"
+      ],
+      "repair_notes": [],
+      "field_confidences": {},
+      "timeline": [],
+      "is_exception": true,
+      "exception": {
+        "issue": "AML hold — enhanced due diligence required",
+        "failed_step": 3,
+        "priority": "HIGH"
+      },
+      "in_queue": false,
+      "workbench_request_id": null
+    },
+    {
+      "instruction_id": "INS-7844255",
+      "intent": "Subscription",
+      "channel": "Email + PDF",
+      "routing_target": "TA",
+      "confidence": 84.0,
+      "status": "Exception Queue",
+      "status_tone": "warning",
+      "journey": {
+        "state": "held",
+        "completed_through": 3,
+        "active_step": 0,
+        "failed_step": 0,
+        "held_step": 4
+      },
+      "meta": "Subscription • TA • Exception Queue",
+      "stage_label": "Stage 4: Repair + Templatise",
+      "recon_status": "pending",
+      "recon_detail": null,
+      "golden_schema": null,
+      "intake": {
+        "source_type": "Email + PDF",
+        "source_detail": "PDF attachment — subscription form"
+      },
+      "party": null,
+      "account": null,
+      "settlement_date": null,
+      "settlement_display": null,
+      "amount": null,
+      "amount_display": null,
+      "quantity": null,
+      "currency": null,
+      "decisions": [],
+      "repair_notes": [
+        "Quantity field ambiguous in PDF"
+      ],
+      "field_confidences": {},
+      "timeline": [],
+      "is_exception": true,
+      "exception": {
+        "issue": "Low confidence (84%) — quantity field ambiguous in PDF",
+        "failed_step": 4,
+        "priority": "MEDIUM"
+      },
+      "in_queue": false,
+      "workbench_request_id": null
+    },
+    {
+      "instruction_id": "INS-7843621",
+      "intent": "Subscription",
+      "channel": "Portal",
+      "routing_target": "TA",
+      "confidence": 76.0,
+      "status": "Rejected",
+      "status_tone": "danger",
+      "journey": {
+        "state": "failed",
+        "completed_through": 2,
+        "active_step": 0,
+        "failed_step": 3,
+        "held_step": 0
+      },
+      "meta": "Subscription • TA • Rejected",
+      "stage_label": "Stage 3: Validate & Enrich",
+      "recon_status": "pending",
+      "recon_detail": null,
+      "golden_schema": null,
+      "intake": {
+        "source_type": "Portal",
+        "source_detail": "Portal upload"
+      },
+      "party": "Sarah Chen",
+      "account": null,
+      "settlement_date": null,
+      "settlement_display": null,
+      "amount": 10000,
+      "amount_display": "$10,000",
+      "quantity": null,
+      "currency": "USD",
+      "decisions": [
+        "ISIN not found in fund master",
+        "Reviewer rejected after human review"
+      ],
+      "repair_notes": [],
+      "field_confidences": {
+        "ISIN": 45,
+        "Fund": 82,
+        "Investor": 88,
+        "Amount": 76,
+        "Date": 90,
+        "Account": 85,
+        "Currency": 95
+      },
+      "timeline": [
+        {
+          "time": "08:30",
+          "event": "Ingestion",
+          "stage": 1
+        },
+        {
+          "time": "08:31",
+          "event": "Detect: Subscription",
+          "stage": 2
+        },
+        {
+          "time": "08:32",
+          "event": "Validate failed (ISIN)",
+          "stage": 3
+        },
+        {
+          "time": "08:35",
+          "event": "Human Review",
+          "stage": 3
+        },
+        {
+          "time": "08:48",
+          "event": "Rejected",
+          "stage": 3
+        }
+      ],
+      "is_exception": true,
+      "exception": {
+        "issue": "ISIN not found in fund master",
+        "failed_step": 3,
+        "priority": "HIGH"
+      },
+      "in_queue": false,
+      "workbench_request_id": "REQ-2026-08371"
+    },
+    {
+      "instruction_id": "INS-7843510",
+      "intent": "Redemption",
+      "channel": "SWIFT",
+      "routing_target": "FA",
+      "confidence": 82.0,
+      "status": "Escalated",
+      "status_tone": "danger",
+      "journey": {
+        "state": "held",
+        "completed_through": 2,
+        "active_step": 0,
+        "failed_step": 0,
+        "held_step": 3
+      },
+      "meta": "Redemption • FA • Escalated",
+      "stage_label": "Stage 3: Validate & Enrich",
+      "recon_status": "pending",
+      "recon_detail": null,
+      "golden_schema": null,
+      "intake": {
+        "source_type": "SWIFT",
+        "source_detail": "SWIFT MT103"
+      },
+      "party": "Global Pension Fund",
+      "account": null,
+      "settlement_date": null,
+      "settlement_display": null,
+      "amount": 2100000,
+      "amount_display": "€2.1M",
+      "quantity": null,
+      "currency": "EUR",
+      "decisions": [
+        "AML API: Enhanced due diligence required for investor",
+        "Large redemption exceeds auto-approval limit"
+      ],
+      "repair_notes": [],
+      "field_confidences": {
+        "ISIN": 88,
+        "Fund": 90,
+        "Investor": 70,
+        "Amount": 85,
+        "Date": 92,
+        "Account": 65,
+        "Currency": 94
+      },
+      "timeline": [
+        {
+          "time": "07:15",
+          "event": "Ingestion (SWIFT)",
+          "stage": 1
+        },
+        {
+          "time": "07:15",
+          "event": "Detect: Redemption",
+          "stage": 2
+        },
+        {
+          "time": "07:16",
+          "event": "Validate: AML hold",
+          "stage": 3
+        },
+        {
+          "time": "07:18",
+          "event": "Human Review",
+          "stage": 3
+        },
+        {
+          "time": "07:22",
+          "event": "Escalated to Compliance",
+          "stage": 3
+        }
+      ],
+      "is_exception": true,
+      "exception": {
+        "issue": "AML hold — large redemption exceeds auto-approval limit",
+        "failed_step": 3,
+        "priority": "HIGH"
+      },
+      "in_queue": false,
+      "workbench_request_id": "REQ-2026-08355"
+    },
+    {
+      "instruction_id": "INS-7844012",
+      "intent": "Subscription",
+      "channel": "Email + PDF",
+      "routing_target": "TA",
+      "confidence": 84.5,
+      "status": "Exception Queue",
+      "status_tone": "warning",
+      "journey": {
+        "state": "held",
+        "completed_through": 3,
+        "active_step": 0,
+        "failed_step": 0,
+        "held_step": 4
+      },
+      "meta": "Subscription • TA • Exception Queue",
+      "stage_label": "Stage 4: Repair + Templatise",
+      "recon_status": "pending",
+      "recon_detail": null,
+      "golden_schema": null,
+      "intake": {
+        "source_type": "Email + PDF",
+        "source_detail": "Email attachment — subscription request"
+      },
+      "party": "Meera Patel",
+      "account": null,
+      "settlement_date": null,
+      "settlement_display": null,
+      "amount": 500000,
+      "amount_display": "₹5,00,000",
+      "quantity": null,
+      "currency": "INR",
+      "decisions": [],
+      "repair_notes": [
+        "Settlement date inferred T+2",
+        "Awaiting human confirmation"
+      ],
+      "field_confidences": {
+        "ISIN": 90,
+        "Fund": 86,
+        "Investor": 92,
+        "Amount": 88,
+        "Date": 80,
+        "Account": 91,
+        "Currency": 97
+      },
+      "timeline": [
+        {
+          "time": "10:45",
+          "event": "Ingestion",
+          "stage": 1
+        },
+        {
+          "time": "10:45",
+          "event": "Detect: Subscription",
+          "stage": 2
+        },
+        {
+          "time": "10:46",
+          "event": "Validate passed",
+          "stage": 3
+        },
+        {
+          "time": "10:47",
+          "event": "Repair held (date field)",
+          "stage": 4
+        },
+        {
+          "time": "10:47",
+          "event": "Human Review queue",
+          "stage": 4
+        }
+      ],
+      "is_exception": true,
+      "exception": {
+        "issue": "Settlement date inferred T+2 — human confirmation required",
+        "failed_step": 4,
+        "priority": "MEDIUM"
+      },
+      "in_queue": false,
+      "workbench_request_id": "REQ-2026-08408"
+    }
+  ],
+  "workbench_requests": [
+    {
+      "id": "REQ-2026-08421",
+      "ref": "INS-7843921",
+      "stage": "approved",
+      "intent": "Subscription",
+      "source": "SWIFT",
+      "party": "Priya Sharma",
+      "amount": "₹2,50,000",
+      "confidence": 99.4,
+      "risk": 12,
+      "riskLabel": "Low",
+      "slaMinutes": 120,
+      "slaRemaining": 0,
+      "assignee": "Auto",
+      "path": "auto",
+      "journey": {
+        "state": "completed",
+        "completedThrough": 6
+      },
+      "fields": {
+        "ISIN": 99,
+        "Fund": 98,
+        "Investor": 97,
+        "Amount": 100,
+        "Date": 99,
+        "Account": 96,
+        "Currency": 99
+      },
+      "findings": [
+        "✓ All validation APIs passed",
+        "✓ Confidence 99.4% — above 98% threshold",
+        "✓ Auto-routed to TA",
+        "✓ Reconciled — settlement matched"
+      ],
+      "explain": "Subscription instruction ingested via SWIFT MT103. AI classified intent with 99.8% confidence. All six journey stages completed — routed to TA and reconciled without human intervention.",
+      "timeline": [
+        "10:12 — Ingestion (SWIFT)",
+        "10:12 — Detect & Classify: Subscription",
+        "10:12 — Validate & Enrich passed",
+        "10:13 — Repair + Templatise (auto)",
+        "10:13 — Routed to TA",
+        "10:15 — Reconciliation matched"
+      ],
+      "comments": [
+        {
+          "user": "System",
+          "text": "Auto-approved per STP policy.",
+          "time": "10:13"
+        }
+      ]
+    },
+    {
+      "id": "REQ-2026-08402",
+      "ref": "INS-7843892",
+      "stage": "review",
+      "intent": "Switch",
+      "source": "Email + PDF",
+      "party": "Rajesh Kumar",
+      "amount": "₹1,25,000",
+      "confidence": 87.2,
+      "risk": 58,
+      "riskLabel": "Medium",
+      "slaMinutes": 60,
+      "slaRemaining": 18,
+      "assignee": "SCB User",
+      "path": "human",
+      "journey": {
+        "heldStep": 4,
+        "completedThrough": 3
+      },
+      "fields": {
+        "ISIN": 92,
+        "Fund": 88,
+        "Investor": 95,
+        "Amount": 91,
+        "Date": 85,
+        "Account": 94,
+        "Quantity": 72,
+        "Currency": 98
+      },
+      "findings": [
+        "⚠ Quantity field ambiguous in PDF",
+        "⚠ Confidence 87.2% — below 98% threshold",
+        "✓ Stages 1–3 complete",
+        "→ Held at Repair + Templatise — human sign-off required"
+      ],
+      "explain": "Switch request detected from email attachment. Journey paused at Stage 4 (Repair + Templatise): quantity could not be resolved unambiguously. Workbench queue: Human Review.",
+      "timeline": [
+        "09:42 — Ingestion (Email + PDF)",
+        "09:42 — Detect: Switch",
+        "09:43 — Validate passed",
+        "09:44 — Repair held — quantity ambiguity",
+        "09:44 — Routed to Human Review queue"
+      ],
+      "comments": [
+        {
+          "user": "AI System",
+          "text": "Suggested repair: 1012.50 units based on NAV 2026-07-16.",
+          "time": "09:44"
+        },
+        {
+          "user": "Vikram (L2)",
+          "text": "Please confirm with client if approximate units are acceptable.",
+          "time": "10:02"
+        }
+      ]
+    },
+    {
+      "id": "REQ-2026-08415",
+      "ref": "INS-7844102",
+      "stage": "validation",
+      "intent": "Redemption",
+      "source": "API",
+      "party": "Tan Wei Ming",
+      "amount": "SGD 50,000",
+      "confidence": 91.0,
+      "risk": 34,
+      "riskLabel": "Low",
+      "slaMinutes": 90,
+      "slaRemaining": 52,
+      "assignee": "AI",
+      "path": "validating",
+      "journey": {
+        "activeStep": 6,
+        "completedThrough": 5
+      },
+      "fields": {
+        "ISIN": 96,
+        "Fund": 94,
+        "Investor": 98,
+        "Amount": 97,
+        "Date": 93,
+        "Account": 99,
+        "Currency": 100
+      },
+      "findings": [
+        "✓ Stages 1–5 complete — routed to FA",
+        "⟳ Stage 6 Reconciliation in progress",
+        "⏳ Awaiting FA settlement confirmation"
+      ],
+      "explain": "API redemption auto-created at 99.1% confidence. Journey at Stage 6 (Reconciliation) — awaiting fund accounting settlement. Workbench queue: AI Validation finishing compliance checks.",
+      "timeline": [
+        "11:05 — Ingestion (API)",
+        "11:05 — Classified: Redemption",
+        "11:05 — Validated & auto-created",
+        "11:05 — Routed to FA",
+        "11:05 — Reconciliation started"
+      ],
+      "comments": []
+    },
+    {
+      "id": "REQ-2026-08398",
+      "ref": "INS-7844156",
+      "stage": "submitted",
+      "intent": "Transfer",
+      "source": "Client Template",
+      "party": "James Mitchell",
+      "amount": "GBP —",
+      "confidence": 0,
+      "risk": 25,
+      "riskLabel": "Low",
+      "slaMinutes": 120,
+      "slaRemaining": 115,
+      "assignee": "—",
+      "path": "new",
+      "journey": {
+        "activeStep": 1,
+        "completedThrough": 0
+      },
+      "fields": {
+        "ISIN": 0,
+        "Fund": 0,
+        "Investor": 0,
+        "Amount": 0,
+        "Date": 0,
+        "Account": 0,
+        "Currency": 0
+      },
+      "findings": [
+        "⏳ Stage 1 Ingestion complete",
+        "→ Stage 2 Detect & Classify queued"
+      ],
+      "explain": "Transfer instruction received via client template. Journey at Ingestion — entering Detect & Classify. Workbench queue: Submitted.",
+      "timeline": [
+        "11:18 — Ingestion (Client Template v3)"
+      ],
+      "comments": []
+    },
+    {
+      "id": "REQ-2026-08371",
+      "ref": "INS-7843621",
+      "stage": "rejected",
+      "intent": "Subscription",
+      "source": "Portal",
+      "party": "Sarah Chen",
+      "amount": "$10,000",
+      "confidence": 76.0,
+      "risk": 72,
+      "riskLabel": "High",
+      "slaMinutes": 60,
+      "slaRemaining": 0,
+      "assignee": "SCB User",
+      "path": "rejected",
+      "journey": {
+        "failedStep": 3,
+        "completedThrough": 2
+      },
+      "fields": {
+        "ISIN": 45,
+        "Fund": 82,
+        "Investor": 88,
+        "Amount": 76,
+        "Date": 90,
+        "Account": 85,
+        "Currency": 95
+      },
+      "findings": [
+        "✗ Journey failed at Stage 3 Validate & Enrich",
+        "✗ ISIN not found in fund master",
+        "✗ Reviewer rejected after human review"
+      ],
+      "explain": "Portal subscription rejected. Journey exception at Validate & Enrich — invalid ISIN. Human reviewer rejected in workbench queue.",
+      "timeline": [
+        "08:30 — Ingestion",
+        "08:31 — Detect: Subscription",
+        "08:32 — Validate failed (ISIN)",
+        "08:35 — Human Review",
+        "08:48 — Rejected"
+      ],
+      "comments": [
+        {
+          "user": "SCB User",
+          "text": "Rejected — ISIN invalid. Client to resubmit with correct fund code.",
+          "time": "08:48"
+        }
+      ]
+    },
+    {
+      "id": "REQ-2026-08355",
+      "ref": "INS-7843510",
+      "stage": "escalated",
+      "intent": "Redemption",
+      "source": "SWIFT",
+      "party": "Global Pension Fund",
+      "amount": "€2.1M",
+      "confidence": 82.0,
+      "risk": 91,
+      "riskLabel": "Critical",
+      "slaMinutes": 30,
+      "slaRemaining": -8,
+      "assignee": "Compliance Team",
+      "path": "escalated",
+      "journey": {
+        "heldStep": 3,
+        "completedThrough": 2
+      },
+      "fields": {
+        "ISIN": 88,
+        "Fund": 90,
+        "Investor": 70,
+        "Amount": 85,
+        "Date": 92,
+        "Account": 65,
+        "Currency": 94
+      },
+      "findings": [
+        "⚠ Held at Stage 3 — AML enhanced due diligence",
+        "⚠ Large redemption exceeds auto-approval limit",
+        "↑ Escalated to Compliance Team",
+        "✗ SLA breached"
+      ],
+      "explain": "High-value redemption escalated at Validate & Enrich due to AML flags. Journey held at Stage 3; workbench escalated to Compliance.",
+      "timeline": [
+        "07:15 — Ingestion (SWIFT)",
+        "07:15 — Detect: Redemption",
+        "07:16 — Validate: AML hold",
+        "07:18 — Human Review",
+        "07:22 — Escalated to Compliance"
+      ],
+      "comments": [
+        {
+          "user": "AI System",
+          "text": "AML API: Enhanced due diligence required for investor.",
+          "time": "07:16"
+        },
+        {
+          "user": "SCB User",
+          "text": "Escalating to Compliance — amount exceeds threshold.",
+          "time": "07:22"
+        }
+      ]
+    },
+    {
+      "id": "REQ-2026-08408",
+      "ref": "INS-7844012",
+      "stage": "review",
+      "intent": "Subscription",
+      "source": "Email + PDF",
+      "party": "Meera Patel",
+      "amount": "₹5,00,000",
+      "confidence": 84.5,
+      "risk": 45,
+      "riskLabel": "Medium",
+      "slaMinutes": 60,
+      "slaRemaining": 8,
+      "assignee": "Unassigned",
+      "path": "human",
+      "journey": {
+        "heldStep": 4,
+        "completedThrough": 3
+      },
+      "fields": {
+        "ISIN": 90,
+        "Fund": 86,
+        "Investor": 92,
+        "Amount": 88,
+        "Date": 80,
+        "Account": 91,
+        "Currency": 97
+      },
+      "findings": [
+        "⚠ Held at Repair + Templatise — settlement date inferred T+2",
+        "⚠ Confidence 84.5%",
+        "→ Reviewer to confirm settlement date"
+      ],
+      "explain": "Subscription missing explicit settlement date. AI inferred T+2 at Stage 4 — held for human confirmation before routing.",
+      "timeline": [
+        "10:45 — Ingestion",
+        "10:45 — Detect: Subscription",
+        "10:46 — Validate passed",
+        "10:47 — Repair held (date field)",
+        "10:47 — Human Review queue"
+      ],
+      "comments": []
+    },
+    {
+      "id": "REQ-2026-08420",
+      "ref": "INS-7844201",
+      "stage": "review",
+      "intent": "Subscription",
+      "source": "Portals & Files",
+      "party": "Sarah Chen",
+      "amount": "$10,000",
+      "confidence": 91.0,
+      "risk": 62,
+      "riskLabel": "Medium",
+      "slaMinutes": 45,
+      "slaRemaining": 12,
+      "assignee": "SCB User",
+      "path": "human",
+      "journey": {
+        "failedStep": 6,
+        "completedThrough": 5
+      },
+      "fields": {
+        "ISIN": 88,
+        "Fund": 90,
+        "Investor": 92,
+        "Amount": 76,
+        "Date": 94,
+        "Account": 89,
+        "Currency": 95
+      },
+      "findings": [
+        "⚠ Reconciliation exception at Stage 6",
+        "Expected $10,000 — settlement shows $9,950",
+        "✓ Stages 1–5 complete",
+        "→ Resolve fee variance in Human Review"
+      ],
+      "explain": "Instruction routed to TA but reconciliation mismatch at Stage 6. $50 fee variance — reviewer resolving in workbench while journey shows recon exception.",
+      "timeline": [
+        "09:30 — Portal ingestion",
+        "09:31 — Detect & Validate",
+        "09:45 — Human approved repair",
+        "09:46 — Routed to TA",
+        "10:12 — Recon mismatch flagged"
+      ],
+      "comments": [
+        {
+          "user": "SCB User",
+          "text": "Fee adjustment likely — checking with TA.",
+          "time": "10:15"
+        }
+      ]
+    }
+  ],
+  "evidence_events": [
+    {
+      "id": "EVD-00001",
+      "instruction_id": "INS-7843921",
+      "timestamp": "2026-07-16T21:12:44",
+      "stage": 1,
+      "stage_label": "Ingestion",
+      "event_type": "ingestion",
+      "summary": "Ingestion from SWIFT",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00002",
+      "instruction_id": "INS-7843921",
+      "timestamp": "2026-07-16T21:12:45",
+      "stage": 2,
+      "stage_label": "Detect & Classify",
+      "event_type": "classification",
+      "summary": "Classified: Subscription",
+      "actor": "ai"
+    },
+    {
+      "id": "EVD-00003",
+      "instruction_id": "INS-7843921",
+      "timestamp": "2026-07-16T21:12:46",
+      "stage": 3,
+      "stage_label": "Validate & Enrich",
+      "event_type": "validation",
+      "summary": "Validated (6 API checks passed)",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00004",
+      "instruction_id": "INS-7843921",
+      "timestamp": "2026-07-16T21:12:47",
+      "stage": 4,
+      "stage_label": "Repair + Templatise",
+      "event_type": "templatise",
+      "summary": "Templatised to Golden Schema",
+      "actor": "ai"
+    },
+    {
+      "id": "EVD-00005",
+      "instruction_id": "INS-7843921",
+      "timestamp": "2026-07-16T21:12:51",
+      "stage": 5,
+      "stage_label": "Routing",
+      "event_type": "routing",
+      "summary": "Routed to TA",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00006",
+      "instruction_id": "INS-7843921",
+      "timestamp": "2026-07-16T21:15:02",
+      "stage": 6,
+      "stage_label": "Reconciliation",
+      "event_type": "reconciliation",
+      "summary": "Reconciled: settlement matched",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00007",
+      "instruction_id": "INS-7843892",
+      "timestamp": "2026-07-16T20:58:11",
+      "stage": 1,
+      "stage_label": "Ingestion",
+      "event_type": "ingestion",
+      "summary": "Ingestion from Email",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00008",
+      "instruction_id": "INS-7843892",
+      "timestamp": "2026-07-16T20:58:12",
+      "stage": 2,
+      "stage_label": "Detect & Classify",
+      "event_type": "classification",
+      "summary": "Classified: Switch",
+      "actor": "ai"
+    },
+    {
+      "id": "EVD-00009",
+      "instruction_id": "INS-7843892",
+      "timestamp": "2026-07-16T20:58:13",
+      "stage": 3,
+      "stage_label": "Validate & Enrich",
+      "event_type": "validation",
+      "summary": "Validated",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00010",
+      "instruction_id": "INS-7843892",
+      "timestamp": "2026-07-16T20:58:14",
+      "stage": 4,
+      "stage_label": "Repair + Templatise",
+      "event_type": "repair_hold",
+      "summary": "Quantity ambiguity (Repair)",
+      "actor": "ai"
+    },
+    {
+      "id": "EVD-00011",
+      "instruction_id": "INS-7843892",
+      "timestamp": "2026-07-16T20:58:14",
+      "stage": 4,
+      "stage_label": "Repair + Templatise",
+      "event_type": "escalation",
+      "summary": "Routed to Exception Queue (<98%)",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00012",
+      "instruction_id": "INS-7844102",
+      "timestamp": "2026-07-16T14:22:01",
+      "stage": 1,
+      "stage_label": "Ingestion",
+      "event_type": "ingestion",
+      "summary": "API ingestion",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00013",
+      "instruction_id": "INS-7844102",
+      "timestamp": "2026-07-16T14:22:02",
+      "stage": 2,
+      "stage_label": "Detect & Classify",
+      "event_type": "classification",
+      "summary": "Classified: Redemption",
+      "actor": "ai"
+    },
+    {
+      "id": "EVD-00014",
+      "instruction_id": "INS-7844102",
+      "timestamp": "2026-07-16T14:22:03",
+      "stage": 3,
+      "stage_label": "Validate & Enrich",
+      "event_type": "auto_create",
+      "summary": "Auto Created (99.1%)",
+      "actor": "ai"
+    },
+    {
+      "id": "EVD-00015",
+      "instruction_id": "INS-7844102",
+      "timestamp": "2026-07-16T14:22:05",
+      "stage": 5,
+      "stage_label": "Routing",
+      "event_type": "routing",
+      "summary": "Routed to FA",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00016",
+      "instruction_id": "INS-7844102",
+      "timestamp": "2026-07-16T14:25:00",
+      "stage": 6,
+      "stage_label": "Reconciliation",
+      "event_type": "reconciliation_pending",
+      "summary": "Reconciliation pending",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00017",
+      "instruction_id": "INS-7844156",
+      "timestamp": "2026-07-16T11:05:00",
+      "stage": 1,
+      "stage_label": "Ingestion",
+      "event_type": "ingestion",
+      "summary": "Client template ingestion",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00018",
+      "instruction_id": "INS-7844156",
+      "timestamp": "2026-07-16T11:05:01",
+      "stage": 2,
+      "stage_label": "Detect & Classify",
+      "event_type": "classification",
+      "summary": "Classified: Transfer",
+      "actor": "ai"
+    },
+    {
+      "id": "EVD-00019",
+      "instruction_id": "INS-7844156",
+      "timestamp": "2026-07-16T11:05:02",
+      "stage": 3,
+      "stage_label": "Validate & Enrich",
+      "event_type": "auto_create",
+      "summary": "Auto Created",
+      "actor": "ai"
+    },
+    {
+      "id": "EVD-00020",
+      "instruction_id": "INS-7844156",
+      "timestamp": "2026-07-16T11:05:04",
+      "stage": 5,
+      "stage_label": "Routing",
+      "event_type": "routing",
+      "summary": "Routed to IS",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00021",
+      "instruction_id": "INS-7844201",
+      "timestamp": "2026-07-16T09:30:00",
+      "stage": 1,
+      "stage_label": "Ingestion",
+      "event_type": "ingestion",
+      "summary": "Portal ingestion",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00022",
+      "instruction_id": "INS-7844201",
+      "timestamp": "2026-07-16T09:45:00",
+      "stage": 4,
+      "stage_label": "Repair + Templatise",
+      "event_type": "human_approval",
+      "summary": "Human review approved",
+      "actor": "SCB User"
+    },
+    {
+      "id": "EVD-00023",
+      "instruction_id": "INS-7844201",
+      "timestamp": "2026-07-16T09:46:00",
+      "stage": 5,
+      "stage_label": "Routing",
+      "event_type": "routing",
+      "summary": "Routed to TA",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00024",
+      "instruction_id": "INS-7844201",
+      "timestamp": "2026-07-16T10:12:00",
+      "stage": 6,
+      "stage_label": "Reconciliation",
+      "event_type": "reconciliation_exception",
+      "summary": "Recon mismatch: amount variance $50",
+      "actor": "system"
+    },
+    {
+      "id": "EVD-00025",
+      "instruction_id": "INS-7843892",
+      "timestamp": "2026-07-16T10:30:00",
+      "stage": 4,
+      "stage_label": "Repair + Templatise",
+      "event_type": "human_approval",
+      "summary": "Approved at Repair + Templatise stage",
+      "detail": "Units corrected • Evidence attached • Reviewed by SCB User",
+      "actor": "SCB User"
+    }
+  ],
+  "config_rules": {
+    "validation": [
+      "Required fields check",
+      "Amount & quantity consistency",
+      "Duplicate detection"
+    ],
+    "repair": [
+      "Auto-fill missing settlement date",
+      "Standardise asset identifiers",
+      "Map to Golden Transaction Schema"
+    ]
+  },
+  "user": {
+    "display_name": "SCB User"
+  }
+}

@@ -1,0 +1,22 @@
+parsers:
+  pdf:
+    active: idp
+    modules:
+      idp: agentx.layers.ingest.parsers.pdf.idp
+  swift:
+    active: rfas
+    modules:
+      rfas: agentx.layers.ingest.parsers.swift.rfas
+      sstm: agentx.layers.ingest.parsers.swift.sstm
+  excel:
+    active: rtas
+    modules:
+      rtas: agentx.layers.ingest.parsers.excel.rtas
+  api:
+    active: json
+    modules:
+      json: agentx.layers.ingest.parsers.api.json
+  template:
+    active: json
+    modules:
+      json: agentx.layers.ingest.parsers.api.json

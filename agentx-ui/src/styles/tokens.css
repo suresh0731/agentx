@@ -1,0 +1,16 @@
+:root {
+  --corp-navy: #001529;
+  --corp-navy-mid: #003a8c;
+  --corp-blue: #1677ff;
+  --corp-blue-hover: #0958d9;
+  --corp-blue-light: #e6f4ff;
+  --corp-sidebar: #f0f2f5;
+  --corp-bg: #f5f7fa;
+  --corp-border: #d9d9d9;
+  --corp-text: #262626;
+  --corp-text-secondary: #595959;
+  --corp-text-muted: #8c8c8c;
+  --corp-success: #52c41a;
+  --corp-warning: #faad14;
+  --corp-danger: #ff4d4f;
+}
