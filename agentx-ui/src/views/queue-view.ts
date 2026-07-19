@@ -84,6 +84,7 @@ export class QueueView extends LightDomElement {
           <thead>
             <tr>
               <th>Instruction ID</th>
+              <th>File</th>
               <th>Source</th>
               <th>Intent</th>
               <th>Destination</th>
@@ -96,6 +97,7 @@ export class QueueView extends LightDomElement {
             ${this.rows.map((r) => html`
               <tr class="cursor-pointer" @click=${() => this.open(r.ref)}>
                 <td class="mono font-medium">${r.ref}</td>
+                <td class="truncate" style="max-width:200px" title=${r.filename || ''}>${r.filename || '—'}</td>
                 <td>${r.source}</td>
                 <td>${r.intent || '—'}</td>
                 <td>${r.dest || '—'}</td>

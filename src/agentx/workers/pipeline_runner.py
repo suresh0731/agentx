@@ -89,6 +89,7 @@ class PipelineRunner:
 
         return InstructionRow(
             instruction_id=inst["instruction_id"],
+            filename=filename or None,
             intent=inst.get("intent"),
             channel=normalize_source_label(inst.get("channel"), source_type),
             routing_target=inst.get("destination"),
@@ -195,7 +196,7 @@ class PipelineRunner:
         existing = await inst_repo.get(row.instruction_id)
         if existing:
             for field in (
-                "intent", "channel", "routing_target", "confidence", "status", "journey",
+                "filename", "intent", "channel", "routing_target", "confidence", "status", "journey",
                 "golden_schema", "intake_json", "party", "amount_display", "field_confidences",
                 "decisions", "repair_notes", "timeline", "in_queue", "is_exception", "exception",
                 "workbench_stage",
@@ -285,7 +286,7 @@ class PipelineRunner:
                         processing=True,
                         node_name=node_name,
                     )
-        except Exception:
+        except Exception as exc:
             logger.exception(
                 "Pipeline failed: instruction_id=%s filename=%s source_type=%s thread_id=%s",
                 instruction_id,
@@ -293,12 +294,15 @@ class PipelineRunner:
                 source_type,
                 thread_id,
             )
+            issue = f"Ingestion failed: {filename}" if filename else "Pipeline execution failed"
             await InstructionRepository(self.session).update(
                 instruction_id,
                 status="Failed",
+                filename=filename or None,
+                party=filename or None,
                 journey={"failed_step": 1, "completed_through": 0},
                 is_exception=True,
-                exception={"issue": "Pipeline execution failed", "failed_step": 1, "priority": "HIGH"},
+                exception={"issue": issue, "failed_step": 1, "priority": "HIGH"},
             )
             if broadcast:
                 row = await InstructionRepository(self.session).get(instruction_id)

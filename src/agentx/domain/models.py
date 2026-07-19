@@ -14,6 +14,7 @@ class JourneyState(BaseModel):
 
 class InstructionState(BaseModel):
     instruction_id: str
+    filename: str = ""
     channel: str = ""
     source_type: str = ""
     intake_json: dict[str, Any] = Field(default_factory=dict)

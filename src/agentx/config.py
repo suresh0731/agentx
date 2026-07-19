@@ -37,7 +37,11 @@ class Settings(BaseSettings):
     idp_doc_type: str = "contract"
     idp_ocr_model: str = "ocr_mineru_v1"
     idp_cert_dir: str = ""
+    idp_token_jar: str = "token-tool-candidate_20241105.4.jar"
+    idp_keystore: str = "keystore.jks"
+    idp_truststore: str = "sstm_rt_np.jks"
     idp_keystore_password: str = "scb@123"
+    idp_truststore_password: str = ""
     idp_verify_ssl: bool = False
     idp_request_timeout_seconds: int = 360
 

@@ -45,6 +45,7 @@ class IngestAgent:
         )
         return InstructionState(
             instruction_id=instruction_id,
+            filename=filename,
             channel=normalize_source_label(intake.source_channel, source_type),
             source_type=source_type,
             intake_json=intake.model_dump(),

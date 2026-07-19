@@ -73,9 +73,9 @@ export interface ChannelStat { name: string; volume: number; stp_rate: number; i
 export interface IntentStat { intent: string; stp_rate: number; }
 export interface Journey { state?: string; completedThrough?: number; activeStep?: number; heldStep?: number; failedStep?: number; }
 export interface InstructionSummary {
-  ref: string; source: string; intent: string; dest: string; conf: string; confValue: number; status: string; journey: Journey;
+  ref: string; filename: string; source: string; intent: string; dest: string; conf: string; confValue: number; status: string; journey: Journey;
 }
-export interface ExceptionSummary { ref: string; issue: string; failed_step: number; priority: string; journey: Journey; }
+export interface ExceptionSummary { ref: string; filename: string; issue: string; failed_step: number; priority: string; journey: Journey; }
 export interface InstructionDetail {
   ref: string; meta?: string; stage_label?: string; confidence: number; golden_schema?: Record<string, unknown>;
   intake?: { extraction_result?: Record<string, unknown>; field_confidences?: Record<string, number> };

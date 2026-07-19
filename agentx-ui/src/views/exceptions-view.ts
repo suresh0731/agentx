@@ -52,6 +52,7 @@ export class ExceptionsView extends LightDomElement {
           <thead>
             <tr>
               <th style="padding-left:20px;">Instruction ID</th>
+              <th>File</th>
               <th>Issue</th>
               <th style="min-width:260px">Where It Stopped</th>
               <th class="center">Priority</th>
@@ -62,6 +63,7 @@ export class ExceptionsView extends LightDomElement {
             ${this.rows.map((r) => html`
               <tr class="cursor-pointer" @click=${() => this.open(r.ref)}>
                 <td style="padding-left:20px;"><strong class="mono">${r.ref}</strong></td>
+                <td class="truncate" style="max-width:200px" title=${r.filename || ''}>${r.filename || '—'}</td>
                 <td class="text-amber-400">${r.issue}</td>
                 <td><ax-step-tracker .journey=${r.journey}></ax-step-tracker></td>
                 <td class="center">

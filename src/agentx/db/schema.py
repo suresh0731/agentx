@@ -13,6 +13,7 @@ class InstructionRow(Base):
     __tablename__ = "instructions"
 
     instruction_id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    filename: Mapped[str | None] = mapped_column(String(256))
     intent: Mapped[str | None] = mapped_column(String(32))
     channel: Mapped[str | None] = mapped_column(String(64))
     routing_target: Mapped[str | None] = mapped_column(String(8))

@@ -21,6 +21,7 @@ def journey_to_api(journey: dict) -> dict:
 def instruction_summary(row: InstructionRow) -> dict:
     return {
         "ref": row.instruction_id,
+        "filename": row.filename or "",
         "source": normalize_source_label(row.channel, row.source_type),
         "intent": row.intent,
         "dest": row.routing_target,
@@ -91,6 +92,7 @@ def exception_summary(row: InstructionRow) -> dict:
     exc = row.exception or {}
     return {
         "ref": row.instruction_id,
+        "filename": row.filename or "",
         "issue": exc.get("issue", "Exception"),
         "failed_step": exc.get("failed_step", 0),
         "priority": exc.get("priority", "MEDIUM"),

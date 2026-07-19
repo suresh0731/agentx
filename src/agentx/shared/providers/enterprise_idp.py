@@ -22,21 +22,29 @@ def _cert_dir() -> Path:
     return Path(__file__).resolve().parent / "sstm_rt_np"
 
 
+def _resolve_cert_path(filename: str) -> Path:
+    path = Path(filename)
+    if path.is_absolute():
+        return path
+    return _cert_dir() / filename
+
+
 def _generate_token_sync() -> dict[str, Any]:
     cert_dir = _cert_dir()
-    token_jar = cert_dir / "token-tool-candidate_20241105.4.jar"
-    keystore = cert_dir / "keystore.jks"
-    truststore = cert_dir / "sstm_rt_np.jks"
-    password = settings.idp_keystore_password
+    token_jar = _resolve_cert_path(settings.idp_token_jar)
+    keystore = _resolve_cert_path(settings.idp_keystore)
+    truststore = _resolve_cert_path(settings.idp_truststore)
+    keystore_password = settings.idp_keystore_password
+    truststore_password = settings.idp_truststore_password or keystore_password
 
     cmd = [
         "java",
         "-Djavax.net.ssl.keyStoreType=JKS",
         f"-Djavax.net.ssl.keyStore={keystore}",
-        f"-Djavax.net.ssl.keyStorePassword={password}",
+        f"-Djavax.net.ssl.keyStorePassword={keystore_password}",
         "-Djavax.net.ssl.trustStoreType=JKS",
         f"-Djavax.net.ssl.trustStore={truststore}",
-        f"-Djavax.net.ssl.trustStorePassword={password}",
+        f"-Djavax.net.ssl.trustStorePassword={truststore_password}",
         "-jar",
         str(token_jar),
         settings.idp_token_url,
