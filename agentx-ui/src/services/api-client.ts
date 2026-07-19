@@ -77,7 +77,8 @@ export interface InstructionSummary {
 }
 export interface ExceptionSummary { ref: string; issue: string; failed_step: number; priority: string; journey: Journey; }
 export interface InstructionDetail {
-  ref: string; meta?: string; stage_label?: string; confidence: number; golden_schema?: object;
+  ref: string; meta?: string; stage_label?: string; confidence: number; golden_schema?: Record<string, unknown>;
+  intake?: { extraction_result?: Record<string, unknown>; field_confidences?: Record<string, number> };
   party?: string; account?: string; settlement?: string; amount?: string; units?: string;
   decisions?: string[]; repair_notes?: string[]; field_confidences?: Record<string, number>;
   timeline?: object[]; journey: Journey; recon_status?: string; recon_detail?: string;
@@ -85,8 +86,10 @@ export interface InstructionDetail {
 export interface WorkbenchCard {
   id: string; ref: string; stage: string; intent: string; source: string; party: string; amount: string;
   confidence: number; risk: number; riskLabel: string; slaMinutes: number; slaRemaining: number;
-  assignee: string; journey: Journey; fields: Record<string, number>; findings: string[];
-  explain: string; timeline: string[]; comments: { user: string; text: string; time: string }[];
+  assignee: string; journey: Journey; fields: Record<string, number>;
+  golden_schema?: Record<string, unknown>;
+  intake?: { extraction_result?: Record<string, unknown>; field_confidences?: Record<string, number> };
+  findings: string[]; explain: string; timeline: string[]; comments: { user: string; text: string; time: string }[];
 }
 export interface WorkbenchInsights {
   total: number; in_review: number; sla_at_risk: number; sla_breached: number;

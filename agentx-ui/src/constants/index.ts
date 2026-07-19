@@ -1,3 +1,36 @@
+export const IDP_FIELDS = [
+  'country',
+  'transaction_date',
+  'transaction_type',
+  'switch_transaction',
+  'reference_no',
+  'sid',
+  'fundcd_type',
+  'fund_code',
+  'fund_currency',
+  'amount_nominal',
+  'amount_unit',
+  'amount_all_units',
+  'sa_reference_no',
+  'investor_account_name',
+] as const;
+
+export function formatFieldLabel(key: string): string {
+  return key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+export function heatClass(score: number): string {
+  if (score >= 95) return 'heat-high';
+  if (score >= 80) return 'heat-med';
+  if (score > 0) return 'heat-low';
+  return '';
+}
+
+export function formatFieldValue(value: unknown): string {
+  if (value === null || value === undefined || value === '') return '—';
+  return String(value);
+}
+
 export const JOURNEY_STEPS = [
   { short: 'Ingest', full: 'Ingestion', icon: 'fa-inbox' },
   { short: 'Detect', full: 'Detect & Classify', icon: 'fa-search' },

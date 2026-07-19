@@ -7,30 +7,54 @@ End-to-end demo: LangGraph agent pipeline + Lit UI + SQLite in-memory seeded dat
 From the project root on Windows:
 
 ```powershell
-# First time only — installs Python and npm dependencies
-.\scripts\start-local.ps1 -Setup
+# First time only — creates .venv and installs dependencies
+.\scripts\setup.ps1
 
 # Start backend + UI in separate console windows
 .\scripts\start-local.ps1
 ```
 
-Or double-click `start-local.bat`.
+Or double-click `setup.bat` then `start-local.bat`.
 
 Open http://localhost:5173
 
 ## Manual Start (Windows)
 
-You need **two PowerShell terminals** — one for the backend, one for the UI. Start the backend first.
+You need **two terminals** — one for the backend, one for the UI. Start the backend first.
+
+Use **PowerShell** or **CMD** — the commands differ slightly for setting environment variables.
 
 ### One-time setup
 
-**Backend (Python)**
+> **Important:** `pip install` does **not** create `.venv`. You must create the virtual environment first with `python -m venv .venv`, then install packages **into** it.
+
+**Option A — setup script (recommended)**
 
 ```powershell
 cd agent-ingestion
-python -m venv .venv
-.\.venv\Scripts\pip install -r requirements.txt
+.\scripts\setup.ps1
 ```
+
+**Option B — manual commands**
+
+**Backend (Python)** — run from the project root (`agent-ingestion`):
+
+```powershell
+cd agent-ingestion
+
+# Step 1: create the virtual environment (required before pip install)
+python -m venv .venv
+
+# Step 2: verify .venv was created
+Test-Path .\.venv\Scripts\python.exe   # should print True
+
+# Step 3: install packages into .venv (not globally)
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -e .
+```
+
+The last command (`pip install -e .`) registers the `agentx` package so you do **not** need to set `PYTHONPATH` every time.
 
 **Frontend (Node)**
 
@@ -43,9 +67,28 @@ npm install
 
 **Terminal 1 — Backend (port 8001)**
 
+After setup (`pip install -e .`), you can start uvicorn directly — no `PYTHONPATH` needed:
+
+```cmd
+cd agent-ingestion
+.\.venv\Scripts\uvicorn agentx.main:app --host 127.0.0.1 --port 8001 --reload
+```
+
+If you skipped `pip install -e .`, set `PYTHONPATH` first:
+
+PowerShell:
+
 ```powershell
 cd agent-ingestion
 $env:PYTHONPATH = "src"
+.\.venv\Scripts\uvicorn agentx.main:app --host 127.0.0.1 --port 8001 --reload
+```
+
+CMD:
+
+```cmd
+cd agent-ingestion
+set PYTHONPATH=src
 .\.venv\Scripts\uvicorn agentx.main:app --host 127.0.0.1 --port 8001 --reload
 ```
 
@@ -58,11 +101,11 @@ INFO:     Uvicorn running on http://127.0.0.1:8001
 
 Verify the backend:
 
-```powershell
-Invoke-RestMethod http://127.0.0.1:8001/health
+```cmd
+curl http://127.0.0.1:8001/health
 ```
 
-Expected response: `status = ok`
+Expected response includes `"status":"ok"`.
 
 **Terminal 2 — UI (port 5173)**
 
@@ -92,6 +135,18 @@ Keep both terminals open while working. Press `Ctrl+C` in each terminal to stop.
 
 ### Common issues
 
+**`.venv` folder not created**
+
+`pip install` alone does not create a virtual environment. Run this first:
+
+```powershell
+python -m venv .venv
+```
+
+Or use the setup script: `.\scripts\setup.ps1`
+
+If `python` opens the Microsoft Store instead of running Python, install Python from https://www.python.org/downloads/ and enable **Add python.exe to PATH**, then open a new terminal.
+
 **Port already in use (`10048` on 8001 or 5173)**
 
 Another process is using the port. Close the old terminal or stop the process:
@@ -101,11 +156,20 @@ netstat -ano | findstr :8001
 taskkill /PID <pid> /F
 ```
 
-**`ModuleNotFoundError: agentx`**
+**`ModuleNotFoundError: No module named 'agentx'`**
 
-Set `PYTHONPATH` before starting uvicorn:
+Python cannot find the `src/agentx` package. Fix with **one** of these:
+
+```cmd
+REM Option 1 (recommended, one-time) — install package into .venv
+.\.venv\Scripts\python.exe -m pip install -e .
+
+REM Option 2 — set PYTHONPATH each time before uvicorn (CMD)
+set PYTHONPATH=src
+```
 
 ```powershell
+# Option 2 — set PYTHONPATH each time before uvicorn (PowerShell)
 $env:PYTHONPATH = "src"
 ```
 
@@ -113,8 +177,8 @@ $env:PYTHONPATH = "src"
 
 Confirm the backend is running:
 
-```powershell
-Invoke-RestMethod http://127.0.0.1:8001/health
+```cmd
+curl http://127.0.0.1:8001/health
 ```
 
 ## Architecture

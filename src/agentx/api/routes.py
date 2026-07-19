@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, WebSocket, WebSocketDisconnect
@@ -20,6 +21,8 @@ from agentx.layers.analytics.service import AnalyticsService
 from agentx.layers.ops_assistant.agent import OpsAssistantAgent
 from agentx.layers.orchestrator.graph import build_graph
 from agentx.workers.pipeline_runner import PipelineRunner
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1")
 
@@ -141,14 +144,17 @@ async def get_instruction(instruction_id: str, session: AsyncSession = Depends(g
 
 @router.post("/instructions/{instruction_id}/approve")
 async def approve_instruction(instruction_id: str, body: ApproveBody, session: AsyncSession = Depends(get_session)):
+    logger.info("Approve requested: instruction_id=%s note=%s", instruction_id, body.note or "(none)")
     repo = InstructionRepository(session)
     row = await repo.get(instruction_id)
     if not row:
+        logger.warning("Approve failed — instruction not found: %s", instruction_id)
         raise HTTPException(404, "Instruction not found")
     wb = await WorkbenchRepository(session).get_by_ref(instruction_id)
     if wb:
         wb.stage = "approved"
         await session.commit()
+        logger.info("Workbench stage set to approved: instruction_id=%s request_id=%s", instruction_id, wb.id)
     await ws_manager.broadcast({"type": "instruction_updated", "id": instruction_id})
     return {"ok": True, "ref": instruction_id, "message": f"{instruction_id} approved"}
 
@@ -156,7 +162,12 @@ async def approve_instruction(instruction_id: str, body: ApproveBody, session: A
 @router.get("/workbench/requests")
 async def list_workbench(session: AsyncSession = Depends(get_session)):
     rows = await WorkbenchRepository(session).list_all()
-    return [workbench_card(r) for r in rows]
+    inst_repo = InstructionRepository(session)
+    cards = []
+    for row in rows:
+        instruction = await inst_repo.get(row.ref)
+        cards.append(workbench_card(row, instruction))
+    return cards
 
 
 @router.get("/workbench/requests/{request_id}")
@@ -164,7 +175,8 @@ async def get_workbench(request_id: str, session: AsyncSession = Depends(get_ses
     row = await WorkbenchRepository(session).get(request_id)
     if not row:
         raise HTTPException(404, "Request not found")
-    return workbench_card(row)
+    instruction = await InstructionRepository(session).get(row.ref)
+    return workbench_card(row, instruction)
 
 
 @router.patch("/workbench/requests/{request_id}/stage")
@@ -173,7 +185,8 @@ async def update_stage(request_id: str, body: StageUpdate, session: AsyncSession
     if not row:
         raise HTTPException(404, "Request not found")
     await ws_manager.broadcast({"type": "workbench_updated", "id": request_id})
-    return workbench_card(row)
+    instruction = await InstructionRepository(session).get(row.ref)
+    return workbench_card(row, instruction)
 
 
 @router.post("/workbench/requests/{request_id}/comments")
@@ -181,7 +194,8 @@ async def add_comment(request_id: str, body: CommentBody, session: AsyncSession 
     row = await WorkbenchRepository(session).add_comment(request_id, body.model_dump())
     if not row:
         raise HTTPException(404, "Request not found")
-    return workbench_card(row)
+    instruction = await InstructionRepository(session).get(row.ref)
+    return workbench_card(row, instruction)
 
 
 @router.get("/workbench/insights")
@@ -237,9 +251,20 @@ async def ingest(
     source_type: str = Form("api"),
     session: AsyncSession = Depends(get_session),
 ):
+    filename = file.filename or ""
+    logger.info("API ingest request: filename=%s source_type=%s", filename or "(unnamed)", source_type)
     raw = await file.read()
     runner = PipelineRunner(get_graph(), session)
-    result = await runner.run(raw, source_type, file.filename or "")
+    result = await runner.run(raw, source_type, filename)
+    if result.get("success"):
+        logger.info(
+            "API ingest complete: instruction_id=%s status=%s needs_human_review=%s",
+            result.get("instruction_id"),
+            result.get("status"),
+            result.get("needs_human_review"),
+        )
+    else:
+        logger.error("API ingest failed: filename=%s error=%s", filename, result.get("error"))
     await ws_manager.broadcast({"type": "instruction_updated", "id": result["instruction_id"]})
     return result
 

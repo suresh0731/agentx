@@ -84,18 +84,29 @@ function Ensure-PythonVenv {
     }
 
     if (-not (Test-Path $VenvPython)) {
-        if (-not (Test-Command "python")) {
-            throw "Python is not on PATH. Install Python 3.11+ and try again."
+        Write-Step ".venv not found — running setup"
+        & (Join-Path $PSScriptRoot "setup.ps1")
+        if (-not (Test-Path $VenvPython)) {
+            throw ".venv was not created. Run .\scripts\setup.ps1 manually and check for errors."
         }
-
-        Write-Step "Creating virtual environment at .venv"
-        & python -m venv $VenvDir
+        return
     }
 
-    if ($Setup -or -not (Test-Path $VenvUvicorn)) {
+    if ($Setup) {
+        Write-Step "Re-installing Python dependencies (-Setup)"
+        & $VenvPython -m pip install --upgrade pip
+        if ($LASTEXITCODE -ne 0) { throw "pip upgrade failed." }
+        & $VenvPython -m pip install -r $Requirements
+        if ($LASTEXITCODE -ne 0) { throw "pip install failed." }
+        return
+    }
+
+    if (-not (Test-Path $VenvUvicorn)) {
         Write-Step "Installing Python dependencies"
         & $VenvPython -m pip install --upgrade pip
+        if ($LASTEXITCODE -ne 0) { throw "pip upgrade failed." }
         & $VenvPython -m pip install -r $Requirements
+        if ($LASTEXITCODE -ne 0) { throw "pip install failed." }
     }
 }
 

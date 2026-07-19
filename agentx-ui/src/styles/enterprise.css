@@ -568,7 +568,7 @@
         .conf-fill-high { background: linear-gradient(90deg, #0958d9, #1677ff); }
         .conf-fill-med { background: linear-gradient(90deg, #d48806, #faad14); }
         .conf-fill-low { background: linear-gradient(90deg, #cf1322, #ff4d4f); }
-        .heatmap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .heatmap-cell { border-radius: 8px; padding: 8px 6px; text-align: center; font-size: 10px; border: 1px solid transparent; }
         .heat-high { background: var(--corp-blue-light); border-color: #91caff; color: var(--corp-navy-mid); }
         .heat-med { background: #fffbe6; border-color: #ffe58f; color: #d48806; }

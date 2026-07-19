@@ -5,10 +5,12 @@ import { api, type KpiTile, type OpsMetric } from '../services/api-client.js';
 
 const CHANNEL_ICONS: Record<string, string> = {
   SWIFT: 'fa-file-code',
-  'Email + PDF': 'fa-envelope',
-  'Portals & Files': 'fa-folder',
+  PDF: 'fa-file-pdf',
+  Email: 'fa-envelope',
+  Portal: 'fa-folder',
   API: 'fa-plug',
-  'Client Templates': 'fa-file-lines',
+  'Client Template': 'fa-file-lines',
+  Excel: 'fa-file-excel',
 };
 
 @customElement('dashboard-view')

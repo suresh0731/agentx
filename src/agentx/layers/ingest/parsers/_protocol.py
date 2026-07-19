@@ -12,6 +12,10 @@ class IntakeJSON(BaseModel):
     normalized_language: str = "en"
     party: dict[str, Any] = Field(default_factory=dict)
     transaction: dict[str, Any] = Field(default_factory=dict)
+    extraction_result: dict[str, Any] = Field(default_factory=dict)
+    field_confidences: dict[str, float] = Field(default_factory=dict)
+    idp_raw: dict[str, Any] = Field(default_factory=dict)
+    document_confidence_score: float | None = None
     extracted_fields: list[dict[str, Any]] = Field(default_factory=list)
     raw_excerpt: str = ""
     parser_used: str = ""

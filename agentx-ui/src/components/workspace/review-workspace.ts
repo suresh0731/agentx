@@ -66,7 +66,7 @@ export class ReviewWorkspace extends LightDomElement {
             <div class="wireframe-card rounded-2xl p-5" style="grid-column:span 2;">
               <div class="section-label mb-3">Request Summary</div>
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div><div class="text-xs text-slate-400">Party</div><div class="font-medium">${c.party}</div></div>
+                <div><div class="text-xs text-slate-400">Investor Name</div><div class="font-medium">${c.party}</div></div>
                 <div><div class="text-xs text-slate-400">Amount</div><div class="font-medium">${c.amount}</div></div>
                 <div><div class="text-xs text-slate-400">Source</div><div class="font-medium">${c.source}</div></div>
                 <div><div class="text-xs text-slate-400">Assignee</div><div class="font-medium">${c.assignee}</div></div>

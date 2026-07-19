@@ -171,13 +171,13 @@
       "stp_rate": 98.2
     },
     {
-      "name": "Email + PDF",
-      "icon": "fa-envelope",
+      "name": "PDF",
+      "icon": "fa-file-pdf",
       "volume": 847,
       "stp_rate": 94.1
     },
     {
-      "name": "Portals & Files",
+      "name": "Portal",
       "icon": "fa-folder",
       "volume": 312,
       "stp_rate": 96.8
@@ -189,7 +189,7 @@
       "stp_rate": 99.1
     },
     {
-      "name": "Client Templates",
+      "name": "Client Template",
       "icon": "fa-file-lines",
       "volume": 89,
       "stp_rate": 97.5
@@ -244,22 +244,100 @@
       "recon_status": "matched",
       "recon_detail": "Settlement ref SET-8847291 confirmed",
       "golden_schema": {
-        "instructionId": "INS-7843921",
-        "intent": "SUBSCRIPTION",
-        "currency": "INR",
-        "isin": "INF109K01VQ1",
-        "party": "Priya Sharma",
-        "accountId": "INV-8847291",
-        "amount": 250000,
-        "quantity": 2793.74,
-        "settlementDate": "2026-07-18",
-        "routingTarget": "TA"
+        "country": "India",
+        "transaction_date": "2026-07-18",
+        "transaction_type": "SUBSCRIPTION",
+        "switch_transaction": "NO",
+        "reference_no": "IA7843921",
+        "sid": null,
+        "fundcd_type": "EQUITY FUND",
+        "fund_code": "INF109K01VQ1",
+        "fund_currency": "INR",
+        "amount_nominal": "₹2,50,000",
+        "amount_unit": 2793.74,
+        "amount_all_units": "NOT APPLICABLE",
+        "sa_reference_no": "INV-8847291",
+        "investor_account_name": "Priya Sharma"
       },
       "intake": {
         "source_type": "SWIFT",
         "source_detail": "SWIFT MT103",
         "message_type": "103",
-        "reference": "FUND-2026-0716-88421"
+        "reference": "FUND-2026-0716-88421",
+        "extraction_result": {
+          "country": {
+            "value": "India",
+            "confidence_score": 99
+          },
+          "transaction_date": {
+            "value": "2026-07-18",
+            "confidence_score": 97
+          },
+          "transaction_type": {
+            "value": "SUBSCRIPTION",
+            "confidence_score": 99
+          },
+          "switch_transaction": {
+            "value": "NO",
+            "confidence_score": 95
+          },
+          "reference_no": {
+            "value": "IA7843921",
+            "confidence_score": 97
+          },
+          "sid": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "fundcd_type": {
+            "value": "EQUITY FUND",
+            "confidence_score": 99
+          },
+          "fund_code": {
+            "value": "INF109K01VQ1",
+            "confidence_score": 98
+          },
+          "fund_currency": {
+            "value": "INR",
+            "confidence_score": 99
+          },
+          "amount_nominal": {
+            "value": "₹2,50,000",
+            "confidence_score": 98
+          },
+          "amount_unit": {
+            "value": 2793.74,
+            "confidence_score": 0
+          },
+          "amount_all_units": {
+            "value": "NOT APPLICABLE",
+            "confidence_score": 90
+          },
+          "sa_reference_no": {
+            "value": "INV-8847291",
+            "confidence_score": 97
+          },
+          "investor_account_name": {
+            "value": "Priya Sharma",
+            "confidence_score": 96
+          }
+        },
+        "field_confidences": {
+          "country": 99.0,
+          "transaction_date": 97.0,
+          "transaction_type": 99.0,
+          "switch_transaction": 95.0,
+          "reference_no": 97.0,
+          "sid": 0.0,
+          "fundcd_type": 99.0,
+          "fund_code": 98.0,
+          "fund_currency": 99.0,
+          "amount_nominal": 98.0,
+          "amount_unit": 0.0,
+          "amount_all_units": 90.0,
+          "sa_reference_no": 97.0,
+          "investor_account_name": 96.0
+        }
       },
       "party": "Priya Sharma",
       "account": "INV-8847291",
@@ -282,13 +360,20 @@
         "Templatised to Golden Schema"
       ],
       "field_confidences": {
-        "ISIN": 99,
-        "Fund": 98,
-        "Investor": 97,
-        "Amount": 100,
-        "Date": 99,
-        "Account": 96,
-        "Currency": 99
+        "country": 99.0,
+        "transaction_date": 97.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 0.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "timeline": [
         {
@@ -329,7 +414,7 @@
     {
       "instruction_id": "INS-7843892",
       "intent": "Switch",
-      "channel": "Email + PDF",
+      "channel": "PDF",
       "routing_target": "TA",
       "confidence": 87.2,
       "status": "Exception Queue",
@@ -346,21 +431,100 @@
       "recon_status": "pending",
       "recon_detail": "Awaiting approval before routing",
       "golden_schema": {
-        "instructionId": "INS-7843892",
-        "intent": "SWITCH",
-        "currency": "INR",
-        "party": "Rajesh Kumar",
-        "fromAsset": "HDFC Top 100",
-        "toAsset": "HDFC Mid-Cap",
-        "amount": 125000,
-        "quantity": 1012.5,
-        "settlementDate": "2026-07-20"
+        "country": "United Arab Emirates",
+        "transaction_date": "2026-07-20",
+        "transaction_type": "SWITCH",
+        "switch_transaction": "YES",
+        "reference_no": "IA7843892",
+        "sid": null,
+        "fundcd_type": "EQUITY FUND",
+        "fund_code": "AL MAL UAE EQUITY FUND",
+        "fund_currency": "INR",
+        "amount_nominal": "₹1,25,000",
+        "amount_unit": 1012.5,
+        "amount_all_units": "NOT APPLICABLE",
+        "sa_reference_no": "INV-3928471",
+        "investor_account_name": "Rajesh Kumar"
       },
       "intake": {
-        "source_type": "Email + PDF",
-        "source_detail": "Email + PDF",
+        "source_type": "PDF",
+        "source_detail": "PDF",
         "subject": "Switch Request - Rajesh Kumar",
-        "language_detected": "English"
+        "language_detected": "English",
+        "extraction_result": {
+          "country": {
+            "value": "United Arab Emirates",
+            "confidence_score": 99
+          },
+          "transaction_date": {
+            "value": "2026-07-20",
+            "confidence_score": 85
+          },
+          "transaction_type": {
+            "value": "SWITCH",
+            "confidence_score": 99
+          },
+          "switch_transaction": {
+            "value": "YES",
+            "confidence_score": 95
+          },
+          "reference_no": {
+            "value": "IA7843892",
+            "confidence_score": 97
+          },
+          "sid": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "fundcd_type": {
+            "value": "EQUITY FUND",
+            "confidence_score": 99
+          },
+          "fund_code": {
+            "value": "AL MAL UAE EQUITY FUND",
+            "confidence_score": 98
+          },
+          "fund_currency": {
+            "value": "INR",
+            "confidence_score": 99
+          },
+          "amount_nominal": {
+            "value": "₹1,25,000",
+            "confidence_score": 98
+          },
+          "amount_unit": {
+            "value": 1012.5,
+            "confidence_score": 72
+          },
+          "amount_all_units": {
+            "value": "NOT APPLICABLE",
+            "confidence_score": 90
+          },
+          "sa_reference_no": {
+            "value": "INV-3928471",
+            "confidence_score": 97
+          },
+          "investor_account_name": {
+            "value": "Rajesh Kumar",
+            "confidence_score": 96
+          }
+        },
+        "field_confidences": {
+          "country": 99.0,
+          "transaction_date": 85.0,
+          "transaction_type": 99.0,
+          "switch_transaction": 95.0,
+          "reference_no": 97.0,
+          "sid": 0.0,
+          "fundcd_type": 99.0,
+          "fund_code": 98.0,
+          "fund_currency": 99.0,
+          "amount_nominal": 98.0,
+          "amount_unit": 72.0,
+          "amount_all_units": 90.0,
+          "sa_reference_no": 97.0,
+          "investor_account_name": 96.0
+        }
       },
       "party": "Rajesh Kumar",
       "account": "INV-3928471",
@@ -382,14 +546,20 @@
         "Awaiting human confirmation"
       ],
       "field_confidences": {
-        "ISIN": 92,
-        "Fund": 88,
-        "Investor": 95,
-        "Amount": 91,
-        "Date": 85,
-        "Account": 94,
-        "Quantity": 72,
-        "Currency": 98
+        "country": 99.0,
+        "transaction_date": 85.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 72.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "timeline": [
         {
@@ -447,19 +617,99 @@
       "recon_status": "in_progress",
       "recon_detail": "Awaiting FA settlement confirmation",
       "golden_schema": {
-        "instructionId": "INS-7844102",
-        "intent": "REDEMPTION",
-        "currency": "SGD",
-        "isin": "SG9999012345",
-        "party": "Tan Wei Ming",
-        "amount": 50000,
-        "quantity": 4120.0,
-        "routingTarget": "FA"
+        "country": "India",
+        "transaction_date": "2026-07-17",
+        "transaction_type": "REDEMPTION",
+        "switch_transaction": "NO",
+        "reference_no": "IA7844102",
+        "sid": null,
+        "fundcd_type": "EQUITY FUND",
+        "fund_code": "SG9999012345",
+        "fund_currency": "SGD",
+        "amount_nominal": "SGD 50,000",
+        "amount_unit": 4120.0,
+        "amount_all_units": "NOT APPLICABLE",
+        "sa_reference_no": "INV-SG-4421",
+        "investor_account_name": "Tan Wei Ming"
       },
       "intake": {
         "source_type": "API",
         "source_detail": "API /v1/instructions",
-        "client": "Apex Capital SG"
+        "client": "Apex Capital SG",
+        "extraction_result": {
+          "country": {
+            "value": "India",
+            "confidence_score": 99
+          },
+          "transaction_date": {
+            "value": "2026-07-17",
+            "confidence_score": 97
+          },
+          "transaction_type": {
+            "value": "REDEMPTION",
+            "confidence_score": 99
+          },
+          "switch_transaction": {
+            "value": "NO",
+            "confidence_score": 95
+          },
+          "reference_no": {
+            "value": "IA7844102",
+            "confidence_score": 97
+          },
+          "sid": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "fundcd_type": {
+            "value": "EQUITY FUND",
+            "confidence_score": 99
+          },
+          "fund_code": {
+            "value": "SG9999012345",
+            "confidence_score": 98
+          },
+          "fund_currency": {
+            "value": "SGD",
+            "confidence_score": 99
+          },
+          "amount_nominal": {
+            "value": "SGD 50,000",
+            "confidence_score": 98
+          },
+          "amount_unit": {
+            "value": 4120.0,
+            "confidence_score": 0
+          },
+          "amount_all_units": {
+            "value": "NOT APPLICABLE",
+            "confidence_score": 90
+          },
+          "sa_reference_no": {
+            "value": "INV-SG-4421",
+            "confidence_score": 97
+          },
+          "investor_account_name": {
+            "value": "Tan Wei Ming",
+            "confidence_score": 96
+          }
+        },
+        "field_confidences": {
+          "country": 99.0,
+          "transaction_date": 97.0,
+          "transaction_type": 99.0,
+          "switch_transaction": 95.0,
+          "reference_no": 97.0,
+          "sid": 0.0,
+          "fundcd_type": 99.0,
+          "fund_code": 98.0,
+          "fund_currency": 99.0,
+          "amount_nominal": 98.0,
+          "amount_unit": 0.0,
+          "amount_all_units": 90.0,
+          "sa_reference_no": 97.0,
+          "investor_account_name": 96.0
+        }
       },
       "party": "Tan Wei Ming",
       "account": "INV-SG-4421",
@@ -479,13 +729,20 @@
         "No repair required"
       ],
       "field_confidences": {
-        "ISIN": 96,
-        "Fund": 94,
-        "Investor": 98,
-        "Amount": 97,
-        "Date": 93,
-        "Account": 99,
-        "Currency": 100
+        "country": 99.0,
+        "transaction_date": 97.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 0.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "timeline": [
         {
@@ -521,7 +778,7 @@
     {
       "instruction_id": "INS-7844156",
       "intent": "Transfer",
-      "channel": "Client Templates",
+      "channel": "Client Template",
       "routing_target": "IS",
       "confidence": 98.6,
       "status": "Routed",
@@ -538,18 +795,99 @@
       "recon_status": "pending",
       "recon_detail": "Reconciliation scheduled post-settlement",
       "golden_schema": {
-        "instructionId": "INS-7844156",
-        "intent": "TRANSFER",
-        "currency": "GBP",
-        "party": "James Mitchell",
-        "fromAccount": "INV-UK-9912",
-        "toAccount": "INV-UK-8844",
-        "routingTarget": "IS"
+        "country": "India",
+        "transaction_date": "2026-07-18",
+        "transaction_type": "TRANSFER",
+        "switch_transaction": "NO",
+        "reference_no": "IA7844156",
+        "sid": null,
+        "fundcd_type": "EQUITY FUND",
+        "fund_code": "AL MAL UAE EQUITY FUND",
+        "fund_currency": "GBP",
+        "amount_nominal": "GBP —",
+        "amount_unit": null,
+        "amount_all_units": "NOT APPLICABLE",
+        "sa_reference_no": "INV-UK-9912 → INV-UK-8844",
+        "investor_account_name": "James Mitchell"
       },
       "intake": {
-        "source_type": "Client Templates",
+        "source_type": "Client Template",
         "source_detail": "Client Template — Standard Transfer v3",
-        "template_match": 98.6
+        "template_match": 98.6,
+        "extraction_result": {
+          "country": {
+            "value": "India",
+            "confidence_score": 99
+          },
+          "transaction_date": {
+            "value": "2026-07-18",
+            "confidence_score": 97
+          },
+          "transaction_type": {
+            "value": "TRANSFER",
+            "confidence_score": 99
+          },
+          "switch_transaction": {
+            "value": "NO",
+            "confidence_score": 95
+          },
+          "reference_no": {
+            "value": "IA7844156",
+            "confidence_score": 97
+          },
+          "sid": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "fundcd_type": {
+            "value": "EQUITY FUND",
+            "confidence_score": 99
+          },
+          "fund_code": {
+            "value": "AL MAL UAE EQUITY FUND",
+            "confidence_score": 98
+          },
+          "fund_currency": {
+            "value": "GBP",
+            "confidence_score": 99
+          },
+          "amount_nominal": {
+            "value": "GBP —",
+            "confidence_score": 98
+          },
+          "amount_unit": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "amount_all_units": {
+            "value": "NOT APPLICABLE",
+            "confidence_score": 90
+          },
+          "sa_reference_no": {
+            "value": "INV-UK-9912 → INV-UK-8844",
+            "confidence_score": 97
+          },
+          "investor_account_name": {
+            "value": "James Mitchell",
+            "confidence_score": 96
+          }
+        },
+        "field_confidences": {
+          "country": 99.0,
+          "transaction_date": 97.0,
+          "transaction_type": 99.0,
+          "switch_transaction": 95.0,
+          "reference_no": 97.0,
+          "sid": 0.0,
+          "fundcd_type": 99.0,
+          "fund_code": 98.0,
+          "fund_currency": 99.0,
+          "amount_nominal": 98.0,
+          "amount_unit": 0.0,
+          "amount_all_units": 90.0,
+          "sa_reference_no": 97.0,
+          "investor_account_name": 96.0
+        }
       },
       "party": "James Mitchell",
       "account": "INV-UK-9912 → INV-UK-8844",
@@ -568,13 +906,20 @@
         "Account IDs normalised to UK format"
       ],
       "field_confidences": {
-        "ISIN": 0,
-        "Fund": 0,
-        "Investor": 0,
-        "Amount": 0,
-        "Date": 0,
-        "Account": 0,
-        "Currency": 0
+        "country": 99.0,
+        "transaction_date": 97.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 0.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "timeline": [
         {
@@ -605,7 +950,7 @@
     {
       "instruction_id": "INS-7844201",
       "intent": "Subscription",
-      "channel": "Portals & Files",
+      "channel": "Portal",
       "routing_target": "TA",
       "confidence": 91.0,
       "status": "Recon Exception",
@@ -622,15 +967,98 @@
       "recon_status": "mismatch",
       "recon_detail": "Expected $10,000 — Settlement shows $9,950",
       "golden_schema": {
-        "instructionId": "INS-7844201",
-        "intent": "SUBSCRIPTION",
-        "currency": "USD",
-        "amount": 10000,
-        "routingTarget": "TA"
+        "country": "India",
+        "transaction_date": "2026-07-16",
+        "transaction_type": "SUBSCRIPTION",
+        "switch_transaction": "NO",
+        "reference_no": "IA7844201",
+        "sid": null,
+        "fundcd_type": "EQUITY FUND",
+        "fund_code": "AL MAL UAE EQUITY FUND",
+        "fund_currency": "USD",
+        "amount_nominal": "$10,000",
+        "amount_unit": 892.15,
+        "amount_all_units": "NOT APPLICABLE",
+        "sa_reference_no": "INV-US-2201",
+        "investor_account_name": "Sarah Chen"
       },
       "intake": {
-        "source_type": "Portals & Files",
-        "source_detail": "Portal upload — US Ops Portal"
+        "source_type": "Portal",
+        "source_detail": "Portal upload — US Ops Portal",
+        "extraction_result": {
+          "country": {
+            "value": "India",
+            "confidence_score": 99
+          },
+          "transaction_date": {
+            "value": "2026-07-16",
+            "confidence_score": 97
+          },
+          "transaction_type": {
+            "value": "SUBSCRIPTION",
+            "confidence_score": 99
+          },
+          "switch_transaction": {
+            "value": "NO",
+            "confidence_score": 95
+          },
+          "reference_no": {
+            "value": "IA7844201",
+            "confidence_score": 97
+          },
+          "sid": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "fundcd_type": {
+            "value": "EQUITY FUND",
+            "confidence_score": 99
+          },
+          "fund_code": {
+            "value": "AL MAL UAE EQUITY FUND",
+            "confidence_score": 98
+          },
+          "fund_currency": {
+            "value": "USD",
+            "confidence_score": 99
+          },
+          "amount_nominal": {
+            "value": "$10,000",
+            "confidence_score": 98
+          },
+          "amount_unit": {
+            "value": 892.15,
+            "confidence_score": 0
+          },
+          "amount_all_units": {
+            "value": "NOT APPLICABLE",
+            "confidence_score": 90
+          },
+          "sa_reference_no": {
+            "value": "INV-US-2201",
+            "confidence_score": 97
+          },
+          "investor_account_name": {
+            "value": "Sarah Chen",
+            "confidence_score": 96
+          }
+        },
+        "field_confidences": {
+          "country": 99.0,
+          "transaction_date": 97.0,
+          "transaction_type": 99.0,
+          "switch_transaction": 95.0,
+          "reference_no": 97.0,
+          "sid": 0.0,
+          "fundcd_type": 99.0,
+          "fund_code": 98.0,
+          "fund_currency": 99.0,
+          "amount_nominal": 98.0,
+          "amount_unit": 0.0,
+          "amount_all_units": 90.0,
+          "sa_reference_no": 97.0,
+          "investor_account_name": 96.0
+        }
       },
       "party": "Sarah Chen",
       "account": "INV-US-2201",
@@ -649,13 +1077,20 @@
         "Fee deduction explanation attached"
       ],
       "field_confidences": {
-        "ISIN": 88,
-        "Fund": 90,
-        "Investor": 92,
-        "Amount": 76,
-        "Date": 94,
-        "Account": 89,
-        "Currency": 95
+        "country": 99.0,
+        "transaction_date": 97.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 0.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "timeline": [
         {
@@ -691,7 +1126,7 @@
     {
       "instruction_id": "INS-7844310",
       "intent": "Subscription",
-      "channel": "Email + PDF",
+      "channel": "PDF",
       "routing_target": "TA",
       "confidence": 84.0,
       "status": "Exception Queue",
@@ -707,10 +1142,99 @@
       "stage_label": "Stage 3: Validate & Enrich",
       "recon_status": "pending",
       "recon_detail": null,
-      "golden_schema": null,
+      "golden_schema": {
+        "country": null,
+        "transaction_date": null,
+        "transaction_type": null,
+        "switch_transaction": null,
+        "reference_no": null,
+        "sid": null,
+        "fundcd_type": null,
+        "fund_code": null,
+        "fund_currency": null,
+        "amount_nominal": null,
+        "amount_unit": null,
+        "amount_all_units": null,
+        "sa_reference_no": null,
+        "investor_account_name": null
+      },
       "intake": {
-        "source_type": "Email + PDF",
-        "source_detail": "Email attachment — fund instruction"
+        "source_type": "PDF",
+        "source_detail": "Email attachment — fund instruction",
+        "extraction_result": {
+          "country": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "transaction_date": {
+            "value": null,
+            "confidence_score": 85
+          },
+          "transaction_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "switch_transaction": {
+            "value": null,
+            "confidence_score": 95
+          },
+          "reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "sid": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "fundcd_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "fund_code": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "fund_currency": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "amount_nominal": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "amount_unit": {
+            "value": null,
+            "confidence_score": 72
+          },
+          "amount_all_units": {
+            "value": null,
+            "confidence_score": 90
+          },
+          "sa_reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "investor_account_name": {
+            "value": null,
+            "confidence_score": 96
+          }
+        },
+        "field_confidences": {
+          "country": 99.0,
+          "transaction_date": 85.0,
+          "transaction_type": 99.0,
+          "switch_transaction": 95.0,
+          "reference_no": 97.0,
+          "sid": 0.0,
+          "fundcd_type": 99.0,
+          "fund_code": 98.0,
+          "fund_currency": 99.0,
+          "amount_nominal": 98.0,
+          "amount_unit": 72.0,
+          "amount_all_units": 90.0,
+          "sa_reference_no": 97.0,
+          "investor_account_name": 96.0
+        }
       },
       "party": null,
       "account": null,
@@ -722,7 +1246,22 @@
       "currency": null,
       "decisions": [],
       "repair_notes": [],
-      "field_confidences": {},
+      "field_confidences": {
+        "country": 99.0,
+        "transaction_date": 85.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 72.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
+      },
       "timeline": [],
       "is_exception": true,
       "exception": {
@@ -752,10 +1291,99 @@
       "stage_label": "Stage 3: Validate & Enrich",
       "recon_status": "pending",
       "recon_detail": null,
-      "golden_schema": null,
+      "golden_schema": {
+        "country": null,
+        "transaction_date": null,
+        "transaction_type": null,
+        "switch_transaction": null,
+        "reference_no": null,
+        "sid": null,
+        "fundcd_type": null,
+        "fund_code": null,
+        "fund_currency": null,
+        "amount_nominal": null,
+        "amount_unit": null,
+        "amount_all_units": null,
+        "sa_reference_no": null,
+        "investor_account_name": null
+      },
       "intake": {
         "source_type": "SWIFT",
-        "source_detail": "SWIFT MT103"
+        "source_detail": "SWIFT MT103",
+        "extraction_result": {
+          "country": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "transaction_date": {
+            "value": null,
+            "confidence_score": 85
+          },
+          "transaction_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "switch_transaction": {
+            "value": null,
+            "confidence_score": 95
+          },
+          "reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "sid": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "fundcd_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "fund_code": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "fund_currency": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "amount_nominal": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "amount_unit": {
+            "value": null,
+            "confidence_score": 72
+          },
+          "amount_all_units": {
+            "value": null,
+            "confidence_score": 90
+          },
+          "sa_reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "investor_account_name": {
+            "value": null,
+            "confidence_score": 96
+          }
+        },
+        "field_confidences": {
+          "country": 99.0,
+          "transaction_date": 85.0,
+          "transaction_type": 99.0,
+          "switch_transaction": 95.0,
+          "reference_no": 97.0,
+          "sid": 0.0,
+          "fundcd_type": 99.0,
+          "fund_code": 98.0,
+          "fund_currency": 99.0,
+          "amount_nominal": 98.0,
+          "amount_unit": 72.0,
+          "amount_all_units": 90.0,
+          "sa_reference_no": 97.0,
+          "investor_account_name": 96.0
+        }
       },
       "party": null,
       "account": null,
@@ -769,7 +1397,22 @@
         "AML API: Enhanced due diligence required"
       ],
       "repair_notes": [],
-      "field_confidences": {},
+      "field_confidences": {
+        "country": 99.0,
+        "transaction_date": 85.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 72.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
+      },
       "timeline": [],
       "is_exception": true,
       "exception": {
@@ -783,7 +1426,7 @@
     {
       "instruction_id": "INS-7844255",
       "intent": "Subscription",
-      "channel": "Email + PDF",
+      "channel": "PDF",
       "routing_target": "TA",
       "confidence": 84.0,
       "status": "Exception Queue",
@@ -799,10 +1442,99 @@
       "stage_label": "Stage 4: Repair + Templatise",
       "recon_status": "pending",
       "recon_detail": null,
-      "golden_schema": null,
+      "golden_schema": {
+        "country": null,
+        "transaction_date": null,
+        "transaction_type": null,
+        "switch_transaction": null,
+        "reference_no": null,
+        "sid": null,
+        "fundcd_type": null,
+        "fund_code": null,
+        "fund_currency": null,
+        "amount_nominal": null,
+        "amount_unit": null,
+        "amount_all_units": null,
+        "sa_reference_no": null,
+        "investor_account_name": null
+      },
       "intake": {
-        "source_type": "Email + PDF",
-        "source_detail": "PDF attachment — subscription form"
+        "source_type": "PDF",
+        "source_detail": "PDF attachment — subscription form",
+        "extraction_result": {
+          "country": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "transaction_date": {
+            "value": null,
+            "confidence_score": 85
+          },
+          "transaction_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "switch_transaction": {
+            "value": null,
+            "confidence_score": 95
+          },
+          "reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "sid": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "fundcd_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "fund_code": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "fund_currency": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "amount_nominal": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "amount_unit": {
+            "value": null,
+            "confidence_score": 72
+          },
+          "amount_all_units": {
+            "value": null,
+            "confidence_score": 90
+          },
+          "sa_reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "investor_account_name": {
+            "value": null,
+            "confidence_score": 96
+          }
+        },
+        "field_confidences": {
+          "country": 99.0,
+          "transaction_date": 85.0,
+          "transaction_type": 99.0,
+          "switch_transaction": 95.0,
+          "reference_no": 97.0,
+          "sid": 0.0,
+          "fundcd_type": 99.0,
+          "fund_code": 98.0,
+          "fund_currency": 99.0,
+          "amount_nominal": 98.0,
+          "amount_unit": 72.0,
+          "amount_all_units": 90.0,
+          "sa_reference_no": 97.0,
+          "investor_account_name": 96.0
+        }
       },
       "party": null,
       "account": null,
@@ -816,7 +1548,22 @@
       "repair_notes": [
         "Quantity field ambiguous in PDF"
       ],
-      "field_confidences": {},
+      "field_confidences": {
+        "country": 99.0,
+        "transaction_date": 85.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 72.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
+      },
       "timeline": [],
       "is_exception": true,
       "exception": {
@@ -846,10 +1593,99 @@
       "stage_label": "Stage 3: Validate & Enrich",
       "recon_status": "pending",
       "recon_detail": null,
-      "golden_schema": null,
+      "golden_schema": {
+        "country": null,
+        "transaction_date": null,
+        "transaction_type": null,
+        "switch_transaction": null,
+        "reference_no": null,
+        "sid": null,
+        "fundcd_type": null,
+        "fund_code": null,
+        "fund_currency": null,
+        "amount_nominal": null,
+        "amount_unit": null,
+        "amount_all_units": null,
+        "sa_reference_no": null,
+        "investor_account_name": null
+      },
       "intake": {
         "source_type": "Portal",
-        "source_detail": "Portal upload"
+        "source_detail": "Portal upload",
+        "extraction_result": {
+          "country": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "transaction_date": {
+            "value": null,
+            "confidence_score": 85
+          },
+          "transaction_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "switch_transaction": {
+            "value": null,
+            "confidence_score": 95
+          },
+          "reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "sid": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "fundcd_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "fund_code": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "fund_currency": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "amount_nominal": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "amount_unit": {
+            "value": null,
+            "confidence_score": 72
+          },
+          "amount_all_units": {
+            "value": null,
+            "confidence_score": 90
+          },
+          "sa_reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "investor_account_name": {
+            "value": null,
+            "confidence_score": 96
+          }
+        },
+        "field_confidences": {
+          "country": 99.0,
+          "transaction_date": 85.0,
+          "transaction_type": 99.0,
+          "switch_transaction": 95.0,
+          "reference_no": 97.0,
+          "sid": 0.0,
+          "fundcd_type": 99.0,
+          "fund_code": 98.0,
+          "fund_currency": 99.0,
+          "amount_nominal": 98.0,
+          "amount_unit": 72.0,
+          "amount_all_units": 90.0,
+          "sa_reference_no": 97.0,
+          "investor_account_name": 96.0
+        }
       },
       "party": "Sarah Chen",
       "account": null,
@@ -865,13 +1701,20 @@
       ],
       "repair_notes": [],
       "field_confidences": {
-        "ISIN": 45,
-        "Fund": 82,
-        "Investor": 88,
-        "Amount": 76,
-        "Date": 90,
-        "Account": 85,
-        "Currency": 95
+        "country": 99.0,
+        "transaction_date": 85.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 72.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "timeline": [
         {
@@ -928,10 +1771,99 @@
       "stage_label": "Stage 3: Validate & Enrich",
       "recon_status": "pending",
       "recon_detail": null,
-      "golden_schema": null,
+      "golden_schema": {
+        "country": null,
+        "transaction_date": null,
+        "transaction_type": null,
+        "switch_transaction": null,
+        "reference_no": null,
+        "sid": null,
+        "fundcd_type": null,
+        "fund_code": null,
+        "fund_currency": null,
+        "amount_nominal": null,
+        "amount_unit": null,
+        "amount_all_units": null,
+        "sa_reference_no": null,
+        "investor_account_name": null
+      },
       "intake": {
         "source_type": "SWIFT",
-        "source_detail": "SWIFT MT103"
+        "source_detail": "SWIFT MT103",
+        "extraction_result": {
+          "country": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "transaction_date": {
+            "value": null,
+            "confidence_score": 85
+          },
+          "transaction_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "switch_transaction": {
+            "value": null,
+            "confidence_score": 95
+          },
+          "reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "sid": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "fundcd_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "fund_code": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "fund_currency": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "amount_nominal": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "amount_unit": {
+            "value": null,
+            "confidence_score": 72
+          },
+          "amount_all_units": {
+            "value": null,
+            "confidence_score": 90
+          },
+          "sa_reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "investor_account_name": {
+            "value": null,
+            "confidence_score": 96
+          }
+        },
+        "field_confidences": {
+          "country": 99.0,
+          "transaction_date": 85.0,
+          "transaction_type": 99.0,
+          "switch_transaction": 95.0,
+          "reference_no": 97.0,
+          "sid": 0.0,
+          "fundcd_type": 99.0,
+          "fund_code": 98.0,
+          "fund_currency": 99.0,
+          "amount_nominal": 98.0,
+          "amount_unit": 72.0,
+          "amount_all_units": 90.0,
+          "sa_reference_no": 97.0,
+          "investor_account_name": 96.0
+        }
       },
       "party": "Global Pension Fund",
       "account": null,
@@ -947,13 +1879,20 @@
       ],
       "repair_notes": [],
       "field_confidences": {
-        "ISIN": 88,
-        "Fund": 90,
-        "Investor": 70,
-        "Amount": 85,
-        "Date": 92,
-        "Account": 65,
-        "Currency": 94
+        "country": 99.0,
+        "transaction_date": 85.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 72.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "timeline": [
         {
@@ -994,7 +1933,7 @@
     {
       "instruction_id": "INS-7844012",
       "intent": "Subscription",
-      "channel": "Email + PDF",
+      "channel": "PDF",
       "routing_target": "TA",
       "confidence": 84.5,
       "status": "Exception Queue",
@@ -1010,10 +1949,99 @@
       "stage_label": "Stage 4: Repair + Templatise",
       "recon_status": "pending",
       "recon_detail": null,
-      "golden_schema": null,
+      "golden_schema": {
+        "country": null,
+        "transaction_date": null,
+        "transaction_type": null,
+        "switch_transaction": null,
+        "reference_no": null,
+        "sid": null,
+        "fundcd_type": null,
+        "fund_code": null,
+        "fund_currency": null,
+        "amount_nominal": null,
+        "amount_unit": null,
+        "amount_all_units": null,
+        "sa_reference_no": null,
+        "investor_account_name": null
+      },
       "intake": {
-        "source_type": "Email + PDF",
-        "source_detail": "Email attachment — subscription request"
+        "source_type": "PDF",
+        "source_detail": "Email attachment — subscription request",
+        "extraction_result": {
+          "country": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "transaction_date": {
+            "value": null,
+            "confidence_score": 85
+          },
+          "transaction_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "switch_transaction": {
+            "value": null,
+            "confidence_score": 95
+          },
+          "reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "sid": {
+            "value": null,
+            "confidence_score": 0
+          },
+          "fundcd_type": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "fund_code": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "fund_currency": {
+            "value": null,
+            "confidence_score": 99
+          },
+          "amount_nominal": {
+            "value": null,
+            "confidence_score": 98
+          },
+          "amount_unit": {
+            "value": null,
+            "confidence_score": 72
+          },
+          "amount_all_units": {
+            "value": null,
+            "confidence_score": 90
+          },
+          "sa_reference_no": {
+            "value": null,
+            "confidence_score": 97
+          },
+          "investor_account_name": {
+            "value": null,
+            "confidence_score": 96
+          }
+        },
+        "field_confidences": {
+          "country": 99.0,
+          "transaction_date": 85.0,
+          "transaction_type": 99.0,
+          "switch_transaction": 95.0,
+          "reference_no": 97.0,
+          "sid": 0.0,
+          "fundcd_type": 99.0,
+          "fund_code": 98.0,
+          "fund_currency": 99.0,
+          "amount_nominal": 98.0,
+          "amount_unit": 72.0,
+          "amount_all_units": 90.0,
+          "sa_reference_no": 97.0,
+          "investor_account_name": 96.0
+        }
       },
       "party": "Meera Patel",
       "account": null,
@@ -1029,13 +2057,20 @@
         "Awaiting human confirmation"
       ],
       "field_confidences": {
-        "ISIN": 90,
-        "Fund": 86,
-        "Investor": 92,
-        "Amount": 88,
-        "Date": 80,
-        "Account": 91,
-        "Currency": 97
+        "country": 99.0,
+        "transaction_date": 85.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 72.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "timeline": [
         {
@@ -1095,13 +2130,20 @@
         "completedThrough": 6
       },
       "fields": {
-        "ISIN": 99,
-        "Fund": 98,
-        "Investor": 97,
-        "Amount": 100,
-        "Date": 99,
-        "Account": 96,
-        "Currency": 99
+        "country": 99.0,
+        "transaction_date": 97.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 0.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "findings": [
         "✓ All validation APIs passed",
@@ -1131,7 +2173,7 @@
       "ref": "INS-7843892",
       "stage": "review",
       "intent": "Switch",
-      "source": "Email + PDF",
+      "source": "PDF",
       "party": "Rajesh Kumar",
       "amount": "₹1,25,000",
       "confidence": 87.2,
@@ -1146,14 +2188,20 @@
         "completedThrough": 3
       },
       "fields": {
-        "ISIN": 92,
-        "Fund": 88,
-        "Investor": 95,
-        "Amount": 91,
-        "Date": 85,
-        "Account": 94,
-        "Quantity": 72,
-        "Currency": 98
+        "country": 99.0,
+        "transaction_date": 85.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 72.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "findings": [
         "⚠ Quantity field ambiguous in PDF",
@@ -1163,7 +2211,7 @@
       ],
       "explain": "Switch request detected from email attachment. Journey paused at Stage 4 (Repair + Templatise): quantity could not be resolved unambiguously. Workbench queue: Human Review.",
       "timeline": [
-        "09:42 — Ingestion (Email + PDF)",
+        "09:42 — Ingestion (PDF)",
         "09:42 — Detect: Switch",
         "09:43 — Validate passed",
         "09:44 — Repair held — quantity ambiguity",
@@ -1202,13 +2250,20 @@
         "completedThrough": 5
       },
       "fields": {
-        "ISIN": 96,
-        "Fund": 94,
-        "Investor": 98,
-        "Amount": 97,
-        "Date": 93,
-        "Account": 99,
-        "Currency": 100
+        "country": 99.0,
+        "transaction_date": 97.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 0.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "findings": [
         "✓ Stages 1–5 complete — routed to FA",
@@ -1245,13 +2300,20 @@
         "completedThrough": 0
       },
       "fields": {
-        "ISIN": 0,
-        "Fund": 0,
-        "Investor": 0,
-        "Amount": 0,
-        "Date": 0,
-        "Account": 0,
-        "Currency": 0
+        "country": 99.0,
+        "transaction_date": 97.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 0.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "findings": [
         "⏳ Stage 1 Ingestion complete",
@@ -1283,13 +2345,20 @@
         "completedThrough": 2
       },
       "fields": {
-        "ISIN": 45,
-        "Fund": 82,
-        "Investor": 88,
-        "Amount": 76,
-        "Date": 90,
-        "Account": 85,
-        "Currency": 95
+        "country": 99.0,
+        "transaction_date": 85.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 72.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "findings": [
         "✗ Journey failed at Stage 3 Validate & Enrich",
@@ -1332,13 +2401,20 @@
         "completedThrough": 2
       },
       "fields": {
-        "ISIN": 88,
-        "Fund": 90,
-        "Investor": 70,
-        "Amount": 85,
-        "Date": 92,
-        "Account": 65,
-        "Currency": 94
+        "country": 99.0,
+        "transaction_date": 85.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 72.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "findings": [
         "⚠ Held at Stage 3 — AML enhanced due diligence",
@@ -1372,7 +2448,7 @@
       "ref": "INS-7844012",
       "stage": "review",
       "intent": "Subscription",
-      "source": "Email + PDF",
+      "source": "PDF",
       "party": "Meera Patel",
       "amount": "₹5,00,000",
       "confidence": 84.5,
@@ -1387,13 +2463,20 @@
         "completedThrough": 3
       },
       "fields": {
-        "ISIN": 90,
-        "Fund": 86,
-        "Investor": 92,
-        "Amount": 88,
-        "Date": 80,
-        "Account": 91,
-        "Currency": 97
+        "country": 99.0,
+        "transaction_date": 85.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 72.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "findings": [
         "⚠ Held at Repair + Templatise — settlement date inferred T+2",
@@ -1415,7 +2498,7 @@
       "ref": "INS-7844201",
       "stage": "review",
       "intent": "Subscription",
-      "source": "Portals & Files",
+      "source": "Portal",
       "party": "Sarah Chen",
       "amount": "$10,000",
       "confidence": 91.0,
@@ -1430,13 +2513,20 @@
         "completedThrough": 5
       },
       "fields": {
-        "ISIN": 88,
-        "Fund": 90,
-        "Investor": 92,
-        "Amount": 76,
-        "Date": 94,
-        "Account": 89,
-        "Currency": 95
+        "country": 99.0,
+        "transaction_date": 97.0,
+        "transaction_type": 99.0,
+        "switch_transaction": 95.0,
+        "reference_no": 97.0,
+        "sid": 0.0,
+        "fundcd_type": 99.0,
+        "fund_code": 98.0,
+        "fund_currency": 99.0,
+        "amount_nominal": 98.0,
+        "amount_unit": 0.0,
+        "amount_all_units": 90.0,
+        "sa_reference_no": 97.0,
+        "investor_account_name": 96.0
       },
       "findings": [
         "⚠ Reconciliation exception at Stage 6",

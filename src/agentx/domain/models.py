@@ -33,3 +33,6 @@ class InstructionState(BaseModel):
     failed_step: int | None = None
     needs_human_review: bool = False
     thread_id: str | None = None
+    timeline: list[str] = Field(default_factory=list)
+    risk_score: int = 0
+    risk_label: str = "Low"

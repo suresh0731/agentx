@@ -10,7 +10,7 @@ meta = ParserMeta(parser_id="excel_rtas", version="1.0.0", source_types=["excel"
 async def parse(raw: bytes, ctx: ParseContext, invoker) -> IntakeJSON:
     return IntakeJSON(
         source_type="excel",
-        source_channel="Portals & Files",
+        source_channel="Excel",
         transaction={"intentHint": "redemption", "amount": 50000},
         parser_used="excel_rtas",
         provider_used="cloud_llm",

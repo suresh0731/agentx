@@ -1,4 +1,10 @@
+import logging
+
 from pydantic import BaseModel
+
+from agentx.shared.providers.enterprise_idp import EnterpriseIdpAuthProvider, EnterpriseIdpInvoker
+
+logger = logging.getLogger(__name__)
 
 
 class MockAuthProvider:
@@ -19,9 +25,14 @@ class MockModelInvoker:
 
 class ProviderFactory:
     @staticmethod
-    def get_auth(provider_key: str) -> MockAuthProvider:
+    def get_auth(provider_key: str):
+        if provider_key == "enterprise_idp":
+            return EnterpriseIdpAuthProvider()
         return MockAuthProvider()
 
     @staticmethod
-    def get_invoker(provider_key: str) -> MockModelInvoker:
+    def get_invoker(provider_key: str):
+        logger.debug("Resolving provider invoker: provider_key=%s", provider_key)
+        if provider_key == "enterprise_idp":
+            return EnterpriseIdpInvoker()
         return MockModelInvoker()

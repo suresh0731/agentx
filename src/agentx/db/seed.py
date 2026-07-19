@@ -1,17 +1,22 @@
 import json
+import logging
 from datetime import datetime
 from pathlib import Path
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from agentx.db.schema import (
+    Base,
     ConfigRuleRow,
     EvidenceEventRow,
     InstructionRow,
     MetricRollupRow,
     WorkbenchRequestRow,
 )
+from agentx.layers.ingest.idp_schema import normalize_source_label
+
+logger = logging.getLogger(__name__)
 
 SEED_PATH = Path(__file__).resolve().parents[3] / "seed" / "demo_data.json"
 
@@ -20,14 +25,30 @@ def load_seed_data() -> dict:
     return json.loads(SEED_PATH.read_text(encoding="utf-8"))
 
 
+async def clear_database(session: AsyncSession) -> None:
+    for table in reversed(Base.metadata.sorted_tables):
+        await session.execute(delete(table))
+    await session.commit()
+
+
 async def seed_database(session: AsyncSession) -> None:
     data = load_seed_data()
+    instruction_count = len(data["instructions"])
+    workbench_count = len(data["workbench_requests"])
+    logger.info(
+        "Seeding database: instructions=%d workbench_requests=%d evidence_events=%d",
+        instruction_count,
+        workbench_count,
+        len(data.get("evidence_events", [])),
+    )
 
     for inst in data["instructions"]:
+        intake = inst.get("intake") or {}
+        source_type = intake.get("source_type")
         session.add(InstructionRow(
             instruction_id=inst["instruction_id"],
             intent=inst.get("intent"),
-            channel=inst.get("channel"),
+            channel=normalize_source_label(inst.get("channel"), source_type),
             routing_target=inst.get("routing_target"),
             confidence=inst.get("confidence", 0.0),
             status=inst.get("status", "Processing"),
@@ -55,7 +76,7 @@ async def seed_database(session: AsyncSession) -> None:
             exception=inst.get("exception"),
             in_queue=inst.get("in_queue", True),
             workbench_request_id=inst.get("workbench_request_id"),
-            source_type=(inst.get("intake") or {}).get("source_type"),
+            source_type=source_type,
             workbench_stage=None,
         ))
 
@@ -65,7 +86,7 @@ async def seed_database(session: AsyncSession) -> None:
             ref=wb["ref"],
             stage=wb["stage"],
             intent=wb["intent"],
-            source=wb["source"],
+            source=normalize_source_label(wb["source"]),
             party=wb["party"],
             amount=wb["amount"],
             confidence=wb["confidence"],
@@ -106,12 +127,18 @@ async def seed_database(session: AsyncSession) -> None:
         "user": data["user"],
     }
     for key, payload in rollups.items():
+        if key == "channels":
+            payload = [
+                {**ch, "name": normalize_source_label(ch["name"])}
+                for ch in payload
+            ]
         session.add(MetricRollupRow(key=key, payload=payload))
 
     for category, rules in data["config_rules"].items():
         session.add(ConfigRuleRow(category=category, rules=rules))
 
     await session.commit()
+    logger.info("Database seed complete: instructions=%d workbench_requests=%d", instruction_count, workbench_count)
 
 
 async def is_seeded(session: AsyncSession) -> bool:

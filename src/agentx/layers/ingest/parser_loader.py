@@ -1,4 +1,5 @@
 import importlib
+import logging
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -6,6 +7,8 @@ from pathlib import Path
 import yaml
 
 from agentx.layers.ingest.parsers._protocol import IntakeJSON, ParseContext
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -36,10 +39,18 @@ class ParserLoader:
     def load(cls, source_type: str):
         module_path = cls.resolve_module_path(source_type)
         if module_path not in cls._cache:
+            logger.debug("Loading parser module: source_type=%s module=%s", source_type, module_path)
             cls._cache[module_path] = importlib.import_module(module_path)
         return cls._cache[module_path]
 
     @classmethod
     async def parse(cls, source_type: str, raw: bytes, ctx: ParseContext, invoker) -> IntakeJSON:
         module = cls.load(source_type)
+        logger.debug(
+            "Parsing payload: source_type=%s filename=%s size=%d parser=%s",
+            source_type,
+            ctx.filename or "(unnamed)",
+            len(raw),
+            getattr(module, "meta").parser_id,
+        )
         return await module.parse(raw, ctx, invoker)

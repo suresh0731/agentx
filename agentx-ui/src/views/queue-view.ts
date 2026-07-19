@@ -50,7 +50,7 @@ export class QueueView extends LightDomElement {
           <input type="text" placeholder="Search..." style="width:192px;" />
         </div>
         <select><option>All Statuses</option><option>Auto Created</option><option>Exception Queue</option></select>
-        <select><option>All Channels</option><option>SWIFT</option><option>Email + PDF</option></select>
+        <select><option>All Channels</option><option>SWIFT</option><option>PDF</option><option>Email</option><option>API</option><option>Portal</option></select>
         <select><option>All Intents</option><option>Subscription</option><option>Redemption</option></select>
         <select><option>All Destinations</option><option>TA</option><option>FA</option><option>IS</option></select>
         <select><option>All Confidence</option><option>≥ 98% (Auto eligible)</option><option>&lt; 98% (Review required)</option></select>

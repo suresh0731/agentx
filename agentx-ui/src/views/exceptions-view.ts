@@ -37,7 +37,7 @@ export class ExceptionsView extends LightDomElement {
               <tr class="cursor-pointer" @click=${() => this.open(r.ref)}>
                 <td style="padding-left:20px;"><strong class="mono">${r.ref}</strong></td>
                 <td class="text-amber-400">${r.issue}</td>
-                <td><ax-step-tracker .journey=${{ failedStep: r.failed_step, completedThrough: r.failed_step - 1 }}></ax-step-tracker></td>
+                <td><ax-step-tracker .journey=${r.journey}></ax-step-tracker></td>
                 <td class="center">
                   <span class="status-pill" style="background:${r.priority === 'HIGH' ? '#fff1f0' : '#fff7e6'};color:${r.priority === 'HIGH' ? '#cf1322' : '#d48806'};">
                     ${r.priority}

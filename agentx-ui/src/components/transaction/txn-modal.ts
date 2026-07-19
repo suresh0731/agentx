@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { LightDomElement } from '../../utils/light-dom.js';
 import { api, InstructionDetail } from '../../services/api-client.js';
+import { renderConfidenceHeatmap, renderGoldenSchemaTable } from '../../utils/idp-display.js';
 import '../shared/step-tracker.js';
 
 @customElement('txn-modal')
@@ -66,9 +67,14 @@ export class TxnModal extends LightDomElement {
               <ax-step-tracker variant="workspace" .journey=${d.journey}></ax-step-tracker>
             </div>
 
-            <div class="mb-6">
-              <div class="section-label mb-2">Golden Transaction Schema</div>
-              <pre class="golden-schema" style="background:#fafafa;border:1px solid var(--corp-border);border-radius:8px;padding:12px;overflow:auto;font-size:12px;">${JSON.stringify(d.golden_schema, null, 2)}</pre>
+            <div class="mb-6 wireframe-card rounded-2xl p-5">
+              <div class="section-label mb-3">Golden Transaction Schema</div>
+              ${renderGoldenSchemaTable(d.golden_schema, d.intake)}
+            </div>
+
+            <div class="mb-6 wireframe-card rounded-2xl p-5">
+              <div class="section-label mb-3">Confidence Heatmap — Field-Level Scores</div>
+              ${renderConfidenceHeatmap(d.field_confidences, d.intake)}
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

@@ -14,7 +14,7 @@ async def parse(raw: bytes, ctx: ParseContext, invoker) -> IntakeJSON:
         data = json.loads(raw.decode("utf-8"))
     except json.JSONDecodeError:
         data = {}
-    channel = "API" if ctx.source_type == "api" else "Client Templates"
+    channel = "API" if ctx.source_type == "api" else "Client Template"
     return IntakeJSON(
         source_type=ctx.source_type,
         source_channel=channel,
