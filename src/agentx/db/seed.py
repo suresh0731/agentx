@@ -14,7 +14,7 @@ from agentx.db.schema import (
     MetricRollupRow,
     WorkbenchRequestRow,
 )
-from agentx.layers.ingest.idp_schema import normalize_source_label
+from agentx.layers.ingest.idp_schema import normalize_source_label, normalize_source_type
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ async def seed_database(session: AsyncSession) -> None:
 
     for inst in data["instructions"]:
         intake = inst.get("intake") or {}
-        source_type = intake.get("source_type")
+        source_type = normalize_source_type(intake.get("source_type") or inst.get("channel"))
         session.add(InstructionRow(
             instruction_id=inst["instruction_id"],
             intent=inst.get("intent"),

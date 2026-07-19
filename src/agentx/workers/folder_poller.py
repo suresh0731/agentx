@@ -4,6 +4,7 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
+from agentx.api.ws_manager import ws_manager
 from agentx.config import settings
 from agentx.db.engine import SessionLocal
 from agentx.workers.pipeline_runner import PipelineRunner
@@ -17,6 +18,8 @@ EXTENSION_SOURCE_MAP = {
     ".xls": "excel",
     ".swift": "swift",
     ".mt": "swift",
+    ".eml": "email",
+    ".msg": "email",
 }
 
 
@@ -124,7 +127,9 @@ class FolderPoller:
 
         async with SessionLocal() as session:
             runner = PipelineRunner(self.graph, session)
-            result = await runner.run(raw, source_type, file_path.name)
+            result = await runner.run(
+                raw, source_type, file_path.name, broadcast=ws_manager.broadcast,
+            )
             await session.commit()
 
         destination = self._destination_for_result(result)

@@ -171,9 +171,15 @@
       "stp_rate": 98.2
     },
     {
+      "name": "Email",
+      "icon": "fa-envelope",
+      "volume": 512,
+      "stp_rate": 93.8
+    },
+    {
       "name": "PDF",
       "icon": "fa-file-pdf",
-      "volume": 847,
+      "volume": 335,
       "stp_rate": 94.1
     },
     {
@@ -260,7 +266,7 @@
         "investor_account_name": "Priya Sharma"
       },
       "intake": {
-        "source_type": "SWIFT",
+        "source_type": "swift",
         "source_detail": "SWIFT MT103",
         "message_type": "103",
         "reference": "FUND-2026-0716-88421",
@@ -414,7 +420,7 @@
     {
       "instruction_id": "INS-7843892",
       "intent": "Switch",
-      "channel": "PDF",
+      "channel": "Email",
       "routing_target": "TA",
       "confidence": 87.2,
       "status": "Exception Queue",
@@ -447,8 +453,8 @@
         "investor_account_name": "Rajesh Kumar"
       },
       "intake": {
-        "source_type": "PDF",
-        "source_detail": "PDF",
+        "source_type": "email",
+        "source_detail": "Email — Switch Request",
         "subject": "Switch Request - Rajesh Kumar",
         "language_detected": "English",
         "extraction_result": {
@@ -633,7 +639,7 @@
         "investor_account_name": "Tan Wei Ming"
       },
       "intake": {
-        "source_type": "API",
+        "source_type": "api",
         "source_detail": "API /v1/instructions",
         "client": "Apex Capital SG",
         "extraction_result": {
@@ -811,7 +817,7 @@
         "investor_account_name": "James Mitchell"
       },
       "intake": {
-        "source_type": "Client Template",
+        "source_type": "template",
         "source_detail": "Client Template — Standard Transfer v3",
         "template_match": 98.6,
         "extraction_result": {
@@ -983,7 +989,7 @@
         "investor_account_name": "Sarah Chen"
       },
       "intake": {
-        "source_type": "Portal",
+        "source_type": "portal",
         "source_detail": "Portal upload — US Ops Portal",
         "extraction_result": {
           "country": {
@@ -1126,7 +1132,7 @@
     {
       "instruction_id": "INS-7844310",
       "intent": "Subscription",
-      "channel": "PDF",
+      "channel": "Email",
       "routing_target": "TA",
       "confidence": 84.0,
       "status": "Exception Queue",
@@ -1159,8 +1165,8 @@
         "investor_account_name": null
       },
       "intake": {
-        "source_type": "PDF",
-        "source_detail": "Email attachment — fund instruction",
+        "source_type": "email",
+        "source_detail": "Email — fund instruction",
         "extraction_result": {
           "country": {
             "value": null,
@@ -1308,7 +1314,7 @@
         "investor_account_name": null
       },
       "intake": {
-        "source_type": "SWIFT",
+        "source_type": "swift",
         "source_detail": "SWIFT MT103",
         "extraction_result": {
           "country": {
@@ -1459,8 +1465,8 @@
         "investor_account_name": null
       },
       "intake": {
-        "source_type": "PDF",
-        "source_detail": "PDF attachment — subscription form",
+        "source_type": "pdf",
+        "source_detail": "PDF — subscription form",
         "extraction_result": {
           "country": {
             "value": null,
@@ -1610,7 +1616,7 @@
         "investor_account_name": null
       },
       "intake": {
-        "source_type": "Portal",
+        "source_type": "portal",
         "source_detail": "Portal upload",
         "extraction_result": {
           "country": {
@@ -1788,7 +1794,7 @@
         "investor_account_name": null
       },
       "intake": {
-        "source_type": "SWIFT",
+        "source_type": "swift",
         "source_detail": "SWIFT MT103",
         "extraction_result": {
           "country": {
@@ -1933,7 +1939,7 @@
     {
       "instruction_id": "INS-7844012",
       "intent": "Subscription",
-      "channel": "PDF",
+      "channel": "Email",
       "routing_target": "TA",
       "confidence": 84.5,
       "status": "Exception Queue",
@@ -1966,8 +1972,8 @@
         "investor_account_name": null
       },
       "intake": {
-        "source_type": "PDF",
-        "source_detail": "Email attachment — subscription request",
+        "source_type": "email",
+        "source_detail": "Email — subscription request",
         "extraction_result": {
           "country": {
             "value": null,
@@ -2173,7 +2179,7 @@
       "ref": "INS-7843892",
       "stage": "review",
       "intent": "Switch",
-      "source": "PDF",
+      "source": "Email",
       "party": "Rajesh Kumar",
       "amount": "₹1,25,000",
       "confidence": 87.2,
@@ -2209,9 +2215,9 @@
         "✓ Stages 1–3 complete",
         "→ Held at Repair + Templatise — human sign-off required"
       ],
-      "explain": "Switch request detected from email attachment. Journey paused at Stage 4 (Repair + Templatise): quantity could not be resolved unambiguously. Workbench queue: Human Review.",
+      "explain": "Switch request received via Email. Journey paused at Stage 4 (Repair + Templatise): quantity could not be resolved unambiguously. Workbench queue: Human Review.",
       "timeline": [
-        "09:42 — Ingestion (PDF)",
+        "09:42 — Ingestion (Email)",
         "09:42 — Detect: Switch",
         "09:43 — Validate passed",
         "09:44 — Repair held — quantity ambiguity",
@@ -2448,7 +2454,7 @@
       "ref": "INS-7844012",
       "stage": "review",
       "intent": "Subscription",
-      "source": "PDF",
+      "source": "Email",
       "party": "Meera Patel",
       "amount": "₹5,00,000",
       "confidence": 84.5,
@@ -2485,7 +2491,7 @@
       ],
       "explain": "Subscription missing explicit settlement date. AI inferred T+2 at Stage 4 — held for human confirmation before routing.",
       "timeline": [
-        "10:45 — Ingestion",
+        "10:45 — Ingestion (Email)",
         "10:45 — Detect: Subscription",
         "10:46 — Validate passed",
         "10:47 — Repair held (date field)",

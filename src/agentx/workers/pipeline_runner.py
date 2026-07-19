@@ -1,14 +1,19 @@
 import logging
 import uuid
+from collections.abc import Awaitable, Callable
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from agentx.api.serializers import exception_summary, instruction_summary, workbench_card
 from agentx.config import settings
 from agentx.db.repositories.instruction_repo import InstructionRepository, WorkbenchRepository
 from agentx.db.schema import InstructionRow, WorkbenchRequestRow
-from agentx.layers.ingest.idp_schema import format_amount_display, format_source_label, normalize_source_label
+from agentx.layers.ingest.idp_schema import format_amount_display, format_source_label, normalize_source_label, normalize_source_type
 
 logger = logging.getLogger(__name__)
+
+BroadcastFn = Callable[[dict], Awaitable[None]]
 
 
 def _journey_dict(inst: dict) -> dict:
@@ -54,51 +59,36 @@ class PipelineRunner:
         self.graph = graph
         self.session = session
 
-    async def run(self, raw: bytes, source_type: str, filename: str) -> dict:
-        thread_id = str(uuid.uuid4())
-        config = {"configurable": {"thread_id": thread_id}}
-        initial = {
-            "instruction": {"_raw": raw, "source_type": source_type, "filename": filename},
-            "needs_human_review": False,
-            "approved": False,
+    async def _broadcast(
+        self,
+        broadcast: BroadcastFn | None,
+        event_type: str,
+        instruction_row: InstructionRow,
+        workbench_row: WorkbenchRequestRow | None = None,
+    ) -> None:
+        if not broadcast:
+            return
+        payload: dict[str, Any] = {
+            "type": event_type,
+            "id": instruction_row.instruction_id,
+            "instruction": instruction_summary(instruction_row),
         }
-        logger.info(
-            "Pipeline started: filename=%s source_type=%s size=%d bytes thread_id=%s",
-            filename or "(unnamed)",
-            source_type,
-            len(raw),
-            thread_id,
-        )
-        try:
-            result = await self.graph.ainvoke(initial, config)
-        except Exception:
-            logger.exception(
-                "Pipeline failed: filename=%s source_type=%s thread_id=%s",
-                filename or "(unnamed)",
-                source_type,
-                thread_id,
-            )
-            return {
-                "instruction_id": None,
-                "status": "Failed",
-                "needs_human_review": False,
-                "success": False,
-                "error": "Pipeline execution failed",
-            }
+        if workbench_row:
+            payload["workbench"] = workbench_card(workbench_row, instruction_row)
+        if instruction_row.is_exception:
+            payload["exception"] = exception_summary(instruction_row)
+        await broadcast(payload)
 
-        inst = result["instruction"]
-        instruction_id = inst["instruction_id"]
+    def _instruction_row(self, inst: dict, source_type: str) -> InstructionRow:
         journey = _journey_dict(inst)
         golden_schema = inst.get("golden_schema") or {}
         investor = _investor_name(inst)
-        source_label = format_source_label(source_type, inst.get("channel", ""))
-        amount_display = format_amount_display(golden_schema)
         timeline = list(inst.get("timeline") or [])
         exception = _build_exception(inst)
+        filename = inst.get("filename") or ""
 
-        inst_repo = InstructionRepository(self.session)
-        await inst_repo.save(InstructionRow(
-            instruction_id=instruction_id,
+        return InstructionRow(
+            instruction_id=inst["instruction_id"],
             intent=inst.get("intent"),
             channel=normalize_source_label(inst.get("channel"), source_type),
             routing_target=inst.get("destination"),
@@ -107,8 +97,8 @@ class PipelineRunner:
             journey=journey,
             golden_schema=golden_schema,
             intake_json=inst.get("intake_json"),
-            party=investor,
-            amount_display=amount_display,
+            party=investor if investor != "Unknown" else (filename or "Incoming file"),
+            amount_display=format_amount_display(golden_schema) if golden_schema else None,
             field_confidences=inst.get("field_confidences", {}),
             decisions=inst.get("decisions", []),
             repair_notes=inst.get("repair_notes", []),
@@ -118,64 +108,232 @@ class PipelineRunner:
             exception=exception,
             source_type=source_type,
             workbench_stage=inst.get("workbench_stage", "submitted"),
-        ))
-        logger.info(
-            "Instruction saved: id=%s intent=%s status=%s confidence=%.1f investor=%s source=%s",
-            instruction_id,
-            inst.get("intent"),
-            inst.get("status"),
-            inst.get("overall_confidence", 0),
-            investor,
-            source_label,
         )
 
-        needs_human_review = inst.get("needs_human_review", False)
-        if needs_human_review:
-            wb_repo = WorkbenchRepository(self.session)
-            req_id = f"REQ-{uuid.uuid4().hex[:8].upper()}"
-            await wb_repo.save(WorkbenchRequestRow(
-                id=req_id,
-                ref=instruction_id,
-                stage=inst.get("workbench_stage", "review"),
-                intent=inst.get("intent") or "Unknown",
-                source=source_label,
-                party=investor,
-                amount=amount_display,
-                confidence=inst.get("overall_confidence", 0),
-                risk=inst.get("risk_score", 0),
-                risk_label=inst.get("risk_label", "Low"),
-                assignee=settings.default_user,
-                journey=journey,
-                fields=inst.get("field_confidences", {}),
-                findings=inst.get("findings", []),
-                explain=inst.get("explainability", ""),
-                timeline=timeline,
-            ))
+    async def _upsert_workbench(
+        self,
+        inst: dict,
+        source_type: str,
+        journey: dict,
+        timeline: list,
+        exception: dict | None,
+    ) -> WorkbenchRequestRow | None:
+        if not inst.get("needs_human_review"):
+            return None
+
+        wb_repo = WorkbenchRepository(self.session)
+        existing = await wb_repo.get_by_ref(inst["instruction_id"])
+        investor = _investor_name(inst)
+        source_label = format_source_label(source_type, inst.get("channel", ""))
+        amount_display = format_amount_display(inst.get("golden_schema") or {})
+
+        if existing:
+            existing.stage = inst.get("workbench_stage", existing.stage)
+            existing.intent = inst.get("intent") or existing.intent
+            existing.source = source_label
+            existing.party = investor
+            existing.amount = amount_display or existing.amount
+            existing.confidence = inst.get("overall_confidence", existing.confidence)
+            existing.risk = inst.get("risk_score", existing.risk)
+            existing.risk_label = inst.get("risk_label", existing.risk_label)
+            existing.journey = journey
+            existing.fields = inst.get("field_confidences", existing.fields)
+            existing.findings = inst.get("findings", existing.findings)
+            existing.explain = inst.get("explainability", existing.explain)
+            existing.timeline = timeline
+            await self.session.commit()
+            await self.session.refresh(existing)
+            return existing
+
+        req_id = f"REQ-{uuid.uuid4().hex[:8].upper()}"
+        row = WorkbenchRequestRow(
+            id=req_id,
+            ref=inst["instruction_id"],
+            stage=inst.get("workbench_stage", "review"),
+            intent=inst.get("intent") or "Unknown",
+            source=source_label,
+            party=investor,
+            amount=amount_display,
+            confidence=inst.get("overall_confidence", 0),
+            risk=inst.get("risk_score", 0),
+            risk_label=inst.get("risk_label", "Low"),
+            assignee=settings.default_user,
+            journey=journey,
+            fields=inst.get("field_confidences", {}),
+            findings=inst.get("findings", []),
+            explain=inst.get("explainability", ""),
+            timeline=timeline,
+        )
+        await wb_repo.save(row)
+        logger.info(
+            "Workbench request created: req_id=%s instruction_id=%s",
+            req_id,
+            inst["instruction_id"],
+        )
+        return row
+
+    async def _persist_progress(
+        self,
+        state: dict,
+        source_type: str,
+        broadcast: BroadcastFn | None,
+        *,
+        processing: bool = False,
+        node_name: str | None = None,
+    ) -> InstructionRow:
+        inst = dict(state.get("instruction") or {})
+        inst["needs_human_review"] = state.get("needs_human_review", inst.get("needs_human_review", False))
+        journey = _journey_dict(inst)
+        timeline = list(inst.get("timeline") or [])
+        exception = _build_exception(inst)
+
+        inst_repo = InstructionRepository(self.session)
+        row = self._instruction_row(inst, source_type)
+        if processing and not exception:
+            row.is_exception = False
+
+        existing = await inst_repo.get(row.instruction_id)
+        if existing:
+            for field in (
+                "intent", "channel", "routing_target", "confidence", "status", "journey",
+                "golden_schema", "intake_json", "party", "amount_display", "field_confidences",
+                "decisions", "repair_notes", "timeline", "in_queue", "is_exception", "exception",
+                "workbench_stage",
+            ):
+                setattr(existing, field, getattr(row, field))
+            await self.session.commit()
+            await self.session.refresh(existing)
+            saved = existing
+        else:
+            saved = await inst_repo.save(row)
+
+        workbench_row = None
+        if inst.get("needs_human_review"):
+            workbench_row = await self._upsert_workbench(inst, source_type, journey, timeline, exception)
+
+        event_type = "instruction_progress" if processing else "instruction_updated"
+        await self._broadcast(broadcast, event_type, saved, workbench_row)
+
+        if node_name:
             logger.info(
-                "Workbench request created: req_id=%s instruction_id=%s risk=%s (%s) issue=%s",
-                req_id,
-                instruction_id,
-                inst.get("risk_score", 0),
-                inst.get("risk_label", "Low"),
-                (exception or {}).get("issue", "human review"),
+                "Pipeline progress [%s]: id=%s status=%s journey=%s needs_review=%s",
+                node_name,
+                saved.instruction_id,
+                saved.status,
+                journey.get("active_step") or journey.get("held_step") or journey.get("failed_step"),
+                inst.get("needs_human_review"),
             )
-        elif exception:
-            logger.warning(
-                "Instruction flagged as exception without workbench: id=%s issue=%s",
+        return saved
+
+    async def run(
+        self,
+        raw: bytes,
+        source_type: str,
+        filename: str,
+        broadcast: BroadcastFn | None = None,
+    ) -> dict:
+        source_type = normalize_source_type(source_type)
+        instruction_id = f"INS-{uuid.uuid4().hex[:7].upper()}"
+        thread_id = str(uuid.uuid4())
+        config = {"configurable": {"thread_id": thread_id}}
+        initial = {
+            "instruction": {
+                "_raw": raw,
+                "source_type": source_type,
+                "filename": filename,
+                "instruction_id": instruction_id,
+            },
+            "needs_human_review": False,
+            "approved": False,
+        }
+        logger.info(
+            "Pipeline started: instruction_id=%s filename=%s source_type=%s size=%d bytes thread_id=%s",
+            instruction_id,
+            filename or "(unnamed)",
+            source_type,
+            len(raw),
+            thread_id,
+        )
+
+        await self._persist_progress(
+            {
+                "instruction": {
+                    "instruction_id": instruction_id,
+                    "filename": filename,
+                    "channel": source_type,
+                    "status": "Processing",
+                    "journey": {"active_step": 1, "completed_through": 0},
+                    "timeline": [],
+                },
+                "needs_human_review": False,
+            },
+            source_type,
+            broadcast,
+            processing=True,
+            node_name="started",
+        )
+
+        final_state = initial
+        try:
+            async for update in self.graph.astream(initial, config, stream_mode="updates"):
+                for node_name, node_output in update.items():
+                    final_state = {**final_state, **node_output}
+                    await self._persist_progress(
+                        final_state,
+                        source_type,
+                        broadcast,
+                        processing=True,
+                        node_name=node_name,
+                    )
+        except Exception:
+            logger.exception(
+                "Pipeline failed: instruction_id=%s filename=%s source_type=%s thread_id=%s",
                 instruction_id,
-                exception.get("issue"),
+                filename or "(unnamed)",
+                source_type,
+                thread_id,
             )
+            await InstructionRepository(self.session).update(
+                instruction_id,
+                status="Failed",
+                journey={"failed_step": 1, "completed_through": 0},
+                is_exception=True,
+                exception={"issue": "Pipeline execution failed", "failed_step": 1, "priority": "HIGH"},
+            )
+            if broadcast:
+                row = await InstructionRepository(self.session).get(instruction_id)
+                if row:
+                    await self._broadcast(broadcast, "instruction_updated", row)
+            return {
+                "instruction_id": instruction_id,
+                "status": "Failed",
+                "needs_human_review": False,
+                "success": False,
+                "error": "Pipeline execution failed",
+            }
+
+        inst = final_state["instruction"]
+        journey = _journey_dict(inst)
+        needs_human_review = final_state.get("needs_human_review", inst.get("needs_human_review", False))
+
+        saved = await self._persist_progress(
+            final_state,
+            source_type,
+            broadcast,
+            processing=False,
+            node_name="completed",
+        )
 
         logger.info(
             "Pipeline completed: id=%s status=%s needs_human_review=%s journey_step=%s",
-            instruction_id,
-            inst.get("status"),
+            saved.instruction_id,
+            saved.status,
             needs_human_review,
             journey.get("held_step") or journey.get("failed_step") or journey.get("active_step"),
         )
         return {
-            "instruction_id": instruction_id,
-            "status": inst.get("status"),
+            "instruction_id": saved.instruction_id,
+            "status": saved.status,
             "needs_human_review": needs_human_review,
             "success": True,
             "error": None,

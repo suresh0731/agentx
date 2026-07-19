@@ -46,8 +46,8 @@ export class AxStepTracker extends LightDomElement {
     if (activeStep > 0) {
       const step = JOURNEY_STEPS[activeStep - 1];
       return {
-        text: html`<i class="fa-solid ${step.icon}"></i> At <strong>${step.full}</strong>`,
-        cls: 'text-amber-400',
+        text: html`<i class="fa-solid ${step.icon}"></i> Processing · <strong>${step.full}</strong>`,
+        cls: 'text-emerald-400',
       };
     }
     return { text: '', cls: 'text-slate-400' };
@@ -59,6 +59,7 @@ export class AxStepTracker extends LightDomElement {
     const activeStep = j.activeStep || 0;
     const failedStep = j.failedStep || 0;
     const heldStep = j.heldStep || 0;
+    const isComplete = j.state === 'completed' || completedThrough >= 6;
     const status = this.statusInfo();
     const trackerClass = this.variant === 'workspace'
       ? 'step-tracker step-tracker-workspace'
@@ -81,15 +82,17 @@ export class AxStepTracker extends LightDomElement {
               labelClass += ' step-label-failed';
               failBadge = html`<span class="step-fail-badge"><i class="fa-solid fa-xmark"></i></span>`;
             } else if (heldStep === stepNum) {
-              nodeClass = 'step-node step-active';
-              labelClass += ' step-label-active';
-            } else if (stepNum <= completedThrough) {
+              nodeClass = 'step-node step-held';
+              wrapClass += ' step-held';
+              labelClass += ' step-label-held';
+            } else if (isComplete || stepNum <= completedThrough) {
               nodeClass = 'step-node step-done';
               wrapClass += ' step-done';
               labelClass += ' step-label-done';
             } else if (activeStep === stepNum) {
-              nodeClass = 'step-node step-active';
-              labelClass += ' step-label-active';
+              nodeClass = 'step-node step-processing';
+              wrapClass += ' step-processing';
+              labelClass += ' step-label-processing';
             }
 
             return html`

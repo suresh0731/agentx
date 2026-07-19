@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { LightDomElement } from '../utils/light-dom.js';
 import { api, InstructionSummary } from '../services/api-client.js';
+import { wsClient, WsMessage } from '../services/ws-client.js';
 import '../components/shared/step-tracker.js';
 
 function statusStyle(status: string) {
@@ -9,6 +10,7 @@ function statusStyle(status: string) {
   if (s.includes('exception') || s.includes('recon')) return 'background:#fff7e6;color:#d48806;';
   if (s.includes('reconciled') || s.includes('auto')) return 'background:#f6ffed;color:#389e0d;';
   if (s.includes('routed')) return 'background:#e6f4ff;color:#0958d9;';
+  if (s.includes('processing')) return 'background:#f6ffed;color:#389e0d;';
   return 'background:#f5f5f5;color:#595959;';
 }
 
@@ -21,10 +23,30 @@ function confClass(val: number) {
 @customElement('queue-view')
 export class QueueView extends LightDomElement {
   @state() private rows: InstructionSummary[] = [];
+  private readonly wsHandler = (msg: WsMessage) => this.onWsMessage(msg);
 
   async connectedCallback() {
     super.connectedCallback();
     this.rows = await api.getInstructions();
+    wsClient.on(this.wsHandler);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    wsClient.off(this.wsHandler);
+  }
+
+  private onWsMessage(msg: WsMessage) {
+    if (msg.type !== 'instruction_progress' && msg.type !== 'instruction_updated') return;
+    if (!msg.instruction) return;
+    const idx = this.rows.findIndex((r) => r.ref === msg.id);
+    if (idx >= 0) {
+      const next = [...this.rows];
+      next[idx] = msg.instruction;
+      this.rows = next;
+    } else {
+      this.rows = [...this.rows, msg.instruction];
+    }
   }
 
   private open(ref: string) {
@@ -75,9 +97,9 @@ export class QueueView extends LightDomElement {
               <tr class="cursor-pointer" @click=${() => this.open(r.ref)}>
                 <td class="mono font-medium">${r.ref}</td>
                 <td>${r.source}</td>
-                <td>${r.intent}</td>
-                <td>${r.dest}</td>
-                <td class="center font-medium ${confClass(r.confValue)}">${r.conf}</td>
+                <td>${r.intent || '—'}</td>
+                <td>${r.dest || '—'}</td>
+                <td class="center font-medium ${confClass(r.confValue)}">${r.confValue > 0 ? r.conf : '—'}</td>
                 <td class="center"><span class="status-pill" style="${statusStyle(r.status)}">${r.status}</span></td>
                 <td><ax-step-tracker .journey=${r.journey}></ax-step-tracker></td>
               </tr>

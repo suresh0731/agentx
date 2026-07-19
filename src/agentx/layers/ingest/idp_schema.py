@@ -213,19 +213,34 @@ _SOURCE_TYPE_LABELS: dict[str, str] = {
     "portal": "Portal",
 }
 
+# Legacy display labels that map to a single canonical source (never combined types).
 _LEGACY_SOURCE_ALIASES: dict[str, str] = {
-    "email + pdf": "PDF",
-    "email+pdf": "PDF",
     "portals & files": "Portal",
     "portals and files": "Portal",
     "client templates": "Client Template",
 }
 
+_DISPLAY_TO_SOURCE_TYPE: dict[str, str] = {
+    label.lower(): key for key, label in _SOURCE_TYPE_LABELS.items()
+}
+_DISPLAY_TO_SOURCE_TYPE["client template"] = "template"
+_DISPLAY_TO_SOURCE_TYPE["client templates"] = "template"
+
+
+def normalize_source_type(value: str | None) -> str:
+    """Return a single lowercase processing key (e.g. pdf, email, swift)."""
+    if not value:
+        return "api"
+    key = value.strip().lower()
+    if key in _SOURCE_TYPE_LABELS:
+        return key
+    return _DISPLAY_TO_SOURCE_TYPE.get(key, key)
+
 
 def normalize_source_label(value: str | None = None, source_type: str | None = None) -> str:
     """Return a single canonical source label (e.g. PDF, Email, SWIFT)."""
     if source_type:
-        mapped = _SOURCE_TYPE_LABELS.get(source_type.strip().lower())
+        mapped = _SOURCE_TYPE_LABELS.get(normalize_source_type(source_type))
         if mapped:
             return mapped
 
@@ -235,6 +250,10 @@ def normalize_source_label(value: str | None = None, source_type: str | None = N
     key = value.strip().lower()
     if key in _LEGACY_SOURCE_ALIASES:
         return _LEGACY_SOURCE_ALIASES[key]
+
+    mapped = _SOURCE_TYPE_LABELS.get(normalize_source_type(key))
+    if mapped:
+        return mapped
 
     for label in _SOURCE_TYPE_LABELS.values():
         if key == label.lower():

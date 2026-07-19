@@ -286,11 +286,16 @@
             z-index: 0;
         }
         .step-node-wrap.step-done:not(:last-child)::after,
+        .step-node-wrap.step-processing:not(:last-child)::after,
+        .step-node-wrap.step-held:not(:last-child)::after,
         .step-node-wrap.step-failed:not(:last-child)::after {
-            background: var(--corp-blue);
+            background: #52c41a;
+        }
+        .step-node-wrap.step-held:not(:last-child)::after {
+            background: linear-gradient(90deg, #52c41a 0%, #faad14 100%);
         }
         .step-node-wrap.step-failed:not(:last-child)::after {
-            background: linear-gradient(90deg, var(--corp-blue) 0%, #d9d9d9 100%);
+            background: linear-gradient(90deg, #52c41a 0%, #d9d9d9 100%);
         }
         .step-node {
             width: 22px;
@@ -308,9 +313,21 @@
         .step-node i { font-size: 9px; line-height: 1; }
         .step-node.step-pending { opacity: 0.55; }
         .step-node.step-done {
-            background: var(--corp-blue-light);
-            border-color: var(--corp-blue);
-            color: var(--corp-blue);
+            background: #f6ffed;
+            border-color: #52c41a;
+            color: #389e0d;
+        }
+        .step-node.step-processing {
+            background: #f6ffed;
+            border-color: #52c41a;
+            color: #389e0d;
+            animation: step-pulse 1.2s ease-in-out infinite;
+        }
+        .step-node.step-held {
+            background: #fffbe6;
+            border-color: #faad14;
+            color: #d48806;
+            box-shadow: 0 0 0 3px rgba(250, 173, 20, 0.15);
         }
         .step-node.step-active {
             background: #fff7e6;
@@ -352,8 +369,15 @@
             white-space: nowrap;
         }
         .step-label.step-label-failed { color: var(--corp-danger); font-weight: 600; }
+        .step-label.step-label-held { color: #d48806; font-weight: 600; }
+        .step-label.step-label-processing { color: #389e0d; font-weight: 600; }
         .step-label.step-label-active { color: #d48806; font-weight: 600; }
-        .step-label.step-label-done { color: var(--corp-blue); }
+        .step-label.step-label-done { color: #389e0d; }
+
+        @keyframes step-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(82, 196, 26, 0.45); }
+            50% { box-shadow: 0 0 0 5px rgba(82, 196, 26, 0.12); }
+        }
 
         /* Journey tracker variants */
         .step-tracker-workspace .step-tracker-status { font-size: 12px; margin-bottom: 10px; }

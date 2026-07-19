@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { LightDomElement } from '../../utils/light-dom.js';
 import { api, WorkbenchCard } from '../../services/api-client.js';
+import { wsClient, WsMessage } from '../../services/ws-client.js';
 import { riskColor, formatSla, slaClass } from '../../constants/index.js';
 import '../shared/step-tracker.js';
 
@@ -9,6 +10,29 @@ import '../shared/step-tracker.js';
 export class ReviewWorkspace extends LightDomElement {
   @state() private card: WorkbenchCard | null = null;
   @state() private visible = false;
+  private readonly wsHandler = (msg: WsMessage) => this.onWsMessage(msg);
+
+  connectedCallback() {
+    super.connectedCallback();
+    wsClient.on(this.wsHandler);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    wsClient.off(this.wsHandler);
+  }
+
+  private async onWsMessage(msg: WsMessage) {
+    if (!this.visible || !this.card) return;
+    if (msg.type !== 'instruction_progress' && msg.type !== 'instruction_updated' && msg.type !== 'workbench_updated') return;
+    if (msg.workbench && msg.workbench.id === this.card.id) {
+      this.card = msg.workbench;
+      return;
+    }
+    if (msg.id === this.card.ref) {
+      this.card = await api.getWorkbenchDetail(this.card.id);
+    }
+  }
 
   async show(id: string) {
     this.card = await api.getWorkbenchDetail(id);

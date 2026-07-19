@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { LightDomElement } from '../utils/light-dom.js';
 import { api, WorkbenchCard } from '../services/api-client.js';
+import { wsClient, WsMessage } from '../services/ws-client.js';
 import { WORKBENCH_STAGES, confClass, formatSla, slaClass } from '../constants/index.js';
 import '../components/shared/step-tracker.js';
 
@@ -13,11 +14,39 @@ export class WorkbenchView extends LightDomElement {
   @state() private draggedId: string | null = null;
   @state() private filterIntent = '';
   @state() private filterView = 'all';
+  private readonly wsHandler = (msg: WsMessage) => this.onWsMessage(msg);
 
   async connectedCallback() {
     super.connectedCallback();
     await this.load();
+    wsClient.on(this.wsHandler);
     setInterval(() => this.tickSla(), 60000);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    wsClient.off(this.wsHandler);
+  }
+
+  private onWsMessage(msg: WsMessage) {
+    if (msg.type === 'workbench_updated') {
+      void this.load();
+      return;
+    }
+    if ((msg.type === 'instruction_progress' || msg.type === 'instruction_updated') && msg.workbench) {
+      this.upsertCard(msg.workbench);
+    }
+  }
+
+  private upsertCard(card: WorkbenchCard) {
+    const idx = this.cards.findIndex((c) => c.id === card.id);
+    if (idx >= 0) {
+      const next = [...this.cards];
+      next[idx] = card;
+      this.cards = next;
+    } else {
+      this.cards = [...this.cards, card];
+    }
   }
 
   async load() {

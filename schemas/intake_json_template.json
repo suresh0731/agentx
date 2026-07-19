@@ -1,6 +1,6 @@
 {
   "instructionRef": null,
-  "sourceType": "swift | pdf | excel | api | file | template",
+  "sourceType": "swift | pdf | excel | api | email | portal | template",
   "sourceChannel": "SWIFT | PDF | Email | API | Portal | Client Template | Excel",
   "detectedLanguage": "en",
   "normalizedLanguage": "en",

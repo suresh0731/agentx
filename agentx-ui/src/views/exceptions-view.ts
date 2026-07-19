@@ -1,16 +1,42 @@
 import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { LightDomElement } from '../utils/light-dom.js';
-import { api } from '../services/api-client.js';
+import { api, ExceptionSummary } from '../services/api-client.js';
+import { wsClient, WsMessage } from '../services/ws-client.js';
 import '../components/shared/step-tracker.js';
 
 @customElement('exceptions-view')
 export class ExceptionsView extends LightDomElement {
-  @state() private rows: Awaited<ReturnType<typeof api.getExceptions>> = [];
+  @state() private rows: ExceptionSummary[] = [];
+  private readonly wsHandler = (msg: WsMessage) => this.onWsMessage(msg);
 
   async connectedCallback() {
     super.connectedCallback();
     this.rows = await api.getExceptions();
+    wsClient.on(this.wsHandler);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    wsClient.off(this.wsHandler);
+  }
+
+  private onWsMessage(msg: WsMessage) {
+    if (msg.type !== 'instruction_progress' && msg.type !== 'instruction_updated') return;
+    if (!msg.exception) {
+      if (msg.type === 'instruction_updated') {
+        this.rows = this.rows.filter((r) => r.ref !== msg.id);
+      }
+      return;
+    }
+    const idx = this.rows.findIndex((r) => r.ref === msg.id);
+    if (idx >= 0) {
+      const next = [...this.rows];
+      next[idx] = msg.exception;
+      this.rows = next;
+    } else {
+      this.rows = [...this.rows, msg.exception];
+    }
   }
 
   private open(ref: string) {

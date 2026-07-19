@@ -20,3 +20,11 @@ parsers:
     active: json
     modules:
       json: agentx.layers.ingest.parsers.api.json
+  email:
+    active: body
+    modules:
+      body: agentx.layers.ingest.parsers.email.body
+  portal:
+    active: upload
+    modules:
+      upload: agentx.layers.ingest.parsers.portal.upload

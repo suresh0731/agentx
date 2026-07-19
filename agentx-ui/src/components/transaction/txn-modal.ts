@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { LightDomElement } from '../../utils/light-dom.js';
 import { api, InstructionDetail } from '../../services/api-client.js';
+import { wsClient, WsMessage } from '../../services/ws-client.js';
 import { renderConfidenceHeatmap, renderGoldenSchemaTable } from '../../utils/idp-display.js';
 import '../shared/step-tracker.js';
 
@@ -9,6 +10,24 @@ import '../shared/step-tracker.js';
 export class TxnModal extends LightDomElement {
   @state() private detail: InstructionDetail | null = null;
   @state() private visible = false;
+  private readonly wsHandler = (msg: WsMessage) => this.onWsMessage(msg);
+
+  connectedCallback() {
+    super.connectedCallback();
+    wsClient.on(this.wsHandler);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    wsClient.off(this.wsHandler);
+  }
+
+  private async onWsMessage(msg: WsMessage) {
+    if (!this.visible || !this.detail) return;
+    if (msg.id !== this.detail.ref) return;
+    if (msg.type !== 'instruction_progress' && msg.type !== 'instruction_updated') return;
+    this.detail = await api.getInstruction(this.detail.ref);
+  }
 
   async show(ref: string) {
     this.detail = await api.getInstruction(ref);

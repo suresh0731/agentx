@@ -13,6 +13,7 @@ from agentx.api.serializers import (
     instruction_summary,
     workbench_card,
 )
+from agentx.api.ws_manager import ws_manager
 from agentx.config import settings
 from agentx.db.engine import get_session
 from agentx.db.repositories.instruction_repo import InstructionRepository, WorkbenchRepository
@@ -53,32 +54,6 @@ class ApproveBody(BaseModel):
 
 class ChatBody(BaseModel):
     message: str
-
-
-class WsManager:
-    def __init__(self):
-        self.connections: list[WebSocket] = []
-
-    async def connect(self, ws: WebSocket):
-        await ws.accept()
-        self.connections.append(ws)
-
-    def disconnect(self, ws: WebSocket):
-        if ws in self.connections:
-            self.connections.remove(ws)
-
-    async def broadcast(self, data: dict):
-        dead = []
-        for ws in self.connections:
-            try:
-                await ws.send_json(data)
-            except Exception:
-                dead.append(ws)
-        for ws in dead:
-            self.disconnect(ws)
-
-
-ws_manager = WsManager()
 
 
 @router.get("/me")
@@ -255,7 +230,7 @@ async def ingest(
     logger.info("API ingest request: filename=%s source_type=%s", filename or "(unnamed)", source_type)
     raw = await file.read()
     runner = PipelineRunner(get_graph(), session)
-    result = await runner.run(raw, source_type, filename)
+    result = await runner.run(raw, source_type, filename, broadcast=ws_manager.broadcast)
     if result.get("success"):
         logger.info(
             "API ingest complete: instruction_id=%s status=%s needs_human_review=%s",
@@ -265,7 +240,6 @@ async def ingest(
         )
     else:
         logger.error("API ingest failed: filename=%s error=%s", filename, result.get("error"))
-    await ws_manager.broadcast({"type": "instruction_updated", "id": result["instruction_id"]})
     return result
 
 

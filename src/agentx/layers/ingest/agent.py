@@ -2,7 +2,7 @@ import logging
 import uuid
 
 from agentx.domain.models import InstructionState, JourneyState
-from agentx.layers.ingest.idp_schema import append_timeline, format_source_label, normalize_source_label
+from agentx.layers.ingest.idp_schema import append_timeline, format_source_label, normalize_source_label, normalize_source_type
 from agentx.layers.ingest.parser_loader import ParserLoader
 from agentx.layers.ingest.parsers._protocol import ParseContext
 from agentx.shared.providers.factory import ProviderFactory
@@ -11,7 +11,14 @@ logger = logging.getLogger(__name__)
 
 
 class IngestAgent:
-    async def run(self, raw: bytes, source_type: str, filename: str = "") -> InstructionState:
+    async def run(
+        self,
+        raw: bytes,
+        source_type: str,
+        filename: str = "",
+        instruction_id: str | None = None,
+    ) -> InstructionState:
+        source_type = normalize_source_type(source_type)
         logger.info(
             "Ingest started: filename=%s source_type=%s payload_size=%d",
             filename or "(unnamed)",
@@ -24,7 +31,7 @@ class IngestAgent:
         invoker = ProviderFactory.get_invoker(provider_key)
         ctx = ParseContext(source_type=source_type, filename=filename)
         intake = await ParserLoader.parse(source_type, raw, ctx, invoker)
-        instruction_id = intake.instruction_ref or f"INS-{uuid.uuid4().hex[:7].upper()}"
+        instruction_id = instruction_id or intake.instruction_ref or f"INS-{uuid.uuid4().hex[:7].upper()}"
         source_label = format_source_label(source_type, intake.source_channel)
         timeline: list[str] = []
         append_timeline(timeline, f"Ingestion ({source_label})")

@@ -33,7 +33,8 @@ async def ingest_node(state: GraphState) -> GraphState:
     source_type = state["instruction"].get("source_type", "api")
     filename = state["instruction"].get("filename", "")
     logger.info("Graph node ingest: filename=%s source_type=%s", filename or "(unnamed)", source_type)
-    result = await ingest_agent.run(raw, source_type, filename)
+    pre_id = state["instruction"].get("instruction_id")
+    result = await ingest_agent.run(raw, source_type, filename, instruction_id=pre_id)
     logger.info("Graph node ingest complete: instruction_id=%s parser=%s",
                 result.instruction_id, result.intake_json.get("parser_used"))
     return {"instruction": result.model_dump(), "needs_human_review": False, "approved": False}

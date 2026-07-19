@@ -2,6 +2,7 @@ from agentx.layers.ingest.idp_schema import (
     compute_risk_score,
     extract_extraction_result,
     normalize_source_label,
+    normalize_source_type,
     format_amount_display,
     format_source_label,
     normalize_field_confidences,
@@ -142,12 +143,21 @@ def test_compute_risk_score_low_confidence_increases_risk():
     assert score >= 5
 
 
-def test_format_source_label_pdf():
-    assert format_source_label("pdf", "Email + PDF") == "PDF"
+def test_format_source_label_single_source():
+    assert format_source_label("pdf", "PDF") == "PDF"
+    assert format_source_label("email", "Email") == "Email"
+
+
+def test_normalize_source_type():
+    assert normalize_source_type("PDF") == "pdf"
+    assert normalize_source_type("Email") == "email"
+    assert normalize_source_type("Client Template") == "template"
+    assert normalize_source_type("SWIFT") == "swift"
 
 
 def test_normalize_source_label_single_values():
-    assert normalize_source_label("Email + PDF") == "PDF"
+    assert normalize_source_label("Email") == "Email"
+    assert normalize_source_label("PDF") == "PDF"
     assert normalize_source_label("Portals & Files") == "Portal"
     assert normalize_source_label("Client Templates") == "Client Template"
     assert normalize_source_label("SWIFT") == "SWIFT"
