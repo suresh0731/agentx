@@ -12,6 +12,7 @@ from typing import Any
 import httpx
 
 from agentx.config import settings
+from agentx.layers.ingest.idp_schema import normalize_idp_response
 
 logger = logging.getLogger(__name__)
 
@@ -156,7 +157,7 @@ class EnterpriseIdpInvoker:
                     timeout=settings.idp_request_timeout_seconds,
                 )
                 response.raise_for_status()
-                data = response.json()
+                data = normalize_idp_response(response.json())
         except httpx.HTTPStatusError as exc:
             logger.error(
                 "IDP extraction HTTP error: file_name=%s trace_id=%s status=%s body=%s",

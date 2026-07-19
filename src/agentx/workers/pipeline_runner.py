@@ -9,7 +9,13 @@ from agentx.api.serializers import exception_summary, instruction_summary, workb
 from agentx.config import settings
 from agentx.db.repositories.instruction_repo import InstructionRepository, WorkbenchRepository
 from agentx.db.schema import InstructionRow, WorkbenchRequestRow
-from agentx.layers.ingest.idp_schema import format_amount_display, format_source_label, normalize_source_label, normalize_source_type
+from agentx.layers.ingest.idp_schema import (
+    format_amount_display,
+    format_source_label,
+    normalize_source_label,
+    normalize_source_type,
+    parse_extraction_fields,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -26,9 +32,14 @@ def _journey_dict(inst: dict) -> dict:
 def _investor_name(inst: dict) -> str:
     golden = inst.get("golden_schema") or {}
     intake = inst.get("intake_json") or {}
+    extraction = intake.get("extraction_result") or {}
+    values, _ = parse_extraction_fields(extraction) if extraction else ({}, {})
+    transaction = intake.get("transaction") or {}
     return (
         golden.get("investor_account_name")
+        or values.get("investor_account_name")
         or intake.get("party", {}).get("name")
+        or transaction.get("investor_account_name")
         or "Unknown"
     )
 

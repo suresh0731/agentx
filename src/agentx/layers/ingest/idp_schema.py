@@ -1,3 +1,4 @@
+import json
 import re
 from datetime import datetime
 from typing import Any
@@ -34,7 +35,33 @@ DEST_MAP = {
 }
 
 
+def normalize_idp_response(response: dict[str, Any] | str | Any) -> dict[str, Any]:
+    """Unwrap common IDP API envelopes (e.g. {\"data\": {\"predictions\": ...}})."""
+    if isinstance(response, str):
+        text = response.strip()
+        if text.startswith("data:"):
+            text = text[5:].strip()
+        try:
+            response = json.loads(text)
+        except json.JSONDecodeError:
+            return {}
+
+    if not isinstance(response, dict):
+        return {}
+
+    if response.get("predictions") or response.get("extraction_result"):
+        return response
+
+    for key in ("data", "result", "payload", "response"):
+        inner = response.get(key)
+        if isinstance(inner, dict) and (inner.get("predictions") or inner.get("extraction_result")):
+            return inner
+
+    return response
+
+
 def extract_extraction_result(response: dict[str, Any]) -> dict[str, Any]:
+    response = normalize_idp_response(response)
     predictions = response.get("predictions") or {}
     if predictions:
         first = next(iter(predictions.values()), {})

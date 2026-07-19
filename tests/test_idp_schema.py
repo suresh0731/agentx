@@ -1,6 +1,9 @@
+import json
+
 from agentx.layers.ingest.idp_schema import (
     compute_risk_score,
     extract_extraction_result,
+    normalize_idp_response,
     normalize_source_label,
     normalize_source_type,
     format_amount_display,
@@ -48,6 +51,26 @@ def test_extract_extraction_result_from_predictions():
     extraction = extract_extraction_result(SAMPLE_IDP_RESPONSE)
     assert extraction["country"]["value"] == "United Arab Emirates"
     assert extraction["document_confidence_score"] == 85
+
+
+def test_extract_extraction_result_from_data_wrapper():
+    wrapped = {"data": SAMPLE_IDP_RESPONSE}
+    extraction = extract_extraction_result(wrapped)
+    assert extraction["investor_account_name"]["value"] == "AL MAL CAPITAL (P.S.C) - TREASURY"
+    assert extraction["investor_account_name"]["confidence_score"] == 96
+
+
+def test_normalize_idp_response_sse_prefix():
+    payload = json.dumps(SAMPLE_IDP_RESPONSE)
+    normalized = normalize_idp_response(f"data: {payload}")
+    assert normalized["predictions"]
+
+
+def test_map_idp_response_with_data_wrapper():
+    intake = _map_idp_response({"data": SAMPLE_IDP_RESPONSE})
+    assert intake.party["name"] == "AL MAL CAPITAL (P.S.C) - TREASURY"
+    assert intake.field_confidences["investor_account_name"] == 96
+    assert intake.field_confidences["country"] == 99
 
 
 def test_parse_extraction_fields():
