@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     # Folder ingest poller
     ingest_poll_enabled: bool = True
-    ingest_poll_interval_seconds: int = 120
+    ingest_poll_interval_seconds: int = 5
     ingest_watch_folder: str = "data/incoming"
     ingest_success_folder: str = "data/processed"
     ingest_failed_folder: str = "data/failed"

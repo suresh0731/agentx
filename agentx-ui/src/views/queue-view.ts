@@ -5,6 +5,8 @@ import { api, InstructionSummary } from '../services/api-client.js';
 import { wsClient, WsMessage } from '../services/ws-client.js';
 import '../components/shared/step-tracker.js';
 
+const POLL_INTERVAL_MS = 5000;
+
 function statusStyle(status: string) {
   const s = status.toLowerCase();
   if (s.includes('exception') || s.includes('recon')) return 'background:#fff7e6;color:#d48806;';
@@ -24,28 +26,54 @@ function confClass(val: number) {
 export class QueueView extends LightDomElement {
   @state() private rows: InstructionSummary[] = [];
   private readonly wsHandler = (msg: WsMessage) => this.onWsMessage(msg);
+  private readonly connectHandler = () => { void this.refresh(); };
+  private pollTimer: ReturnType<typeof setInterval> | null = null;
 
   async connectedCallback() {
     super.connectedCallback();
-    this.rows = await api.getInstructions();
+    await this.refresh();
     wsClient.on(this.wsHandler);
+    wsClient.onConnect(this.connectHandler);
+    this.pollTimer = setInterval(() => {
+      if (!wsClient.connected) void this.refresh();
+    }, POLL_INTERVAL_MS);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     wsClient.off(this.wsHandler);
+    wsClient.offConnect(this.connectHandler);
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+      this.pollTimer = null;
+    }
+  }
+
+  private async refresh() {
+    this.rows = await api.getInstructions();
+  }
+
+  private upsertRow(instruction: InstructionSummary) {
+    const idx = this.rows.findIndex((r) => r.ref === instruction.ref);
+    if (idx >= 0) {
+      const next = [...this.rows];
+      next[idx] = instruction;
+      this.rows = next;
+    } else {
+      this.rows = [...this.rows, instruction];
+    }
   }
 
   private onWsMessage(msg: WsMessage) {
     if (msg.type !== 'instruction_progress' && msg.type !== 'instruction_updated') return;
-    if (!msg.instruction) return;
-    const idx = this.rows.findIndex((r) => r.ref === msg.id);
-    if (idx >= 0) {
-      const next = [...this.rows];
-      next[idx] = msg.instruction;
-      this.rows = next;
-    } else {
-      this.rows = [...this.rows, msg.instruction];
+
+    if (msg.instruction) {
+      this.upsertRow(msg.instruction);
+      return;
+    }
+
+    if (msg.id) {
+      void this.refresh();
     }
   }
 

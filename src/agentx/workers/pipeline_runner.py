@@ -15,6 +15,7 @@ from agentx.layers.ingest.idp_schema import (
     normalize_source_label,
     normalize_source_type,
     parse_extraction_fields,
+    round_confidence,
 )
 
 logger = logging.getLogger(__name__)
@@ -104,7 +105,7 @@ class PipelineRunner:
             intent=inst.get("intent"),
             channel=normalize_source_label(inst.get("channel"), source_type),
             routing_target=inst.get("destination"),
-            confidence=inst.get("overall_confidence", 0),
+            confidence=round_confidence(inst.get("overall_confidence", 0)),
             status=inst.get("status", "Processing"),
             journey=journey,
             golden_schema=golden_schema,
@@ -145,7 +146,7 @@ class PipelineRunner:
             existing.source = source_label
             existing.party = investor
             existing.amount = amount_display or existing.amount
-            existing.confidence = inst.get("overall_confidence", existing.confidence)
+            existing.confidence = round_confidence(inst.get("overall_confidence", existing.confidence))
             existing.risk = inst.get("risk_score", existing.risk)
             existing.risk_label = inst.get("risk_label", existing.risk_label)
             existing.journey = journey
@@ -166,7 +167,7 @@ class PipelineRunner:
             source=source_label,
             party=investor,
             amount=amount_display,
-            confidence=inst.get("overall_confidence", 0),
+            confidence=round_confidence(inst.get("overall_confidence", 0)),
             risk=inst.get("risk_score", 0),
             risk_label=inst.get("risk_label", "Low"),
             assignee=settings.default_user,

@@ -9,6 +9,7 @@ from agentx.layers.ingest.idp_schema import (
     classify_intent,
     compute_risk_score,
     overall_confidence_from_fields,
+    round_confidence,
     parse_extraction_fields,
 )
 from agentx.shared.mocks import external_apis as mocks
@@ -172,7 +173,9 @@ class TransactionProcessingAgent:
             "investor_account_name": party or txn.get("party"),
         }
         confidences = [v for v in state.field_confidences.values() if v > 0]
-        state.overall_confidence = sum(confidences) / len(confidences) if confidences else 92.0
+        state.overall_confidence = (
+            round_confidence(sum(confidences) / len(confidences)) if confidences else 92.0
+        )
         if txn.get("quantity") is None and state.intent == "Switch":
             state.overall_confidence = 87.2
             state.field_confidences["amount_unit"] = 72.0

@@ -11,6 +11,7 @@ from agentx.layers.ingest.idp_schema import (
     normalize_field_confidences,
     normalize_golden_schema,
     overall_confidence_from_fields,
+    round_confidence,
     parse_extraction_fields,
     parse_amount_nominal,
 )
@@ -96,6 +97,12 @@ def test_overall_confidence_excludes_document_score():
     _, confidences = parse_extraction_fields(extraction)
     overall = overall_confidence_from_fields(confidences)
     assert 80 < overall < 99
+    assert overall == round_confidence(overall)
+
+
+def test_round_confidence_to_one_decimal():
+    assert round_confidence(97.456) == 97.5
+    assert round_confidence(98.04) == 98.0
 
 
 def test_parse_amount_nominal():

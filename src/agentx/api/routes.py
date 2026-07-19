@@ -30,6 +30,36 @@ router = APIRouter(prefix="/api/v1")
 _graph = None
 
 
+async def _broadcast_instruction_event(
+    session: AsyncSession,
+    instruction_id: str,
+    event_type: str = "instruction_updated",
+    *,
+    workbench_id: str | None = None,
+) -> None:
+    inst_repo = InstructionRepository(session)
+    row = await inst_repo.get(instruction_id)
+    if not row:
+        return
+
+    workbench_row = None
+    if workbench_id:
+        workbench_row = await WorkbenchRepository(session).get(workbench_id)
+    else:
+        workbench_row = await WorkbenchRepository(session).get_by_ref(instruction_id)
+
+    payload: dict[str, Any] = {
+        "type": event_type,
+        "id": instruction_id,
+        "instruction": instruction_summary(row),
+    }
+    if workbench_row:
+        payload["workbench"] = workbench_card(workbench_row, row)
+    if row.is_exception:
+        payload["exception"] = exception_summary(row)
+    await ws_manager.broadcast(payload)
+
+
 def get_graph():
     global _graph
     if _graph is None:
@@ -130,7 +160,7 @@ async def approve_instruction(instruction_id: str, body: ApproveBody, session: A
         wb.stage = "approved"
         await session.commit()
         logger.info("Workbench stage set to approved: instruction_id=%s request_id=%s", instruction_id, wb.id)
-    await ws_manager.broadcast({"type": "instruction_updated", "id": instruction_id})
+    await _broadcast_instruction_event(session, instruction_id)
     return {"ok": True, "ref": instruction_id, "message": f"{instruction_id} approved"}
 
 
@@ -159,7 +189,7 @@ async def update_stage(request_id: str, body: StageUpdate, session: AsyncSession
     row = await WorkbenchRepository(session).update_stage(request_id, body.stage)
     if not row:
         raise HTTPException(404, "Request not found")
-    await ws_manager.broadcast({"type": "workbench_updated", "id": request_id})
+    await _broadcast_instruction_event(session, row.ref, workbench_id=request_id)
     instruction = await InstructionRepository(session).get(row.ref)
     return workbench_card(row, instruction)
 

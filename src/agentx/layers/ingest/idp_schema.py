@@ -165,11 +165,15 @@ def normalize_field_confidences(confidences: dict[str, Any] | None) -> dict[str,
     return normalized
 
 
+def round_confidence(value: float) -> float:
+    return round(float(value), 1)
+
+
 def overall_confidence_from_fields(confidences: dict[str, float]) -> float:
     field_scores = [confidences[field] for field in IDP_FIELDS if field in confidences]
     if not field_scores:
         return 0.0
-    return sum(field_scores) / len(field_scores)
+    return round_confidence(sum(field_scores) / len(field_scores))
 
 
 # Global nominal fund transaction keyword risk weightage.

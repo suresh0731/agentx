@@ -5,6 +5,7 @@ from agentx.layers.ingest.idp_schema import (
     normalize_golden_schema,
     normalize_source_label,
     parse_extraction_fields,
+    round_confidence,
 )
 
 
@@ -25,8 +26,8 @@ def instruction_summary(row: InstructionRow) -> dict:
         "source": normalize_source_label(row.channel, row.source_type),
         "intent": row.intent,
         "dest": row.routing_target,
-        "conf": f"{row.confidence:.1f}%",
-        "confValue": row.confidence,
+        "conf": f"{round_confidence(row.confidence):.1f}%",
+        "confValue": round_confidence(row.confidence),
         "status": row.status,
         "journey": journey_to_api(row.journey or {}),
     }
@@ -69,7 +70,7 @@ def instruction_detail(row: InstructionRow) -> dict:
         "ref": row.instruction_id,
         "meta": row.meta,
         "stage_label": row.stage_label,
-        "confidence": row.confidence,
+        "confidence": round_confidence(row.confidence),
         "recon_status": row.recon_status,
         "recon_detail": row.recon_detail,
         "golden_schema": _golden_schema_for_row(row),
@@ -116,7 +117,7 @@ def workbench_card(row: WorkbenchRequestRow, instruction: InstructionRow | None 
         ),
         "party": row.party,
         "amount": row.amount,
-        "confidence": row.confidence,
+        "confidence": round_confidence(row.confidence),
         "risk": row.risk,
         "riskLabel": row.risk_label,
         "slaMinutes": row.sla_minutes,
