@@ -57,7 +57,7 @@ def _build_exception(inst: dict) -> dict | None:
     stop_step = failed_step or held_step or inst.get("failed_step") or 4
 
     decisions = inst.get("decisions") or []
-        issue = next(
+    issue = next(
         (d for d in reversed(decisions) if any(
             kw in d.lower() for kw in ("mismatch", "aml", "below", "ambiguity", "failed", "hold", "validate fail", "human review")
         )),
