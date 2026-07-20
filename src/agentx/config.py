@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     ingest_failed_folder: str = "data/failed"
     ingest_review_folder: str = "data/review"
 
+    # Routed instruction Excel output (RTAS / ViTAL / RFAS)
+    route_output_folder: str = "routed"
+
     # Enterprise IDP
     idp_token_url: str = (
         "https://sit-authn.idp.global.standardchartered.com"

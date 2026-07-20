@@ -39,6 +39,18 @@ async def dispatch_is(instruction_id: str) -> dict:
     return {"ack": True, "system": "IS", "ref": f"IS-{instruction_id[-4:]}"}
 
 
+async def dispatch_rtas(instruction_id: str) -> dict:
+    return {"ack": True, "system": "RTAS", "ref": f"RTAS-{instruction_id[-4:]}"}
+
+
+async def dispatch_vital(instruction_id: str) -> dict:
+    return {"ack": True, "system": "ViTAL", "ref": f"ViTAL-{instruction_id[-4:]}"}
+
+
+async def dispatch_rfas(instruction_id: str) -> dict:
+    return {"ack": True, "system": "RFAS", "ref": f"RFAS-{instruction_id[-4:]}"}
+
+
 async def fetch_settlement(instruction_id: str, expected: float) -> dict:
     if instruction_id == "INS-7844201":
         return {"matched": False, "expected": expected, "actual": expected - 50}

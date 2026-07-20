@@ -1,0 +1,62 @@
+{
+  "contentType": "application/vnd.gorules.decision",
+  "nodes": [
+    {
+      "id": "in",
+      "name": "request",
+      "type": "inputNode",
+      "content": { "schema": "" },
+      "position": { "x": 100, "y": 100 }
+    },
+    {
+      "id": "routingTable",
+      "name": "routing_destination",
+      "type": "decisionTableNode",
+      "content": {
+        "hitPolicy": "first",
+        "inputs": [
+          { "id": "i1", "name": "Intent Hint", "field": "intentHint" },
+          { "id": "i2", "name": "Country", "field": "country" }
+        ],
+        "outputs": [
+          { "id": "o1", "name": "Destination", "field": "destination" }
+        ],
+        "rules": [
+          {
+            "_id": "r1",
+            "_description": "Subscription/Redemption in Hong Kong -> RTAS",
+            "i1": "'subscription','redemption'",
+            "i2": "'hk','hong kong'",
+            "o1": "'RTAS'"
+          },
+          {
+            "_id": "r2",
+            "_description": "Subscription/Redemption outside Hong Kong -> ViTAL",
+            "i1": "'subscription','redemption'",
+            "i2": "",
+            "o1": "'ViTAL'"
+          },
+          {
+            "_id": "r3",
+            "_description": "All other transaction types -> RFAS",
+            "i1": "",
+            "i2": "",
+            "o1": "'RFAS'"
+          }
+        ]
+      },
+      "position": { "x": 350, "y": 100 }
+    },
+    {
+      "id": "out",
+      "name": "response",
+      "type": "outputNode",
+      "content": { "schema": "" },
+      "position": { "x": 600, "y": 100 }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "sourceId": "in", "targetId": "routingTable", "type": "edge" },
+    { "id": "e2", "sourceId": "routingTable", "targetId": "out", "type": "edge" }
+  ]
+}

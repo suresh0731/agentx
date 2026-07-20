@@ -7,18 +7,11 @@ from agentx.shared.mocks import external_apis as mocks
 logger = logging.getLogger(__name__)
 
 
-class RouteReconcileAgent:
-    async def run(self, state: InstructionState) -> InstructionState:
-        dest = state.destination or "TA"
-        logger.info("Routing instruction_id=%s to destination=%s", state.instruction_id, dest)
-        dispatch = {"TA": mocks.dispatch_ta, "FA": mocks.dispatch_fa, "IS": mocks.dispatch_is}
-        result = await dispatch.get(dest, mocks.dispatch_ta)(state.instruction_id)
-        state.decisions.append(f"Routed to {dest} — ref {result['ref']}")
-        state.journey = JourneyState(completed_through=5, active_step=6)
-        append_timeline(state.timeline, f"Routed to {dest}")
-        state.status = "Routed"
-        logger.info("Dispatch complete: instruction_id=%s dest=%s ref=%s", state.instruction_id, dest, result["ref"])
+class ReconcileAgent:
+    """Stage 6 - Reconciliation: matches routed instruction against settlement records."""
 
+    async def run(self, state: InstructionState) -> InstructionState:
+        logger.debug("Running %s for instruction_id=%s", self.__class__.__name__, state.instruction_id)
         amount = (
             parse_amount_nominal(state.golden_schema.get("amount_nominal"))
             or state.golden_schema.get("amount")
@@ -31,7 +24,11 @@ class RouteReconcileAgent:
             state.status = "Reconciled"
             state.decisions.append("Reconciliation matched")
             append_timeline(state.timeline, "Reconciliation matched")
-            logger.info("Reconciliation matched: instruction_id=%s amount=%s", state.instruction_id, amount)
+            logger.info(
+                "Reconciliation matched: instruction_id=%s amount=%s",
+                state.instruction_id,
+                amount,
+            )
         else:
             state.journey = JourneyState(failed_step=6, completed_through=5)
             state.status = "Recon Exception"
