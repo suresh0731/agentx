@@ -4,6 +4,7 @@ from typing import Any
 
 from agentx.layers.ingest.idp_schema import (
     IDP_FIELDS,
+    extract_doc_type,
     extract_extraction_result,
     parse_extraction_fields,
 )
@@ -30,6 +31,7 @@ def _map_idp_response(response: dict[str, Any]) -> IntakeJSON:
 
     transaction_type = values.get("transaction_type")
     intent_hint = (transaction_type or "subscription").lower()
+    doc_type = extract_doc_type(response)
 
     return IntakeJSON(
         source_type="pdf",
@@ -40,6 +42,7 @@ def _map_idp_response(response: dict[str, Any]) -> IntakeJSON:
         },
         transaction={
             "intentHint": intent_hint,
+            "doc_type": doc_type,
             **values,
         },
         extraction_result=extraction,

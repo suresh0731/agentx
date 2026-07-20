@@ -45,6 +45,7 @@ param(
     [switch]$UiOnly,
     [string]$BindHost = "127.0.0.1",
     [int]$ApiPort = 8001,
+    [int]$ReconPort = 8002,
     [int]$UiPort = 5173,
     [switch]$NoNewWindow
 )
@@ -197,6 +198,43 @@ try {
     Ensure-NodeModules
 
     if ($StartBackend) {
+        $reconReloadFlag = if ($Dev) { " --reload" } else { "" }
+        $reconCmd = "& '$VenvUvicorn' recon_service.main:app --host $BindHost --port $ReconPort$reconReloadFlag"
+
+        Write-Step "Starting Reconciliation Service on http://${BindHost}:$ReconPort"
+        Write-Host "    Health: http://${BindHost}:$ReconPort/health"
+        Write-Host ""
+
+        if ($NoNewWindow) {
+            $env:PYTHONPATH = Join-Path $ProjectRoot "src"
+            Start-Job -ScriptBlock {
+                param($Cmd, $Root)
+                Set-Location $Root
+                $env:PYTHONPATH = Join-Path $Root "src"
+                Invoke-Expression $Cmd
+            } -ArgumentList $reconCmd, $ProjectRoot | Out-Null
+        }
+        else {
+            Start-ServiceWindow `
+                -Title "Recon Service" `
+                -WorkingDirectory $ProjectRoot `
+                -Environment @{
+                    PYTHONPATH = (Join-Path $ProjectRoot "src")
+                } `
+                -Command $reconCmd
+        }
+
+        $reconHealthUrl = "http://${BindHost}:$ReconPort/health"
+        Write-Step "Waiting for Reconciliation Service health check"
+        if (Wait-ForHttp -Url $reconHealthUrl) {
+            Write-Host "Reconciliation Service is ready at $reconHealthUrl" -ForegroundColor Green
+        }
+        else {
+            Write-Warning "Reconciliation Service did not respond within 30s. Check the Recon Service window for errors."
+        }
+    }
+
+    if ($StartBackend) {
         $reloadFlag = if ($Dev) { " --reload" } else { "" }
         $uvicornCmd = "& '$VenvUvicorn' agentx.main:app --host $BindHost --port $ApiPort$reloadFlag"
 
@@ -218,6 +256,7 @@ try {
             -Environment @{
                 PYTHONPATH = (Join-Path $ProjectRoot "src")
                 AGENTX_DEBUG = if ($Dev) { "true" } else { "false" }
+                AGENTX_RECON_SERVICE_URL = "http://${BindHost}:$ReconPort"
             } `
             -Command $uvicornCmd
 

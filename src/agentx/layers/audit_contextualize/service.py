@@ -27,8 +27,10 @@ class AuditContextualizeService:
     async def record_block(self, state: InstructionState, block: str) -> InstructionState:
         labels = {
             "ingest": (1, "Ingestion", "ingestion"),
-            "transaction_processing": (3, "Validate & Enrich", "validation"),
+            "detect": (2, "Detect & Classify", "detection"),
+            "validate": (3, "Validate & Enrich", "validation"),
             "repair": (4, "Repair + Templatise", "repair"),
+            "transaction_processing": (3, "Validate & Enrich", "validation"),
             "route": (5, "Routing", "routing"),
             "reconcile": (6, "Reconciliation", "reconciliation"),
         }

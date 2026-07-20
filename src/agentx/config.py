@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     # Routed instruction Excel output (RTAS / ViTAL / RFAS)
     route_output_folder: str = "routed"
 
+    # External reconciliation validation service
+    recon_service_url: str = "http://127.0.0.1:8002"
+    recon_service_timeout_seconds: float = 30.0
+
     # Enterprise IDP
     idp_token_url: str = (
         "https://sit-authn.idp.global.standardchartered.com"

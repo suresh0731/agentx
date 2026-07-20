@@ -60,6 +60,17 @@ def normalize_idp_response(response: dict[str, Any] | str | Any) -> dict[str, An
     return response
 
 
+def extract_doc_type(response: dict[str, Any]) -> str | None:
+    """Return doc_type from IDP predictions envelope (e.g. 'trade')."""
+    response = normalize_idp_response(response)
+    predictions = response.get("predictions") or {}
+    if predictions:
+        first = next(iter(predictions.values()), {})
+        if isinstance(first, dict):
+            return first.get("doc_type")
+    return response.get("doc_type")
+
+
 def extract_extraction_result(response: dict[str, Any]) -> dict[str, Any]:
     response = normalize_idp_response(response)
     predictions = response.get("predictions") or {}
@@ -69,6 +80,11 @@ def extract_extraction_result(response: dict[str, Any]) -> dict[str, Any]:
             return first.get("extraction_result") or {}
 
     return response.get("extraction_result") or {}
+
+
+DOC_TYPE_DETECT_MAP = {
+    "trade": "Trade Fund",
+}
 
 
 def parse_extraction_fields(extraction: dict[str, Any]) -> tuple[dict[str, Any], dict[str, float]]:

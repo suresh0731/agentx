@@ -37,3 +37,5 @@ class InstructionState(BaseModel):
     timeline: list[str] = Field(default_factory=list)
     risk_score: int = 0
     risk_label: str = "Low"
+    recon_status: str | None = None
+    recon_detail: str | None = None

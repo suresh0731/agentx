@@ -65,7 +65,15 @@ npm install
 
 ### Every time you run
 
-**Terminal 1 — Backend (port 8001)**
+**Terminal 1 — Reconciliation Service (port 8002)**
+
+```cmd
+cd agent-ingestion
+set PYTHONPATH=src
+.\.venv\Scripts\uvicorn recon_service.main:app --host 127.0.0.1 --port 8002 --reload
+```
+
+**Terminal 2 — Backend API (port 8001)**
 
 After setup (`pip install -e .`), you can start uvicorn directly — no `PYTHONPATH` needed:
 
@@ -107,7 +115,7 @@ curl http://127.0.0.1:8001/health
 
 Expected response includes `"status":"ok"`.
 
-**Terminal 2 — UI (port 5173)**
+**Terminal 3 — UI (port 5173)**
 
 ```powershell
 cd agentx-ui
@@ -127,9 +135,10 @@ Open http://localhost:5173 in your browser. The UI proxies API calls to the back
 
 | Step | What | URL |
 |------|------|-----|
-| 1 | Start backend first | http://127.0.0.1:8001/health |
-| 2 | Start UI second | http://localhost:5173 |
-| 3 | Open the app | http://localhost:5173 |
+| 1 | Start reconciliation service | http://127.0.0.1:8002/health |
+| 2 | Start backend API | http://127.0.0.1:8001/health |
+| 3 | Start UI | http://localhost:5173 |
+| 4 | Open the app | http://localhost:5173 |
 
 Keep both terminals open while working. Press `Ctrl+C` in each terminal to stop.
 
@@ -183,7 +192,8 @@ curl http://127.0.0.1:8001/health
 
 ## Architecture
 
-- **Backend:** `src/agentx/` — FastAPI, LangGraph 3-block pipeline, AnalyticsService, OpsAssistantAgent
+- **Backend:** `src/agentx/` — FastAPI, LangGraph pipeline, AnalyticsService, OpsAssistantAgent
+- **Reconciliation service:** `src/recon_service/` — separate API that validates ingested vs external-system records
 - **Frontend:** `agentx-ui/` — Lit 3 + TypeScript + Vite
 - **Seed data:** `seed/demo_data.json` → SQLite on startup
 

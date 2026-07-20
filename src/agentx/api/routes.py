@@ -160,8 +160,24 @@ async def approve_instruction(instruction_id: str, body: ApproveBody, session: A
         wb.stage = "approved"
         await session.commit()
         logger.info("Workbench stage set to approved: instruction_id=%s request_id=%s", instruction_id, wb.id)
+
+    runner = PipelineRunner(get_graph(), session)
+    result = await runner.resume_after_approval(
+        instruction_id,
+        fields=body.fields,
+        note=body.note,
+        broadcast=ws_manager.broadcast,
+    )
+    if not result.get("success"):
+        raise HTTPException(400, result.get("error", "Resume failed"))
+
     await _broadcast_instruction_event(session, instruction_id)
-    return {"ok": True, "ref": instruction_id, "message": f"{instruction_id} approved"}
+    return {
+        "ok": True,
+        "ref": instruction_id,
+        "message": f"{instruction_id} approved — routed and reconciled",
+        "status": result.get("status"),
+    }
 
 
 @router.get("/workbench/requests")

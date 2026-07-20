@@ -10,6 +10,7 @@ from agentx.config import settings
 from agentx.db.repositories.instruction_repo import InstructionRepository, WorkbenchRepository
 from agentx.db.schema import InstructionRow, WorkbenchRequestRow
 from agentx.layers.ingest.idp_schema import (
+    append_timeline,
     format_amount_display,
     format_source_label,
     normalize_source_label,
@@ -17,6 +18,7 @@ from agentx.layers.ingest.idp_schema import (
     parse_extraction_fields,
     round_confidence,
 )
+from agentx.layers.orchestrator.graph import reconcile_node, route_node
 
 logger = logging.getLogger(__name__)
 
@@ -55,9 +57,9 @@ def _build_exception(inst: dict) -> dict | None:
     stop_step = failed_step or held_step or inst.get("failed_step") or 4
 
     decisions = inst.get("decisions") or []
-    issue = next(
+        issue = next(
         (d for d in reversed(decisions) if any(
-            kw in d.lower() for kw in ("mismatch", "aml", "below", "ambiguity", "failed", "hold")
+            kw in d.lower() for kw in ("mismatch", "aml", "below", "ambiguity", "failed", "hold", "validate fail", "human review")
         )),
         decisions[-1] if decisions else "Requires human review",
     )
@@ -121,6 +123,8 @@ class PipelineRunner:
             exception=exception,
             source_type=source_type,
             workbench_stage=inst.get("workbench_stage", "submitted"),
+            recon_status=inst.get("recon_status"),
+            recon_detail=inst.get("recon_detail"),
         )
 
     async def _upsert_workbench(
@@ -211,7 +215,7 @@ class PipelineRunner:
                 "filename", "intent", "channel", "routing_target", "confidence", "status", "journey",
                 "golden_schema", "intake_json", "party", "amount_display", "field_confidences",
                 "decisions", "repair_notes", "timeline", "in_queue", "is_exception", "exception",
-                "workbench_stage",
+                "workbench_stage", "recon_status", "recon_detail",
             ):
                 setattr(existing, field, getattr(row, field))
             await self.session.commit()
@@ -351,6 +355,101 @@ class PipelineRunner:
             "instruction_id": saved.instruction_id,
             "status": saved.status,
             "needs_human_review": needs_human_review,
+            "success": True,
+            "error": None,
+        }
+
+    @staticmethod
+    def _row_to_instruction_dict(row: InstructionRow) -> dict:
+        return {
+            "instruction_id": row.instruction_id,
+            "filename": row.filename or "",
+            "channel": row.channel or "",
+            "source_type": row.source_type or "",
+            "intake_json": row.intake_json or {},
+            "intent": row.intent,
+            "destination": row.routing_target,
+            "golden_schema": row.golden_schema or {},
+            "field_confidences": row.field_confidences or {},
+            "overall_confidence": row.confidence,
+            "journey": dict(row.journey or {}),
+            "workbench_stage": row.workbench_stage or "review",
+            "status": row.status,
+            "decisions": list(row.decisions or []),
+            "repair_notes": list(row.repair_notes or []),
+            "timeline": list(row.timeline or []),
+            "needs_human_review": False,
+            "recon_status": row.recon_status,
+            "recon_detail": row.recon_detail,
+        }
+
+    async def resume_after_approval(
+        self,
+        instruction_id: str,
+        fields: dict[str, str] | None = None,
+        note: str | None = None,
+        broadcast: BroadcastFn | None = None,
+    ) -> dict:
+        """Continue route + reconcile after human workbench approval."""
+        inst_repo = InstructionRepository(self.session)
+        row = await inst_repo.get(instruction_id)
+        if not row:
+            return {"success": False, "error": "Instruction not found"}
+
+        inst = self._row_to_instruction_dict(row)
+        source_type = normalize_source_type(row.source_type or "pdf")
+
+        if fields:
+            golden = dict(inst.get("golden_schema") or {})
+            golden.update(fields)
+            inst["golden_schema"] = golden
+            inst["decisions"].append(f"Human corrections applied: {', '.join(fields.keys())}")
+
+        timeline = list(inst.get("timeline") or [])
+        append_timeline(timeline, "Human review approved — continuing to Routing")
+        if note:
+            timeline.append(note)
+        inst["timeline"] = timeline
+        inst["needs_human_review"] = False
+        inst["workbench_stage"] = "approved"
+        inst["journey"] = {"completed_through": 4, "active_step": 5, "held_step": None}
+        inst["decisions"].append("Human review approved — proceeding to route and reconcile")
+
+        state: dict = {
+            "instruction": inst,
+            "needs_human_review": False,
+            "approved": True,
+        }
+
+        logger.info("Resuming pipeline after approval: instruction_id=%s", instruction_id)
+
+        for node_name, node_fn in (("route", route_node), ("reconcile", reconcile_node)):
+            state = await node_fn(state)
+            await self._persist_progress(
+                state,
+                source_type,
+                broadcast,
+                processing=True,
+                node_name=node_name,
+            )
+
+        saved = await self._persist_progress(
+            state,
+            source_type,
+            broadcast,
+            processing=False,
+            node_name="resume_completed",
+        )
+
+        logger.info(
+            "Pipeline resumed: instruction_id=%s status=%s",
+            saved.instruction_id,
+            saved.status,
+        )
+        return {
+            "instruction_id": saved.instruction_id,
+            "status": saved.status,
+            "needs_human_review": False,
             "success": True,
             "error": None,
         }
