@@ -158,8 +158,6 @@ class PipelineRunner:
             existing.findings = inst.get("findings", existing.findings)
             existing.explain = inst.get("explainability", existing.explain)
             existing.timeline = timeline
-            await self.session.commit()
-            await self.session.refresh(existing)
             return existing
 
         req_id = f"REQ-{uuid.uuid4().hex[:8].upper()}"
@@ -181,7 +179,7 @@ class PipelineRunner:
             explain=inst.get("explainability", ""),
             timeline=timeline,
         )
-        await wb_repo.save(row)
+        self.session.add(row)
         logger.info(
             "Workbench request created: req_id=%s instruction_id=%s",
             req_id,
@@ -214,8 +212,6 @@ class PipelineRunner:
         existing.confidence = round_confidence(inst.get("overall_confidence", existing.confidence))
         existing.journey = journey
         existing.timeline = timeline
-        await self.session.commit()
-        await self.session.refresh(existing)
         return existing
 
     async def _persist_progress(
@@ -247,17 +243,24 @@ class PipelineRunner:
                 "workbench_stage", "recon_status", "recon_detail",
             ):
                 setattr(existing, field, getattr(row, field))
-            await self.session.commit()
-            await self.session.refresh(existing)
             saved = existing
         else:
-            saved = await inst_repo.save(row)
+            self.session.add(row)
+            saved = row
 
         workbench_row = None
         if inst.get("needs_human_review"):
             workbench_row = await self._upsert_workbench(inst, source_type, journey, timeline, exception)
         else:
             workbench_row = await self._sync_workbench_if_exists(inst, source_type, journey, timeline)
+
+        await self.session.commit()
+        instruction_id = saved.instruction_id
+        reloaded = await inst_repo.get(instruction_id)
+        if reloaded is not None:
+            saved = reloaded
+        if workbench_row is not None:
+            workbench_row = await WorkbenchRepository(self.session).get(workbench_row.id) or workbench_row
 
         event_type = "instruction_progress" if processing else "instruction_updated"
         await self._broadcast(broadcast, event_type, saved, workbench_row)

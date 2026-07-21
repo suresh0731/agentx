@@ -29,9 +29,9 @@ class InstructionRepository:
 
     async def save(self, row: InstructionRow) -> InstructionRow:
         self.session.add(row)
+        row_id = row.instruction_id
         await self.session.commit()
-        await self.session.refresh(row)
-        return row
+        return await self.get(row_id) or row
 
     async def update(self, instruction_id: str, **kwargs) -> InstructionRow | None:
         row = await self.get(instruction_id)
@@ -40,8 +40,7 @@ class InstructionRepository:
         for k, v in kwargs.items():
             setattr(row, k, v)
         await self.session.commit()
-        await self.session.refresh(row)
-        return row
+        return await self.get(instruction_id) or row
 
 
 class WorkbenchRepository:
@@ -65,8 +64,7 @@ class WorkbenchRepository:
             return None
         row.stage = stage
         await self.session.commit()
-        await self.session.refresh(row)
-        return row
+        return await self.get(request_id) or row
 
     async def add_comment(self, request_id: str, comment: dict) -> WorkbenchRequestRow | None:
         row = await self.get(request_id)
@@ -76,11 +74,10 @@ class WorkbenchRepository:
         comments.append(comment)
         row.comments = comments
         await self.session.commit()
-        await self.session.refresh(row)
-        return row
+        return await self.get(request_id) or row
 
     async def save(self, row: WorkbenchRequestRow) -> WorkbenchRequestRow:
         self.session.add(row)
+        row_id = row.id
         await self.session.commit()
-        await self.session.refresh(row)
-        return row
+        return await self.get(row_id) or row
