@@ -18,6 +18,7 @@ from agentx.config import settings
 from agentx.db.engine import get_session
 from agentx.db.repositories.instruction_repo import InstructionRepository, WorkbenchRepository
 from agentx.db.repositories.metrics_repo import ConfigRepository, EvidenceRepository
+from agentx.layers.analytics.service import AnalyticsService
 from agentx.layers.ingest.idp_schema import append_timeline, normalize_golden_schema
 from agentx.layers.ops_assistant.agent import OpsAssistantAgent
 from agentx.layers.orchestrator.graph import build_graph
