@@ -145,7 +145,7 @@ export class WorkbenchView extends LightDomElement {
             <option value="exceptions">Exceptions & Escalations</option>
           </select>
           <button class="btn-outline-sm" @click=${() => this.load()}><i class="fa-solid fa-sync-alt"></i> Refresh</button>
-          <button class="corp-btn-primary px-4 h-8 text-xs flex items-center gap-1.5" style="border:none;cursor:pointer;" @click=${() => { this.showInsights = !this.showInsights; }}>
+          <button type="button" class="corp-btn-primary px-4 h-8 text-xs" title="Queue insights" @click=${() => { this.showInsights = !this.showInsights; }}>
             <i class="fa-solid fa-chart-pie"></i>
             <span class="hidden sm:inline">Insights</span>
           </button>
@@ -179,7 +179,7 @@ export class WorkbenchView extends LightDomElement {
             <span class="text-slate-400">Avg conf</span>
             <span class="wb-stat-value">${this.insights.avg_confidence}%</span>
           </div>
-          <button class="wb-stat-chip hover:border-blue-300 cursor-pointer ml-auto" style="background:#fff;" @click=${() => { this.showInsights = true; }}>
+          <button type="button" class="wb-stat-chip cursor-pointer ml-auto" @click=${() => { this.showInsights = true; }}>
             <i class="fa-solid fa-chart-simple text-blue-600 text-[10px]"></i>
             <span class="text-gray-600">Stage breakdown</span>
             <i class="fa-solid fa-chevron-right text-[9px] text-gray-400"></i>

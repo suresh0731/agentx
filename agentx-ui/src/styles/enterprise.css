@@ -143,11 +143,24 @@
         }
 
         .corp-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             background: var(--corp-blue);
             color: #ffffff;
+            border: none;
             border-radius: 9999px;
             font-weight: 500;
+            line-height: 1;
+            white-space: nowrap;
+            cursor: pointer;
             transition: background 0.15s ease;
+        }
+        .corp-btn-primary i {
+            flex-shrink: 0;
+            font-size: 11px;
+            line-height: 1;
         }
         .corp-btn-primary:hover {
             background: var(--corp-blue-hover);
@@ -603,7 +616,7 @@
             flex-shrink: 0;
         }
         .wb-stat-chip {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 6px 12px;
@@ -612,6 +625,19 @@
             border-radius: 12px;
             font-size: 11px;
             white-space: nowrap;
+            line-height: 1.2;
+        }
+        button.wb-stat-chip {
+            font: inherit;
+            cursor: pointer;
+            appearance: none;
+        }
+        button.wb-stat-chip i {
+            flex-shrink: 0;
+        }
+        button.wb-stat-chip:hover {
+            background: #eff6ff;
+            border-color: #93c5fd;
         }
         .wb-stat-chip .wb-stat-value {
             font-weight: 600;
