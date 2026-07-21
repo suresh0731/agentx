@@ -223,6 +223,7 @@ async def approve_instruction(instruction_id: str, body: ApproveBody, session: A
         raise HTTPException(409, "Instruction has already been approved and cannot be reviewed again")
     if wb:
         wb.stage = "approved"
+        wb.journey = {"completed_through": 4, "active_step": 5, "held_step": None}
         if body.fields:
             golden = dict(row.golden_schema or {})
             golden.update(body.fields)

@@ -16,16 +16,20 @@ export class WorkbenchView extends LightDomElement {
   @state() private filterView = 'all';
   private readonly wsHandler = (msg: WsMessage) => this.onWsMessage(msg);
 
+  private readonly approvedHandler = () => { void this.load(); };
+
   async connectedCallback() {
     super.connectedCallback();
     await this.load();
     wsClient.on(this.wsHandler);
+    this.addEventListener('approved', this.approvedHandler);
     setInterval(() => this.tickSla(), 60000);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     wsClient.off(this.wsHandler);
+    this.removeEventListener('approved', this.approvedHandler);
   }
 
   private onWsMessage(msg: WsMessage) {

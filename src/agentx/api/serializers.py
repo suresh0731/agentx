@@ -127,6 +127,16 @@ def exception_summary(row: InstructionRow) -> dict:
     }
 
 
+def _workbench_journey(
+    workbench: WorkbenchRequestRow,
+    instruction: InstructionRow | None = None,
+) -> dict:
+    """Prefer instruction journey — it is updated after approval; workbench copy can lag."""
+    if instruction is not None and instruction.journey:
+        return instruction.journey
+    return workbench.journey or {}
+
+
 def workbench_card(row: WorkbenchRequestRow, instruction: InstructionRow | None = None) -> dict:
     fields = _field_confidences_for_row(instruction) if instruction is not None else normalize_field_confidences(row.fields)
     if instruction is None and sum(fields.values()) == 0:
@@ -136,6 +146,7 @@ def workbench_card(row: WorkbenchRequestRow, instruction: InstructionRow | None 
     display = display_fields_from_golden(golden) if golden is not None else {}
     amount = display.get("amount_display") or (row.amount if instruction is None else format_amount_display(golden)) or "—"
     party = display.get("party", row.party)
+    journey = _workbench_journey(row, instruction)
 
     payload = {
         "id": row.id,
@@ -155,7 +166,7 @@ def workbench_card(row: WorkbenchRequestRow, instruction: InstructionRow | None 
         "slaRemaining": row.sla_remaining,
         "assignee": row.assignee,
         "path": row.path,
-        "journey": journey_to_api(row.journey or {}),
+        "journey": journey_to_api(journey),
         "fields": fields,
         "findings": row.findings,
         "explain": row.explain,

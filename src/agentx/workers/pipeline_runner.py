@@ -189,6 +189,35 @@ class PipelineRunner:
         )
         return row
 
+    async def _sync_workbench_if_exists(
+        self,
+        inst: dict,
+        source_type: str,
+        journey: dict,
+        timeline: list,
+    ) -> WorkbenchRequestRow | None:
+        """Keep workbench row in sync after approval when pipeline continues."""
+        wb_repo = WorkbenchRepository(self.session)
+        existing = await wb_repo.get_by_ref(inst["instruction_id"])
+        if not existing:
+            return None
+
+        investor = _investor_name(inst)
+        source_label = format_source_label(source_type, inst.get("channel", ""))
+        amount_display = format_amount_display(inst.get("golden_schema") or {})
+
+        existing.stage = inst.get("workbench_stage", existing.stage)
+        existing.intent = inst.get("intent") or existing.intent
+        existing.source = source_label
+        existing.party = investor
+        existing.amount = amount_display or existing.amount
+        existing.confidence = round_confidence(inst.get("overall_confidence", existing.confidence))
+        existing.journey = journey
+        existing.timeline = timeline
+        await self.session.commit()
+        await self.session.refresh(existing)
+        return existing
+
     async def _persist_progress(
         self,
         state: dict,
@@ -227,6 +256,8 @@ class PipelineRunner:
         workbench_row = None
         if inst.get("needs_human_review"):
             workbench_row = await self._upsert_workbench(inst, source_type, journey, timeline, exception)
+        else:
+            workbench_row = await self._sync_workbench_if_exists(inst, source_type, journey, timeline)
 
         event_type = "instruction_progress" if processing else "instruction_updated"
         await self._broadcast(broadcast, event_type, saved, workbench_row)

@@ -47,6 +47,7 @@ export class AgentxApp extends LightDomElement {
     }) as EventListener);
     this.addEventListener('approved', ((e: CustomEvent) => {
       this.toast = `${e.detail} approved — journey continued`;
+      void this.refreshBadges();
       setTimeout(() => { this.toast = ''; }, 3000);
     }) as EventListener);
     this.addEventListener('navigate-tab', ((e: CustomEvent) => {
