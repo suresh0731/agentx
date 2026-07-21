@@ -1,8 +1,12 @@
-import { html, TemplateResult } from 'lit';
+import { html, nothing, TemplateResult } from 'lit';
 import { IDP_FIELDS, formatFieldLabel, formatFieldValue, heatClass } from '../constants/index.js';
 
 type ExtractionEntry = { value?: unknown; confidence_score?: number };
 type ExtractionResult = Record<string, ExtractionEntry | number | null | undefined>;
+type IntakeLike = {
+  extraction_result?: ExtractionResult | Record<string, unknown> | null;
+  field_confidences?: Record<string, number>;
+} | null | undefined;
 
 const LEGACY_GOLDEN_KEYS: Record<string, string> = {
   party: 'investor_account_name',
@@ -49,7 +53,7 @@ function applyLegacyConfidenceKeys(confidences: Record<string, number>): Record<
   return normalized;
 }
 
-function parseExtractionResult(extraction?: ExtractionResult | null): {
+function parseExtractionResult(extraction?: ExtractionResult | Record<string, unknown> | null): {
   values: Record<string, unknown>;
   confidences: Record<string, number>;
 } {
@@ -71,7 +75,7 @@ function parseExtractionResult(extraction?: ExtractionResult | null): {
 
 export function resolveGoldenSchema(
   schema?: Record<string, unknown> | null,
-  intake?: { extraction_result?: ExtractionResult } | null,
+  intake?: IntakeLike,
 ): Record<string, unknown> {
   const resolved: Record<string, unknown> = {};
   const fromSchema = applyLegacyGoldenKeys(schema || {});
@@ -89,7 +93,7 @@ export function resolveGoldenSchema(
 
 export function resolveFieldConfidences(
   confidences?: Record<string, number> | null,
-  intake?: { extraction_result?: ExtractionResult; field_confidences?: Record<string, number> } | null,
+  intake?: IntakeLike,
 ): Record<string, number> {
   const { confidences: fromExtraction } = parseExtractionResult(intake?.extraction_result);
   const merged = applyLegacyConfidenceKeys({
@@ -107,7 +111,7 @@ export function resolveFieldConfidences(
 
 export function renderGoldenSchemaTable(
   schema?: Record<string, unknown> | null,
-  intake?: { extraction_result?: ExtractionResult } | null,
+  intake?: IntakeLike,
 ): TemplateResult {
   const resolved = resolveGoldenSchema(schema, intake);
   return html`
@@ -120,9 +124,69 @@ export function renderGoldenSchemaTable(
   `;
 }
 
+export function goldenSchemaToFormValues(
+  schema?: Record<string, unknown> | null,
+  intake?: IntakeLike,
+): Record<string, string> {
+  const resolved = resolveGoldenSchema(schema, intake);
+  const form: Record<string, string> = {};
+  for (const field of IDP_FIELDS) {
+    const value = resolved[field];
+    form[field] = value === null || value === undefined ? '' : String(value);
+  }
+  return form;
+}
+
+export function collectFieldCorrections(
+  edited: Record<string, string>,
+  original: Record<string, string>,
+): Record<string, string> {
+  const corrections: Record<string, string> = {};
+  for (const field of IDP_FIELDS) {
+    const editedVal = (edited[field] ?? '').trim();
+    const originalVal = (original[field] ?? '').trim();
+    if (editedVal !== originalVal) {
+      corrections[field] = editedVal;
+    }
+  }
+  return corrections;
+}
+
+export function renderEditableFieldsForm(
+  values: Record<string, string>,
+  confidences: Record<string, number>,
+  onFieldChange: (field: string, value: string) => void,
+): TemplateResult {
+  return html`
+    <div class="editable-fields-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px 16px;">
+      ${IDP_FIELDS.map((field) => {
+        const score = confidences[field] ?? 0;
+        const needsReview = score > 0 && score < 98;
+        return html`
+          <div>
+            <div class="field-label mb-1 flex items-center justify-between gap-2">
+              <span>${formatFieldLabel(field)}</span>
+              ${needsReview
+                ? html`<span class="text-[10px] text-amber-600 whitespace-nowrap">${score}%</span>`
+                : nothing}
+            </div>
+            <input
+              type="text"
+              class="editable-field w-full"
+              style=${needsReview ? 'border-color:#fcd34d;' : ''}
+              .value=${values[field] ?? ''}
+              @input=${(e: Event) => onFieldChange(field, (e.target as HTMLInputElement).value)}
+            />
+          </div>
+        `;
+      })}
+    </div>
+  `;
+}
+
 export function renderConfidenceHeatmap(
   fields?: Record<string, number> | null,
-  intake?: { extraction_result?: ExtractionResult; field_confidences?: Record<string, number> } | null,
+  intake?: IntakeLike,
 ): TemplateResult {
   const resolved = resolveFieldConfidences(fields, intake);
   return html`

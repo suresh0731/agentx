@@ -21,7 +21,9 @@ export const api = {
   getInstructions: () => request<InstructionSummary[]>('/instructions'),
   getExceptions: () => request<ExceptionSummary[]>('/exceptions'),
   getInstruction: (id: string) => request<InstructionDetail>(`/instructions/${id}`),
-  approveInstruction: (id: string, body: object = {}) =>
+  updateInstructionFields: (id: string, body: { fields: Record<string, string>; note?: string }) =>
+    request<InstructionDetail>(`/instructions/${id}/fields`, { method: 'PATCH', body: JSON.stringify(body) }),
+  approveInstruction: (id: string, body: { fields?: Record<string, string>; note?: string } = {}) =>
     request(`/instructions/${id}/approve`, { method: 'POST', body: JSON.stringify(body) }),
   getWorkbench: () => request<WorkbenchCard[]>('/workbench/requests'),
   getWorkbenchDetail: (id: string) => request<WorkbenchCard>(`/workbench/requests/${id}`),

@@ -18,7 +18,7 @@ from agentx.config import settings
 from agentx.db.engine import get_session
 from agentx.db.repositories.instruction_repo import InstructionRepository, WorkbenchRepository
 from agentx.db.repositories.metrics_repo import ConfigRepository, EvidenceRepository
-from agentx.layers.analytics.service import AnalyticsService
+from agentx.layers.ingest.idp_schema import append_timeline, normalize_golden_schema
 from agentx.layers.ops_assistant.agent import OpsAssistantAgent
 from agentx.layers.orchestrator.graph import build_graph
 from agentx.workers.pipeline_runner import PipelineRunner
@@ -79,6 +79,11 @@ class CommentBody(BaseModel):
 
 class ApproveBody(BaseModel):
     fields: dict[str, str] | None = None
+    note: str | None = None
+
+
+class FieldsUpdateBody(BaseModel):
+    fields: dict[str, str]
     note: str | None = None
 
 
@@ -145,6 +150,41 @@ async def get_instruction(instruction_id: str, session: AsyncSession = Depends(g
     if not row:
         raise HTTPException(404, "Instruction not found")
     return instruction_detail(row)
+
+
+@router.patch("/instructions/{instruction_id}/fields")
+async def update_instruction_fields(
+    instruction_id: str,
+    body: FieldsUpdateBody,
+    session: AsyncSession = Depends(get_session),
+):
+    if not body.fields:
+        raise HTTPException(400, "No field corrections provided")
+
+    repo = InstructionRepository(session)
+    row = await repo.get(instruction_id)
+    if not row:
+        raise HTTPException(404, "Instruction not found")
+
+    golden = dict(row.golden_schema or {})
+    golden.update(body.fields)
+
+    decisions = list(row.decisions or [])
+    decisions.append(f"Human corrections saved: {', '.join(body.fields.keys())}")
+
+    timeline = list(row.timeline or [])
+    append_timeline(timeline, "Reviewer saved field corrections")
+    if body.note:
+        timeline.append(body.note)
+
+    updated = await repo.update(
+        instruction_id,
+        golden_schema=normalize_golden_schema(golden),
+        decisions=decisions,
+        timeline=timeline,
+    )
+    await _broadcast_instruction_event(session, instruction_id)
+    return instruction_detail(updated)
 
 
 @router.post("/instructions/{instruction_id}/approve")

@@ -1,6 +1,7 @@
 from agentx.db.schema import InstructionRow, WorkbenchRequestRow
 from agentx.layers.ingest.idp_schema import (
     IDP_FIELDS,
+    format_amount_display,
     normalize_field_confidences,
     normalize_golden_schema,
     normalize_source_label,
@@ -78,7 +79,7 @@ def instruction_detail(row: InstructionRow) -> dict:
         "party": row.party,
         "account": row.account,
         "settlement": row.settlement_display,
-        "amount": row.amount_display or str(row.amount or "—"),
+        "amount": format_amount_display(_golden_schema_for_row(row)),
         "units": str(row.quantity or "—"),
         "decisions": row.decisions,
         "repair_notes": row.repair_notes,
@@ -106,6 +107,12 @@ def workbench_card(row: WorkbenchRequestRow, instruction: InstructionRow | None 
     if instruction is None and sum(fields.values()) == 0:
         fields = normalize_field_confidences(row.fields)
 
+    amount = (
+        format_amount_display(_golden_schema_for_row(instruction))
+        if instruction is not None
+        else (row.amount or "—")
+    )
+
     payload = {
         "id": row.id,
         "ref": row.ref,
@@ -116,7 +123,7 @@ def workbench_card(row: WorkbenchRequestRow, instruction: InstructionRow | None 
             instruction.source_type if instruction is not None else None,
         ),
         "party": row.party,
-        "amount": row.amount,
+        "amount": amount,
         "confidence": round_confidence(row.confidence),
         "risk": row.risk,
         "riskLabel": row.risk_label,

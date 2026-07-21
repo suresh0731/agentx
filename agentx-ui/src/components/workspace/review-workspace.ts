@@ -4,12 +4,23 @@ import { LightDomElement } from '../../utils/light-dom.js';
 import { api, WorkbenchCard } from '../../services/api-client.js';
 import { wsClient, WsMessage } from '../../services/ws-client.js';
 import { riskColor, formatSla, slaClass } from '../../constants/index.js';
+import {
+  collectFieldCorrections,
+  goldenSchemaToFormValues,
+  renderEditableFieldsForm,
+  resolveFieldConfidences,
+} from '../../utils/idp-display.js';
 import '../shared/step-tracker.js';
 
 @customElement('review-workspace')
 export class ReviewWorkspace extends LightDomElement {
   @state() private card: WorkbenchCard | null = null;
   @state() private visible = false;
+  @state() private editedFields: Record<string, string> = {};
+  @state() private originalFields: Record<string, string> = {};
+  @state() private reviewNote = '';
+  @state() private saving = false;
+  @state() private approving = false;
   private readonly wsHandler = (msg: WsMessage) => this.onWsMessage(msg);
 
   connectedCallback() {
@@ -22,38 +33,91 @@ export class ReviewWorkspace extends LightDomElement {
     wsClient.off(this.wsHandler);
   }
 
+  private initFieldState(card: WorkbenchCard) {
+    const values = goldenSchemaToFormValues(card.golden_schema, card.intake);
+    this.editedFields = { ...values };
+    this.originalFields = { ...values };
+    this.reviewNote = '';
+  }
+
+  private hasUnsavedCorrections(): boolean {
+    return Object.keys(collectFieldCorrections(this.editedFields, this.originalFields)).length > 0;
+  }
+
+  private onFieldChange(field: string, value: string) {
+    this.editedFields = { ...this.editedFields, [field]: value };
+  }
+
   private async onWsMessage(msg: WsMessage) {
     if (!this.visible || !this.card) return;
     if (msg.type !== 'instruction_progress' && msg.type !== 'instruction_updated' && msg.type !== 'workbench_updated') return;
+    if (this.hasUnsavedCorrections()) return;
     if (msg.workbench && msg.workbench.id === this.card.id) {
       this.card = msg.workbench;
+      this.initFieldState(this.card);
       return;
     }
     if (msg.id === this.card.ref) {
-      this.card = await api.getWorkbenchDetail(this.card.id);
+      const updated = await api.getWorkbenchDetail(this.card.id);
+      this.card = updated;
+      this.initFieldState(updated);
     }
   }
 
   async show(id: string) {
     this.card = await api.getWorkbenchDetail(id);
+    this.initFieldState(this.card);
     this.visible = true;
   }
 
   close() {
     this.visible = false;
     this.card = null;
+    this.editedFields = {};
+    this.originalFields = {};
+    this.reviewNote = '';
+  }
+
+  private async saveCorrections() {
+    if (!this.card) return;
+    const corrections = collectFieldCorrections(this.editedFields, this.originalFields);
+    if (!Object.keys(corrections).length) return;
+
+    this.saving = true;
+    try {
+      await api.updateInstructionFields(this.card.ref, {
+        fields: corrections,
+        note: this.reviewNote.trim() || undefined,
+      });
+      this.originalFields = { ...this.editedFields };
+      this.card = await api.getWorkbenchDetail(this.card.id);
+    } finally {
+      this.saving = false;
+    }
   }
 
   private async approve() {
-    if (!this.card) return;
-    await api.approveInstruction(this.card.ref);
-    this.dispatchEvent(new CustomEvent('approved', { detail: this.card.ref, bubbles: true, composed: true }));
-    this.close();
+    if (!this.card || this.approving) return;
+    this.approving = true;
+    try {
+      const corrections = collectFieldCorrections(this.editedFields, this.originalFields);
+      await api.approveInstruction(this.card.ref, {
+        fields: Object.keys(corrections).length ? corrections : undefined,
+        note: this.reviewNote.trim() || undefined,
+      });
+      this.dispatchEvent(new CustomEvent('approved', { detail: this.card.ref, bubbles: true, composed: true }));
+      this.close();
+    } finally {
+      this.approving = false;
+    }
   }
 
   render() {
     if (!this.visible || !this.card) return html``;
     const c = this.card;
+    const confidences = resolveFieldConfidences(c.fields, c.intake);
+    const hasCorrections = this.hasUnsavedCorrections();
+
     return html`
       <div id="review-workspace" class="fixed inset-0 z-[600] bg-gray-50 flex flex-col" style="position:fixed;inset:0;z-index:600;background:#f9fafb;display:flex;flex-direction:column;">
         <div class="border-b border-gray-200 bg-white px-6 py-3 flex items-center justify-between shrink-0">
@@ -97,6 +161,23 @@ export class ReviewWorkspace extends LightDomElement {
               </div>
             </div>
 
+            <div class="wireframe-card rounded-2xl p-5" style="grid-column:span 2;">
+              <div class="section-label mb-1">Editable Extracted Fields</div>
+              <p class="text-xs text-slate-500 mb-4">Correct any extracted values below. Saved corrections are used when the transaction continues processing.</p>
+              ${renderEditableFieldsForm(this.editedFields, confidences, (field, value) => this.onFieldChange(field, value))}
+            </div>
+
+            <div class="wireframe-card rounded-2xl p-5" style="grid-column:span 2;">
+              <div class="section-label mb-2">Review Note (Added to Evidence Trail)</div>
+              <textarea
+                id="audit-note"
+                placeholder="Explain your correction..."
+                class="w-full h-24 text-sm"
+                .value=${this.reviewNote}
+                @input=${(e: Event) => { this.reviewNote = (e.target as HTMLTextAreaElement).value; }}
+              ></textarea>
+            </div>
+
             <div class="wireframe-card rounded-2xl p-5">
               <div class="section-label mb-3">AI Findings</div>
               <div class="space-y-2 text-xs">
@@ -118,8 +199,8 @@ export class ReviewWorkspace extends LightDomElement {
             <div class="wireframe-card rounded-2xl p-5" style="grid-column:span 2;">
               <div class="section-label mb-3">Confidence Heatmap — Field-Level Scores</div>
               <div class="heatmap-grid">
-                ${Object.entries(c.fields).map(([k, v]: [string, number]) => html`
-                  <div class="heatmap-cell ${v >= 95 ? 'heat-high' : v >= 80 ? 'heat-med' : v > 0 ? 'heat-low' : ''}">${k}<br><strong>${v}%</strong></div>
+                ${Object.entries(confidences).map(([k, v]: [string, number]) => html`
+                  <div class="heatmap-cell ${v >= 95 ? 'heat-high' : v >= 80 ? 'heat-med' : v > 0 ? 'heat-low' : ''}">${k.replace(/_/g, ' ')}<br><strong>${v}%</strong></div>
                 `)}
               </div>
             </div>
@@ -139,9 +220,22 @@ export class ReviewWorkspace extends LightDomElement {
         </div>
 
         <div class="border-t border-gray-200 bg-white px-6 py-4 flex items-center justify-between shrink-0" style="padding-right:96px;">
-          <div class="text-xs text-gray-500">Select an action to advance this request</div>
+          <div class="text-xs text-gray-500">
+            ${hasCorrections ? 'Unsaved field corrections' : 'Select an action to advance this request'}
+          </div>
           <div class="flex flex-wrap justify-end gap-2">
-            <button class="corp-btn-primary" style="border:none;cursor:pointer;" @click=${() => this.approve()}>Approve</button>
+            <button
+              class="btn-outline-sm"
+              style="cursor:pointer;"
+              ?disabled=${!hasCorrections || this.saving}
+              @click=${() => this.saveCorrections()}
+            >${this.saving ? 'Saving…' : 'Save Corrections'}</button>
+            <button
+              class="corp-btn-primary"
+              style="border:none;cursor:pointer;"
+              ?disabled=${this.approving}
+              @click=${() => this.approve()}
+            >${this.approving ? 'Approving…' : 'Approve & Continue'}</button>
             <button class="btn-outline-sm" @click=${() => this.close()}>Back to Board</button>
           </div>
         </div>

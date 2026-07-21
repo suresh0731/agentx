@@ -316,14 +316,29 @@ def format_source_label(source_type: str, channel: str = "") -> str:
     return normalize_source_label(channel or None, source_type or None)
 
 
+def _has_numeric_amount(value: Any) -> bool:
+    """True when value is present and contains a parseable numeric amount."""
+    if _is_missing_value(value):
+        return False
+    if isinstance(value, (int, float)):
+        return True
+    cleaned = re.sub(r"[^\d.]", "", str(value).replace(",", ""))
+    return bool(cleaned)
+
+
 def format_amount_display(golden_schema: dict[str, Any] | None) -> str:
     if not golden_schema:
         return "—"
     nominal = golden_schema.get("amount_nominal")
-    if nominal not in (None, ""):
+    if _has_numeric_amount(nominal):
         return str(nominal)
+    unit = golden_schema.get("amount_unit")
+    if _has_numeric_amount(unit):
+        return str(unit)
     legacy = golden_schema.get("amount")
-    return str(legacy) if legacy not in (None, "") else "—"
+    if _has_numeric_amount(legacy):
+        return str(legacy)
+    return "—"
 
 
 def append_timeline(timeline: list[str], event: str) -> None:

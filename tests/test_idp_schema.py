@@ -196,3 +196,24 @@ def test_normalize_source_label_single_values():
 
 def test_format_amount_display_nominal():
     assert format_amount_display({"amount_nominal": "AED 5,000,000.00"}) == "AED 5,000,000.00"
+
+
+def test_format_amount_display_falls_back_to_unit_when_nominal_not_numeric():
+    assert format_amount_display({
+        "amount_nominal": "NOT APPLICABLE",
+        "amount_unit": 1012.5,
+    }) == "1012.5"
+
+
+def test_format_amount_display_falls_back_to_unit_when_nominal_missing():
+    assert format_amount_display({
+        "amount_nominal": None,
+        "amount_unit": 2793.74,
+    }) == "2793.74"
+
+
+def test_format_amount_display_returns_dash_when_no_usable_amount():
+    assert format_amount_display({
+        "amount_nominal": "NOT APPLICABLE",
+        "amount_unit": None,
+    }) == "—"

@@ -3,13 +3,24 @@ import { customElement, state } from 'lit/decorators.js';
 import { LightDomElement } from '../../utils/light-dom.js';
 import { api, InstructionDetail } from '../../services/api-client.js';
 import { wsClient, WsMessage } from '../../services/ws-client.js';
-import { renderConfidenceHeatmap, renderGoldenSchemaTable } from '../../utils/idp-display.js';
+import {
+  collectFieldCorrections,
+  goldenSchemaToFormValues,
+  renderConfidenceHeatmap,
+  renderEditableFieldsForm,
+  resolveFieldConfidences,
+} from '../../utils/idp-display.js';
 import '../shared/step-tracker.js';
 
 @customElement('txn-modal')
 export class TxnModal extends LightDomElement {
   @state() private detail: InstructionDetail | null = null;
   @state() private visible = false;
+  @state() private editedFields: Record<string, string> = {};
+  @state() private originalFields: Record<string, string> = {};
+  @state() private reviewNote = '';
+  @state() private saving = false;
+  @state() private approving = false;
   private readonly wsHandler = (msg: WsMessage) => this.onWsMessage(msg);
 
   connectedCallback() {
@@ -22,37 +33,88 @@ export class TxnModal extends LightDomElement {
     wsClient.off(this.wsHandler);
   }
 
+  private initFieldState(detail: InstructionDetail) {
+    const values = goldenSchemaToFormValues(detail.golden_schema, detail.intake);
+    this.editedFields = { ...values };
+    this.originalFields = { ...values };
+    this.reviewNote = '';
+  }
+
+  private hasUnsavedCorrections(): boolean {
+    return Object.keys(collectFieldCorrections(this.editedFields, this.originalFields)).length > 0;
+  }
+
+  private onFieldChange(field: string, value: string) {
+    this.editedFields = { ...this.editedFields, [field]: value };
+  }
+
   private async onWsMessage(msg: WsMessage) {
     if (!this.visible || !this.detail) return;
     if (msg.id !== this.detail.ref) return;
     if (msg.type !== 'instruction_progress' && msg.type !== 'instruction_updated') return;
+    if (this.hasUnsavedCorrections()) return;
     this.detail = await api.getInstruction(this.detail.ref);
+    this.initFieldState(this.detail);
   }
 
   async show(ref: string) {
     this.detail = await api.getInstruction(ref);
+    this.initFieldState(this.detail);
     this.visible = true;
   }
 
   close() {
     this.visible = false;
     this.detail = null;
+    this.editedFields = {};
+    this.originalFields = {};
+    this.reviewNote = '';
+  }
+
+  private async saveCorrections() {
+    if (!this.detail) return;
+    const corrections = collectFieldCorrections(this.editedFields, this.originalFields);
+    if (!Object.keys(corrections).length) return;
+
+    this.saving = true;
+    try {
+      this.detail = await api.updateInstructionFields(this.detail.ref, {
+        fields: corrections,
+        note: this.reviewNote.trim() || undefined,
+      });
+      this.originalFields = { ...this.editedFields };
+    } finally {
+      this.saving = false;
+    }
   }
 
   private async approve() {
-    if (!this.detail) return;
-    await api.approveInstruction(this.detail.ref);
-    this.dispatchEvent(new CustomEvent('approved', { detail: this.detail.ref, bubbles: true, composed: true }));
-    this.close();
+    if (!this.detail || this.approving) return;
+    this.approving = true;
+    try {
+      const corrections = collectFieldCorrections(this.editedFields, this.originalFields);
+      await api.approveInstruction(this.detail.ref, {
+        fields: Object.keys(corrections).length ? corrections : undefined,
+        note: this.reviewNote.trim() || undefined,
+      });
+      this.dispatchEvent(new CustomEvent('approved', { detail: this.detail.ref, bubbles: true, composed: true }));
+      this.close();
+    } finally {
+      this.approving = false;
+    }
   }
 
   render() {
     if (!this.visible || !this.detail) return html``;
     const d = this.detail;
+    const confidences = resolveFieldConfidences(d.field_confidences, d.intake);
+    const hasCorrections = this.hasUnsavedCorrections();
+    const canReview = d.journey?.heldStep !== undefined && d.journey.heldStep !== null;
+
     return html`
       <div class="modal-overlay" style="background:rgba(0,0,0,0.4);" @click=${(e: Event) => { if (e.target === e.currentTarget) this.close(); }}>
         <div class="modal-content" style="max-width:72rem;padding:0;" @click=${(e: Event) => e.stopPropagation()}>
-          <div class="px-6 pt-5 pb-4 border-b border-gray-200 flex items-center justify-between" style="position:sticky;top:0;background:#fff;">
+          <div class="px-6 pt-5 pb-4 border-b border-gray-200 flex items-center justify-between" style="position:sticky;top:0;background:#fff;z-index:1;">
             <div>
               <div class="mono text-2xl font-semibold text-gray-900">${d.ref}</div>
               <div class="text-blue-600 text-sm">${d.meta || ''}</div>
@@ -87,8 +149,24 @@ export class TxnModal extends LightDomElement {
             </div>
 
             <div class="mb-6 wireframe-card rounded-2xl p-5">
-              <div class="section-label mb-3">Golden Transaction Schema</div>
-              ${renderGoldenSchemaTable(d.golden_schema, d.intake)}
+              <div class="section-label mb-1">Editable Extracted Fields</div>
+              <p class="text-xs text-slate-500 mb-4">
+                ${canReview
+                  ? 'Correct extracted values before approving. Saved corrections are used in routing and reconciliation.'
+                  : 'Review extracted field values. Corrections can be saved for audit before continuing.'}
+              </p>
+              ${renderEditableFieldsForm(this.editedFields, confidences, (field, value) => this.onFieldChange(field, value))}
+            </div>
+
+            <div class="mb-6 wireframe-card rounded-2xl p-5">
+              <div class="section-label mb-2">Review Note (Added to Evidence Trail)</div>
+              <textarea
+                id="audit-note"
+                placeholder="Explain your correction..."
+                class="w-full h-24 text-sm"
+                .value=${this.reviewNote}
+                @input=${(e: Event) => { this.reviewNote = (e.target as HTMLTextAreaElement).value; }}
+              ></textarea>
             </div>
 
             <div class="mb-6 wireframe-card rounded-2xl p-5">
@@ -107,9 +185,21 @@ export class TxnModal extends LightDomElement {
               </div>
             </div>
 
-            <div class="flex gap-3">
-              <button class="corp-btn-primary" style="border:none;cursor:pointer;padding:8px 20px;" @click=${() => this.approve()}>Approve & Continue</button>
+            <div class="flex flex-wrap gap-3 items-center">
+              <button
+                class="btn-outline"
+                style="cursor:pointer;"
+                ?disabled=${!hasCorrections || this.saving}
+                @click=${() => this.saveCorrections()}
+              >${this.saving ? 'Saving…' : 'Save Corrections'}</button>
+              <button
+                class="corp-btn-primary"
+                style="border:none;cursor:pointer;padding:8px 20px;"
+                ?disabled=${this.approving}
+                @click=${() => this.approve()}
+              >${this.approving ? 'Approving…' : 'Approve & Continue'}</button>
               <button class="btn-outline" @click=${() => this.close()}>Close</button>
+              ${hasCorrections ? html`<span class="text-xs text-amber-600">Unsaved field corrections</span>` : ''}
             </div>
           </div>
         </div>
