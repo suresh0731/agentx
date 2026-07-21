@@ -341,6 +341,20 @@ def format_amount_display(golden_schema: dict[str, Any] | None) -> str:
     return "—"
 
 
+def display_fields_from_golden(golden_schema: dict[str, Any] | None) -> dict[str, str]:
+    """Derive instruction/workbench display columns from golden schema."""
+    if not golden_schema:
+        return {}
+    updates: dict[str, str] = {}
+    investor = golden_schema.get("investor_account_name")
+    if investor not in (None, ""):
+        updates["party"] = str(investor)
+    amount = format_amount_display(golden_schema)
+    if amount != "—":
+        updates["amount_display"] = amount
+    return updates
+
+
 def append_timeline(timeline: list[str], event: str) -> None:
     ts = datetime.now().strftime("%H:%M")
     timeline.append(f"{ts} — {event}")

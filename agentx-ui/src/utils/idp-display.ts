@@ -156,7 +156,9 @@ export function renderEditableFieldsForm(
   values: Record<string, string>,
   confidences: Record<string, number>,
   onFieldChange: (field: string, value: string) => void,
+  options: { disabled?: boolean } = {},
 ): TemplateResult {
+  const disabled = options.disabled ?? false;
   return html`
     <div class="editable-fields-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px 16px;">
       ${IDP_FIELDS.map((field) => {
@@ -173,8 +175,9 @@ export function renderEditableFieldsForm(
             <input
               type="text"
               class="editable-field w-full"
-              style=${needsReview ? 'border-color:#fcd34d;' : ''}
+              style=${needsReview && !disabled ? 'border-color:#fcd34d;' : ''}
               .value=${values[field] ?? ''}
+              ?disabled=${disabled}
               @input=${(e: Event) => onFieldChange(field, (e.target as HTMLInputElement).value)}
             />
           </div>

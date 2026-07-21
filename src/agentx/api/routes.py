@@ -11,6 +11,7 @@ from agentx.api.serializers import (
     exception_summary,
     instruction_detail,
     instruction_summary,
+    is_review_editable,
     workbench_card,
 )
 from agentx.api.ws_manager import ws_manager
@@ -19,7 +20,7 @@ from agentx.db.engine import get_session
 from agentx.db.repositories.instruction_repo import InstructionRepository, WorkbenchRepository
 from agentx.db.repositories.metrics_repo import ConfigRepository, EvidenceRepository
 from agentx.layers.analytics.service import AnalyticsService
-from agentx.layers.ingest.idp_schema import append_timeline, normalize_golden_schema
+from agentx.layers.ingest.idp_schema import append_timeline, display_fields_from_golden, normalize_golden_schema
 from agentx.layers.ops_assistant.agent import OpsAssistantAgent
 from agentx.layers.orchestrator.graph import build_graph
 from agentx.workers.pipeline_runner import PipelineRunner
@@ -167,8 +168,20 @@ async def update_instruction_fields(
     if not row:
         raise HTTPException(404, "Instruction not found")
 
+    wb = await WorkbenchRepository(session).get_by_ref(instruction_id)
+    if not is_review_editable(row, wb):
+        raise HTTPException(409, "Instruction is no longer editable after human review")
+
     golden = dict(row.golden_schema or {})
     golden.update(body.fields)
+    golden = normalize_golden_schema(golden)
+    display = display_fields_from_golden(golden)
+
+    intake = dict(row.intake_json or {})
+    if "investor_account_name" in body.fields:
+        party = dict(intake.get("party") or {})
+        party["name"] = body.fields["investor_account_name"]
+        intake["party"] = party
 
     decisions = list(row.decisions or [])
     decisions.append(f"Human corrections saved: {', '.join(body.fields.keys())}")
@@ -180,10 +193,19 @@ async def update_instruction_fields(
 
     updated = await repo.update(
         instruction_id,
-        golden_schema=normalize_golden_schema(golden),
+        golden_schema=golden,
+        intake_json=intake if "investor_account_name" in body.fields else row.intake_json,
         decisions=decisions,
         timeline=timeline,
+        **display,
     )
+    if wb and updated:
+        if "party" in display:
+            wb.party = display["party"]
+        if "amount_display" in display:
+            wb.amount = display["amount_display"]
+        await session.commit()
+
     await _broadcast_instruction_event(session, instruction_id)
     return instruction_detail(updated)
 
@@ -197,8 +219,18 @@ async def approve_instruction(instruction_id: str, body: ApproveBody, session: A
         logger.warning("Approve failed — instruction not found: %s", instruction_id)
         raise HTTPException(404, "Instruction not found")
     wb = await WorkbenchRepository(session).get_by_ref(instruction_id)
+    if not is_review_editable(row, wb):
+        raise HTTPException(409, "Instruction has already been approved and cannot be reviewed again")
     if wb:
         wb.stage = "approved"
+        if body.fields:
+            golden = dict(row.golden_schema or {})
+            golden.update(body.fields)
+            display = display_fields_from_golden(normalize_golden_schema(golden))
+            if "party" in display:
+                wb.party = display["party"]
+            if "amount_display" in display:
+                wb.amount = display["amount_display"]
         await session.commit()
         logger.info("Workbench stage set to approved: instruction_id=%s request_id=%s", instruction_id, wb.id)
 

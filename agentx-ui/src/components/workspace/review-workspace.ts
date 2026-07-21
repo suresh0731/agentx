@@ -1,4 +1,4 @@
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { LightDomElement } from '../../utils/light-dom.js';
 import { api, WorkbenchCard } from '../../services/api-client.js';
@@ -79,7 +79,7 @@ export class ReviewWorkspace extends LightDomElement {
   }
 
   private async saveCorrections() {
-    if (!this.card) return;
+    if (!this.card || !this.isReviewEditable(this.card)) return;
     const corrections = collectFieldCorrections(this.editedFields, this.originalFields);
     if (!Object.keys(corrections).length) return;
 
@@ -97,7 +97,7 @@ export class ReviewWorkspace extends LightDomElement {
   }
 
   private async approve() {
-    if (!this.card || this.approving) return;
+    if (!this.card || this.approving || !this.isReviewEditable(this.card)) return;
     this.approving = true;
     try {
       const corrections = collectFieldCorrections(this.editedFields, this.originalFields);
@@ -112,11 +112,22 @@ export class ReviewWorkspace extends LightDomElement {
     }
   }
 
+  private displayInvestorName(card: WorkbenchCard): string {
+    const edited = (this.editedFields.investor_account_name ?? '').trim();
+    return edited || card.party;
+  }
+
+  private isReviewEditable(card: WorkbenchCard): boolean {
+    return card.review_editable !== false;
+  }
+
   render() {
     if (!this.visible || !this.card) return html``;
     const c = this.card;
     const confidences = resolveFieldConfidences(c.fields, c.intake);
     const hasCorrections = this.hasUnsavedCorrections();
+    const reviewEditable = this.isReviewEditable(c);
+    const investorName = this.displayInvestorName(c);
 
     return html`
       <div id="review-workspace" class="fixed inset-0 z-[600] bg-gray-50 flex flex-col" style="position:fixed;inset:0;z-index:600;background:#f9fafb;display:flex;flex-direction:column;">
@@ -127,7 +138,7 @@ export class ReviewWorkspace extends LightDomElement {
             </button>
             <div>
               <div class="mono text-lg font-semibold text-gray-900">${c.ref}</div>
-              <div class="text-xs text-blue-600">${c.intent} · ${c.party}</div>
+              <div class="text-xs text-blue-600">${c.intent} · ${investorName}</div>
             </div>
           </div>
           <div class="flex items-center gap-3">
@@ -154,7 +165,7 @@ export class ReviewWorkspace extends LightDomElement {
             <div class="wireframe-card rounded-2xl p-5" style="grid-column:span 2;">
               <div class="section-label mb-3">Request Summary</div>
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div><div class="text-xs text-slate-400">Investor Name</div><div class="font-medium">${c.party}</div></div>
+                <div><div class="text-xs text-slate-400">Investor Name</div><div class="font-medium">${investorName}</div></div>
                 <div><div class="text-xs text-slate-400">Amount</div><div class="font-medium">${c.amount}</div></div>
                 <div><div class="text-xs text-slate-400">Source</div><div class="font-medium">${c.source}</div></div>
                 <div><div class="text-xs text-slate-400">Assignee</div><div class="font-medium">${c.assignee}</div></div>
@@ -162,9 +173,18 @@ export class ReviewWorkspace extends LightDomElement {
             </div>
 
             <div class="wireframe-card rounded-2xl p-5" style="grid-column:span 2;">
-              <div class="section-label mb-1">Editable Extracted Fields</div>
-              <p class="text-xs text-slate-500 mb-4">Correct any extracted values below. Saved corrections are used when the transaction continues processing.</p>
-              ${renderEditableFieldsForm(this.editedFields, confidences, (field, value) => this.onFieldChange(field, value))}
+              <div class="section-label mb-1">${reviewEditable ? 'Editable Extracted Fields' : 'Extracted Fields'}</div>
+              <p class="text-xs text-slate-500 mb-4">
+                ${reviewEditable
+                  ? 'Correct any extracted values below. Saved corrections are used when the transaction continues processing.'
+                  : 'This instruction has moved past human review. Field values are read-only.'}
+              </p>
+              ${renderEditableFieldsForm(
+                this.editedFields,
+                confidences,
+                (field, value) => this.onFieldChange(field, value),
+                { disabled: !reviewEditable },
+              )}
             </div>
 
             <div class="wireframe-card rounded-2xl p-5" style="grid-column:span 2;">
@@ -174,6 +194,7 @@ export class ReviewWorkspace extends LightDomElement {
                 placeholder="Explain your correction..."
                 class="w-full h-24 text-sm"
                 .value=${this.reviewNote}
+                ?disabled=${!reviewEditable}
                 @input=${(e: Event) => { this.reviewNote = (e.target as HTMLTextAreaElement).value; }}
               ></textarea>
             </div>
@@ -221,9 +242,14 @@ export class ReviewWorkspace extends LightDomElement {
 
         <div class="border-t border-gray-200 bg-white px-6 py-4 flex items-center justify-between shrink-0" style="padding-right:96px;">
           <div class="text-xs text-gray-500">
-            ${hasCorrections ? 'Unsaved field corrections' : 'Select an action to advance this request'}
+            ${!reviewEditable
+              ? 'This request is read-only — processing has continued past human review.'
+              : hasCorrections
+                ? 'Unsaved field corrections'
+                : 'Select an action to advance this request'}
           </div>
           <div class="flex flex-wrap justify-end gap-2">
+            ${reviewEditable ? html`
             <button
               class="btn-outline-sm"
               style="cursor:pointer;"
@@ -236,6 +262,7 @@ export class ReviewWorkspace extends LightDomElement {
               ?disabled=${this.approving}
               @click=${() => this.approve()}
             >${this.approving ? 'Approving…' : 'Approve & Continue'}</button>
+            ` : nothing}
             <button class="btn-outline-sm" @click=${() => this.close()}>Back to Board</button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { LightDomElement } from '../../utils/light-dom.js';
 import { api, InstructionDetail } from '../../services/api-client.js';
@@ -72,7 +72,7 @@ export class TxnModal extends LightDomElement {
   }
 
   private async saveCorrections() {
-    if (!this.detail) return;
+    if (!this.detail || this.detail.review_editable === false) return;
     const corrections = collectFieldCorrections(this.editedFields, this.originalFields);
     if (!Object.keys(corrections).length) return;
 
@@ -89,7 +89,7 @@ export class TxnModal extends LightDomElement {
   }
 
   private async approve() {
-    if (!this.detail || this.approving) return;
+    if (!this.detail || this.approving || this.detail.review_editable === false) return;
     this.approving = true;
     try {
       const corrections = collectFieldCorrections(this.editedFields, this.originalFields);
@@ -109,7 +109,7 @@ export class TxnModal extends LightDomElement {
     const d = this.detail;
     const confidences = resolveFieldConfidences(d.field_confidences, d.intake);
     const hasCorrections = this.hasUnsavedCorrections();
-    const canReview = d.journey?.heldStep !== undefined && d.journey.heldStep !== null;
+    const reviewEditable = d.review_editable !== false;
 
     return html`
       <div class="modal-overlay" style="background:rgba(0,0,0,0.4);" @click=${(e: Event) => { if (e.target === e.currentTarget) this.close(); }}>
@@ -149,13 +149,18 @@ export class TxnModal extends LightDomElement {
             </div>
 
             <div class="mb-6 wireframe-card rounded-2xl p-5">
-              <div class="section-label mb-1">Editable Extracted Fields</div>
+              <div class="section-label mb-1">${reviewEditable ? 'Editable Extracted Fields' : 'Extracted Fields'}</div>
               <p class="text-xs text-slate-500 mb-4">
-                ${canReview
+                ${reviewEditable
                   ? 'Correct extracted values before approving. Saved corrections are used in routing and reconciliation.'
-                  : 'Review extracted field values. Corrections can be saved for audit before continuing.'}
+                  : 'This instruction has moved past human review. Field values are read-only.'}
               </p>
-              ${renderEditableFieldsForm(this.editedFields, confidences, (field, value) => this.onFieldChange(field, value))}
+              ${renderEditableFieldsForm(
+                this.editedFields,
+                confidences,
+                (field, value) => this.onFieldChange(field, value),
+                { disabled: !reviewEditable },
+              )}
             </div>
 
             <div class="mb-6 wireframe-card rounded-2xl p-5">
@@ -165,6 +170,7 @@ export class TxnModal extends LightDomElement {
                 placeholder="Explain your correction..."
                 class="w-full h-24 text-sm"
                 .value=${this.reviewNote}
+                ?disabled=${!reviewEditable}
                 @input=${(e: Event) => { this.reviewNote = (e.target as HTMLTextAreaElement).value; }}
               ></textarea>
             </div>
@@ -186,6 +192,7 @@ export class TxnModal extends LightDomElement {
             </div>
 
             <div class="flex flex-wrap gap-3 items-center">
+              ${reviewEditable ? html`
               <button
                 class="btn-outline"
                 style="cursor:pointer;"
@@ -198,8 +205,9 @@ export class TxnModal extends LightDomElement {
                 ?disabled=${this.approving}
                 @click=${() => this.approve()}
               >${this.approving ? 'Approving…' : 'Approve & Continue'}</button>
+              ` : nothing}
               <button class="btn-outline" @click=${() => this.close()}>Close</button>
-              ${hasCorrections ? html`<span class="text-xs text-amber-600">Unsaved field corrections</span>` : ''}
+              ${reviewEditable && hasCorrections ? html`<span class="text-xs text-amber-600">Unsaved field corrections</span>` : nothing}
             </div>
           </div>
         </div>

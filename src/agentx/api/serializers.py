@@ -1,6 +1,7 @@
 from agentx.db.schema import InstructionRow, WorkbenchRequestRow
 from agentx.layers.ingest.idp_schema import (
     IDP_FIELDS,
+    display_fields_from_golden,
     format_amount_display,
     normalize_field_confidences,
     normalize_golden_schema,
@@ -8,6 +9,27 @@ from agentx.layers.ingest.idp_schema import (
     parse_extraction_fields,
     round_confidence,
 )
+
+_REVIEW_TERMINAL_STATUSES = frozenset({"Reconciled", "Routed"})
+
+
+def is_review_editable(
+    instruction: InstructionRow,
+    workbench: WorkbenchRequestRow | None = None,
+) -> bool:
+    """True only while an instruction is actively held for human review."""
+    journey = instruction.journey or {}
+    held_step = journey.get("held_step", journey.get("heldStep"))
+    completed = journey.get("completed_through", journey.get("completedThrough", 0))
+    if held_step is None and completed >= 4:
+        return False
+    if instruction.status in _REVIEW_TERMINAL_STATUSES:
+        return False
+    if not instruction.is_exception:
+        return False
+    if workbench is not None and workbench.stage != "review":
+        return False
+    return True
 
 
 def journey_to_api(journey: dict) -> dict:
@@ -67,6 +89,8 @@ def _field_confidences_for_row(row: InstructionRow) -> dict[str, float]:
 
 
 def instruction_detail(row: InstructionRow) -> dict:
+    golden = _golden_schema_for_row(row)
+    display = display_fields_from_golden(golden)
     return {
         "ref": row.instruction_id,
         "meta": row.meta,
@@ -74,12 +98,12 @@ def instruction_detail(row: InstructionRow) -> dict:
         "confidence": round_confidence(row.confidence),
         "recon_status": row.recon_status,
         "recon_detail": row.recon_detail,
-        "golden_schema": _golden_schema_for_row(row),
+        "golden_schema": golden,
         "intake": row.intake_json,
-        "party": row.party,
+        "party": display.get("party", row.party),
         "account": row.account,
         "settlement": row.settlement_display,
-        "amount": format_amount_display(_golden_schema_for_row(row)),
+        "amount": display.get("amount_display", format_amount_display(golden)),
         "units": str(row.quantity or "—"),
         "decisions": row.decisions,
         "repair_notes": row.repair_notes,
@@ -87,6 +111,7 @@ def instruction_detail(row: InstructionRow) -> dict:
         "timeline": row.timeline,
         "journey": journey_to_api(row.journey or {}),
         "status": row.status,
+        "review_editable": is_review_editable(row),
     }
 
 
@@ -107,11 +132,10 @@ def workbench_card(row: WorkbenchRequestRow, instruction: InstructionRow | None 
     if instruction is None and sum(fields.values()) == 0:
         fields = normalize_field_confidences(row.fields)
 
-    amount = (
-        format_amount_display(_golden_schema_for_row(instruction))
-        if instruction is not None
-        else (row.amount or "—")
-    )
+    golden = _golden_schema_for_row(instruction) if instruction is not None else None
+    display = display_fields_from_golden(golden) if golden is not None else {}
+    amount = display.get("amount_display") or (row.amount if instruction is None else format_amount_display(golden)) or "—"
+    party = display.get("party", row.party)
 
     payload = {
         "id": row.id,
@@ -122,7 +146,7 @@ def workbench_card(row: WorkbenchRequestRow, instruction: InstructionRow | None 
             row.source,
             instruction.source_type if instruction is not None else None,
         ),
-        "party": row.party,
+        "party": party,
         "amount": amount,
         "confidence": round_confidence(row.confidence),
         "risk": row.risk,
@@ -139,6 +163,9 @@ def workbench_card(row: WorkbenchRequestRow, instruction: InstructionRow | None 
         "comments": row.comments,
     }
     if instruction is not None:
-        payload["golden_schema"] = _golden_schema_for_row(instruction)
+        payload["golden_schema"] = golden
         payload["intake"] = instruction.intake_json
+        payload["review_editable"] = is_review_editable(instruction, row)
+    else:
+        payload["review_editable"] = row.stage == "review"
     return payload
