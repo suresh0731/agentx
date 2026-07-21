@@ -5,7 +5,6 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from sse_starlette.sse import EventSourceResponse
 
 from agentx.api.serializers import (
     exception_summary,
@@ -330,14 +329,7 @@ async def assistant_welcome(session: AsyncSession = Depends(get_session)):
 @router.post("/assistant/chat")
 async def assistant_chat(body: ChatBody, session: AsyncSession = Depends(get_session)):
     agent = OpsAssistantAgent(session)
-    result = await agent.chat(body.message)
-
-    async def stream():
-        yield {"event": "message", "data": result["reply_html"]}
-        if result.get("meta"):
-            yield {"event": "meta", "data": str(result["meta"])}
-
-    return EventSourceResponse(stream())
+    return await agent.chat(body.message)
 
 
 @router.post("/ingest")

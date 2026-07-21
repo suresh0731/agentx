@@ -35,28 +35,10 @@ export const api = {
   getAudit: () => request<AuditEvent[]>('/audit'),
   getConfigRules: () => request<{ validation: string[]; repair: string[] }>('/config/rules'),
   getAssistantWelcome: () => request<{ greeting: string; stats: { label: string; value: string }[] }>('/assistant/welcome'),
-  chat: async (message: string): Promise<{ reply_html: string; meta?: { stats: string[] } }> => {
-    const res = await fetch(`${BASE}/assistant/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message }),
-    });
-    const text = await res.text();
-    const lines = text.split('\n');
-    let reply = '';
-    let stats: string[] = [];
-    for (const line of lines) {
-      if (line.startsWith('data: ')) {
-        const data = line.slice(6);
-        if (line.includes('meta')) {
-          try { stats = JSON.parse(data.replace(/'/g, '"')).stats || []; } catch { /* ignore */ }
-        } else {
-          reply = data;
-        }
-      }
-    }
-    return { reply_html: reply || text, meta: { stats } };
-  },
+  chat: (message: string) => request<{ reply_html: string; meta?: { stats: string[] } }>('/assistant/chat', {
+    method: 'POST',
+    body: JSON.stringify({ message }),
+  }),
 };
 
 export interface KpiTile {
